@@ -8,57 +8,75 @@
     $smarty->setCompileDir(TEMPLATES_CACHE_PATH);
     $smarty->setCacheDir(CACHE_PATH);
     $smarty->setConfigDir(CONFIG_PATH);
-    $smarty->assign('sites', getSites());
+    $error = false;
 
-    if (substr($_SERVER['REMOTE_ADDR'], 7) == '192.168') {
-        $smarty->display('403.tpl');
-        die();
+    try {
+        $smarty->assign('sites', getSites());
+        $smarty->assign('locations', getLocations());
+    } catch (Exception $e) {
+        $error = true;
+        $smarty->assign('error', $e->getMessage());
+        $smarty->display('500.tpl');
     }
-
-    $smarty->assign('locations', getLocations());
+    if (substr($_SERVER['REMOTE_ADDR'], 7) == '192.168') {
+        $error = true;
+        $smarty->display('403.tpl');
+    }
 
     $site = FALSE;
 
 
-    if (isset($_REQUEST['action'])) {
-        switch ($_REQUEST['action']) {
-            case 'additem':
-                if (isset($_POST['name']) && isset($_POST['location']) && isset($_POST['count'])) {
-                    insertItem($_POST['name'], $_POST['location'], $_POST['count']);
+    try {
+        if (!$error) {
+            if (isset($_REQUEST['action'])) {
+                switch ($_REQUEST['action']) {
+                    case 'additem':
+                        if (isset($_POST['name']) && isset($_POST['location']) && isset($_POST['count'])) {
+                            insertItem($_POST['name'], $_POST['location'], $_POST['count']);
+                        }
+                        $smarty->display('additem.tpl');
+                    break;
+                    case 'addlocation':
+                        if (isset($_POST['name']) && isset($_POST['site'])) {
+                            insertLocation($_POST['name'], $_POST['site']);
+                        }
+                        showTemplateWithSitesAndLocations('addlocation.tpl');
+                    break;
+                    case 'addsite':
+                        if (isset($_POST['name'])) {
+                            insertSite($_POST['name']);
+                        }
+                        showTemplateWithSitesAndLocations('addsite.tpl');
+                    break;
+                    case 'edititem':
+                        if (isset($_POST['itemid']) && isset($_POST['count'])) {
+                            editItem($_POST['itemid'], $_POST['count']);
+                        }
+                        $smarty->assign('siteid', $_REQUEST['site']);
+                        $smarty->assign('site', getSiteName($_REQUEST['site']));
+                        $smarty->assign('stock', getStock($_REQUEST['site']));
+                        $smarty->display('stock.tpl');
+                    break;
                 }
-                $smarty->display('additem.tpl');
-            break;
-            case 'addlocation':
-                if (isset($_POST['name']) && isset($_POST['site'])) {
-                    insertLocation($_POST['name'], $_POST['site']);
-                }
-                $smarty->assign('sites', getSites());
-                $smarty->assign('locations', getLocations());
-                $smarty->display('addlocation.tpl');
-            break;
-            case 'addsite':
-                if (isset($_POST['name'])) {
-                    insertSite($_POST['name']);
-                }
-                $smarty->assign('sites', getSites());
-                $smarty->assign('locations', getLocations());
-                $smarty->display('addsite.tpl');
-            break;
-            case 'edititem':
-                if (isset($_POST['itemid']) && isset($_POST['count'])) {
-                    editItem($_POST['itemid'], $_POST['count']);
-                }
+            } else if (isset($_REQUEST['site']) && is_numeric($_REQUEST['site']) && getSiteName($_REQUEST['site']) !== FALSE) {
                 $smarty->assign('siteid', $_REQUEST['site']);
                 $smarty->assign('site', getSiteName($_REQUEST['site']));
                 $smarty->assign('stock', getStock($_REQUEST['site']));
                 $smarty->display('stock.tpl');
-            break;
+            } else {
+                $smarty->display('index.tpl');
+            }
         }
-    } else if (isset($_REQUEST['site']) && is_numeric($_REQUEST['site']) && getSiteName($_REQUEST['site']) !== FALSE) {
-        $smarty->assign('siteid', $_REQUEST['site']);
-        $smarty->assign('site', getSiteName($_REQUEST['site']));
-        $smarty->assign('stock', getStock($_REQUEST['site']));
-        $smarty->display('stock.tpl');
-    } else {
-        $smarty->display('index.tpl');
+    } catch (Exception $e) {
+        $error = true;
+        $smarty->assign('error', $e->getMessage());
+        $smarty->display('500.tpl');
+    }
+
+    function showTemplateWithSitesAndLocations($template) {
+
+            $smarty->assign('sites', getSites());
+            $smarty->assign('locations', getLocations());
+            $smarty->display($template);
+
     }
