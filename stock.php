@@ -1,11 +1,11 @@
 <?php
 
     function dbConnect() {
-        $db = new mysqli(STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW, STOCK_DB);
-        if($db->connect_errno > 0){
-            die('Unable to connect to database [' . $db->connect_error . ']');
+        $dbconnection = new mysqli(STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW, STOCK_DB);
+        if($dbconnection->connect_errno > 0){
+            die('Unable to connect to database [' . $dbconnection->connect_error . ']');
         }
-        return $db;
+        return $dbconnection;
     }
 
     function getSiteName($siteID) {
@@ -20,14 +20,14 @@
     }
 
     function getSites() {
-        $db = dbConnect();
-        $statement = $db->prepare('SELECT site_id, site_name FROM '.SITES_TABLE);
+        $dbconnection = dbConnect();
+        $statement = $dbconnection->prepare('SELECT site_id, site_name FROM '.SITES_TABLE);
         if (!$statement) {
-            die('Unable to prepare sites [' . $db->error . ']');
+            die('Unable to prepare sites [' . $dbconnection->error . ']');
         }
         $result = $statement->execute();
         if (!$result) {
-            die('Unable to execute sites ['. $db->error .']');
+            die('Unable to execute sites ['. $dbconnection->error .']');
         }
 
         $statement->bind_result($site_id, $site_name);
@@ -40,14 +40,14 @@
     }
 
     function getLocations() {
-        $db = dbConnect();
-        $statement = $db->prepare('SELECT site_id, site_name FROM '.SITES_TABLE);
+        $dbconnection = dbConnect();
+        $statement = $dbconnection->prepare('SELECT site_id, site_name FROM '.SITES_TABLE);
         if (!$statement) {
-            die('Unable to prepare stock sites [' . $db->error . ']');
+            die('Unable to prepare stock sites [' . $dbconnection->error . ']');
         }
         $result = $statement->execute();
         if (!$result) {
-            die('Unable to execute sites ['. $db->error .']');
+            die('Unable to execute sites ['. $dbconnection->error .']');
         }
         $statement->bind_result($id, $name);
         $locations = array();
@@ -56,17 +56,17 @@
         }
         $statement->close();
         foreach ($locations as $siteid => $location) {
-            $statement = $db->prepare('SELECT location_id, location_name
+            $statement = $dbconnection->prepare('SELECT location_id, location_name
                                        FROM '.LOCATIONS_TABLE.' where location_site=?');
             if (!$statement) {
-                die('Unable to prepare location select [' . $db->error . ']');
+                die('Unable to prepare location select [' . $dbconnection->error . ']');
             }
             if (!$statement->bind_param('i', $siteid)) {
-                die('Unable to bind location select [' . $db->error . ']');
+                die('Unable to bind location select [' . $dbconnection->error . ']');
             }
             $result = $statement->execute();
             if (!$result) {
-                die('Unable to execute location ['. $db->error .']');
+                die('Unable to execute location ['. $dbconnection->error .']');
             }
             $statement->bind_result($location_id, $name);
             $locations[$siteid]['locations'] = array();
@@ -78,7 +78,7 @@
     }
 
     function getStock($site) {
-        $db = dbConnect();
+        $dbconnection = dbConnect();
         $sql = 'SELECT stock_id, site_name, location_name, stock_name, stock_count
                               FROM '.STOCK_TABLE.'
                               LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
@@ -87,18 +87,18 @@
             $sql .= " WHERE site_id=?";
         }
         $sql .= " ORDER BY stock_name, location_name, site_name ASC";
-        $statement = $db->prepare($sql);
+        $statement = $dbconnection->prepare($sql);
         if (!$statement) {
-            die('Unable to prepare stock select [' . $db->error . ']');
+            die('Unable to prepare stock select [' . $dbconnection->error . ']');
         }
         if ($site != 0) {
             if (!$statement->bind_param('i', $site)) {
-                die('Unable to bind stock select [' . $db->error . ']');
+                die('Unable to bind stock select [' . $dbconnection->error . ']');
             }
         }
         $result = $statement->execute();
         if (!$result) {
-            die('Unable to execute stock ['. $db->error .']');
+            die('Unable to execute stock ['. $dbconnection->error .']');
         }
         $statement->bind_result($id, $site, $location, $name, $count);
         $stock = array();
@@ -109,8 +109,8 @@
     }
 
     function insertItem($name, $location, $count=0) {
-        $db = dbConnect();
-        $statement = $db->prepare('INSERT INTO '.STOCK_TABLE.' (stock_name, stock_location, stock_count) VALUES (?,?,?)');
+        $dbconnection = dbConnect();
+        $statement = $dbconnection->prepare('INSERT INTO '.STOCK_TABLE.' (stock_name, stock_location, stock_count) VALUES (?,?,?)');
         if (!$statement) {
             die('Unable to prepare stock insert');
         }
@@ -124,8 +124,8 @@
     }
 
     function insertLocation($name, $site) {
-        $db = dbConnect();
-        $statement = $db->prepare('INSERT INTO '.LOCATIONS_TABLE.' (location_name, location_site) VALUES (?,?)');
+        $dbconnection = dbConnect();
+        $statement = $dbconnection->prepare('INSERT INTO '.LOCATIONS_TABLE.' (location_name, location_site) VALUES (?,?)');
         if (!$statement) {
             die('Unable to prepare location insert');
         }
@@ -139,8 +139,8 @@
     }
 
     function insertSite($name) {
-        $db = dbConnect();
-        $statement = $db->prepare('INSERT INTO '.SITES_TABLE.' (site_name) VALUES (?)');
+        $dbconnection = dbConnect();
+        $statement = $dbconnection->prepare('INSERT INTO '.SITES_TABLE.' (site_name) VALUES (?)');
         if (!$statement) {
             die('Unable to prepare site insert');
         }
@@ -154,8 +154,8 @@
     }
 
     function editItem($itemID, $count) {
-        $db = dbConnect();
-        $statement = $db->prepare('UPDATE '.STOCK_TABLE.' SET stock_count=? where stock_id=?');
+        $dbconnection = dbConnect();
+        $statement = $dbconnection->prepare('UPDATE '.STOCK_TABLE.' SET stock_count=? where stock_id=?');
         if (!$statement) {
             die('Unable to prepare stock update');
         }
