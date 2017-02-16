@@ -51,7 +51,7 @@
         }
         $statement->bind_result($id, $name);
         $locations = array();
-        while ($row = $statement->fetch()) {
+        while ($statement->fetch()) {
             $locations[$id] = array('name'=>$name, 'locations'=>array());
         }
         $statement->close();
@@ -70,7 +70,7 @@
             }
             $statement->bind_result($location_id, $name);
             $locations[$siteid]['locations'] = array();
-            while ($row = $statement->fetch()) {
+            while ($statement->fetch()) {
                 $locations[$siteid]['locations'][$location_id] = $name;
             }
         }
@@ -102,7 +102,7 @@
         }
         $statement->bind_result($id, $site, $location, $name, $count);
         $stock = array();
-        while ($row = $statement->fetch()) {
+        while ($statement->fetch()) {
             $stock[$id] = array('name'=>$name, 'count'=>$count, 'site'=>$site, 'location'=>$location);
         }
         return $stock;
