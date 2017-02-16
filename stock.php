@@ -20,7 +20,7 @@
     function getSites() {
         $dbconnection = dbConnect();
         $statement = $dbconnection->prepare('SELECT site_id, site_name FROM '.SITES_TABLE);
-        $result = $statement->execute();
+        $statement->execute();
         $statement->bind_result($site_id, $site_name);
 
         $sites = array();
@@ -33,7 +33,7 @@
     function getLocations() {
         $dbconnection = dbConnect();
         $statement = $dbconnection->prepare('SELECT site_id, site_name FROM '.SITES_TABLE);
-        $result = $statement->execute();
+        $statement->execute();
         $statement->bind_result($id, $name);
         $locations = array();
         while ($statement->fetch()) {
@@ -68,7 +68,7 @@
         if ($site != 0) {
             $statement->bind_param('i', $site);
         }
-        $result = $statement->execute();
+        $statement->execute();
         $statement->bind_result($id, $site, $location, $name, $count);
         $stock = array();
         while ($statement->fetch()) {
@@ -81,26 +81,26 @@
         $dbconnection = dbConnect();
         $statement = $dbconnection->prepare('INSERT INTO '.STOCK_TABLE.' (stock_name, stock_location, stock_count) VALUES (?,?,?)');
         $statement->bind_param('sii', $name, $location, $count);
-        $result = $statement->execute();
+        $statement->execute();
     }
 
     function insertLocation($name, $site) {
         $dbconnection = dbConnect();
         $statement = $dbconnection->prepare('INSERT INTO '.LOCATIONS_TABLE.' (location_name, location_site) VALUES (?,?)');
         $statement->bind_param('si', $name, $site);
-        $result = $statement->execute();
+        $statement->execute();
     }
 
     function insertSite($name) {
         $dbconnection = dbConnect();
         $statement = $dbconnection->prepare('INSERT INTO '.SITES_TABLE.' (site_name) VALUES (?)');
         $statement->bind_param('s', $name);
-        $result = $statement->execute();
+        $statement->execute();
     }
 
     function editItem($itemID, $count) {
         $dbconnection = dbConnect();
         $statement = $dbconnection->prepare('UPDATE '.STOCK_TABLE.' SET stock_count=? where stock_id=?');
         $statement->bind_param('ii', $count, $itemID);
-        $result = $statement->execute();
+        $statement->execute();
     }
