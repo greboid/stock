@@ -44,7 +44,7 @@
             $statement = $dbconnection->prepare('SELECT location_id, location_name
                                        FROM '.LOCATIONS_TABLE.' where location_site=?');
             $statement->bind_param('i', $siteid);
-            $result = $statement->execute();
+            $statement->execute();
             $statement->bind_result($location_id, $name);
             $locations[$siteid]['locations'] = array();
             while ($statement->fetch()) {
