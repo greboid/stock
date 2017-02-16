@@ -33,7 +33,7 @@
         $statement->bind_result($site_id, $site_name);
 
         $sites = array();
-        while ($row = $statement->fetch()) {
+        while ($statement->fetch()) {
             $sites[$site_id] = $site_name;
         }
         return $sites;
@@ -55,7 +55,7 @@
             $locations[$id] = array('name'=>$name, 'locations'=>array());
         }
         $statement->close();
-        foreach ($locations as $siteid => $location) {
+        foreach(array_keys($locations) as $siteid) {
             $statement = $dbconnection->prepare('SELECT location_id, location_name
                                        FROM '.LOCATIONS_TABLE.' where location_site=?');
             if (!$statement) {
