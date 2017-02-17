@@ -17,7 +17,7 @@
                         <tbody>
                             {foreach from=$stock key=id item=item}
                                 <tr>
-                                    <form class="pure-form pure-form-aligned" action="/" method="post">
+                                    <form class="pure-form pure-form-aligned" method="post">
                                         <input type="hidden" id="action" name="action" value="edititem">
                                         <input type="hidden" id="itemid" name="itemid" value="{$id}">
                                         <input type="hidden" id="siteid" name="site" value="{$siteid}">

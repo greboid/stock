@@ -3,7 +3,9 @@
     require_once('../config.php');
 
     use greboid\stock\Stock;
+    use \Bramus\Router\Router;
 
+    $router = new Router();
     $stock = new Stock();
     $smarty = new Smarty();
     $smarty->setTemplateDir(TEMPLATES_PATH);
@@ -12,70 +14,105 @@
     $smarty->setConfigDir(CONFIG_PATH);
     $error = false;
 
-    try {
-        $smarty->assign('sites', $stock->getSites());
-        $smarty->assign('locations', $stock->getLocations());
-    } catch (Exception $e) {
-        $error = true;
-        $smarty->assign('error', $e->getMessage());
-        $smarty->display('500.tpl');
-    }
-
-    $site = FALSE;
-
-
-    try {
-        if (!$error) {
-            if (isset($_REQUEST['action'])) {
-                switch ($_REQUEST['action']) {
-                    case 'additem':
-                        if (isset($_POST['name']) && isset($_POST['location']) && isset($_POST['count'])) {
-                            $stock->insertItem($_POST['name'], $_POST['location'], $_POST['count']);
-                        }
-                        $smarty->display('additem.tpl');
-                    break;
-                    case 'addlocation':
-                        if (isset($_POST['name']) && isset($_POST['site'])) {
-                            $stock->insertLocation($_POST['name'], $_POST['site']);
-                        }
-                        showTemplateWithSitesAndLocations($smarty, $stock, 'addlocation.tpl');
-                    break;
-                    case 'addsite':
-                        if (isset($_POST['name'])) {
-                            $stock->insertSite($_POST['name']);
-                        }
-                        showTemplateWithSitesAndLocations($smarty, $stock, 'addsite.tpl');
-                    break;
-                    case 'edititem':
-                        if (isset($_POST['itemid']) && isset($_POST['count'])) {
-                            $stock->editItem($_POST['itemid'], $_POST['count']);
-                        }
-                        $smarty->assign('siteid', $_REQUEST['site']);
-                        $smarty->assign('site', $stock->getSiteName($_REQUEST['site']));
-                        $smarty->assign('stock', $stock->getStock($_REQUEST['site']));
-                        $smarty->display('stock.tpl');
-                    break;
-                }
-            } else if (isset($_REQUEST['site'])
-                       && is_numeric($_REQUEST['site'])
-                       && $stock->getSiteName($_REQUEST['site']) !== FALSE) {
-                $smarty->assign('siteid', $_REQUEST['site']);
-                $smarty->assign('site', $stock->getSiteName($_REQUEST['site']));
-                $smarty->assign('stock', $stock->getStock($_REQUEST['site']));
-                $smarty->display('stock.tpl');
-            } else {
-                $smarty->display('index.tpl');
-            }
-        }
-    } catch (Exception $e) {
-        $error = true;
-        $smarty->assign('error', $e->getMessage());
-        $smarty->display('500.tpl');
-    }
-
-    function showTemplateWithSitesAndLocations($smarty, $stock, $template) {
+    $router->set404(function() use ($smarty) {
+        header('HTTP/1.1 404 Not Found');
+        $smarty->display('404.tpl');
+    });
+    $router->get('/', function() use($smarty, $stock) {
+        try {
             $smarty->assign('sites', $stock->getSites());
             $smarty->assign('locations', $stock->getLocations());
-            $smarty->display($template);
-
-    }
+            $smarty->display('index.tpl');
+        } catch (Exception $e) {
+            $smarty->assign('error', $e->getMessage());
+            $smarty->display('500.tpl');
+        }
+    });
+    $router->get('/site/(\d+)', function($siteid) use ($smarty, $stock) {
+        try {
+            $smarty->assign('sites', $stock->getSites());
+            $smarty->assign('locations', $stock->getLocations());
+            $smarty->assign('siteid', $siteid);
+            $smarty->assign('site', $stock->getSiteName($siteid));
+            $smarty->assign('stock', $stock->getStock($siteid));
+            $smarty->display('stock.tpl');
+        } catch (Exception $e) {
+            $smarty->assign('error', $e->getMessage());
+            $smarty->display('500.tpl');
+        }
+    });
+    $router->get('/add/item', function() use ($smarty, $stock) {
+        try {
+            $smarty->assign('sites', $stock->getSites());
+            $smarty->assign('locations', $stock->getLocations());
+            $smarty->display('additem.tpl');
+        } catch (Exception $e) {
+            $smarty->assign('error', $e->getMessage());
+            $smarty->display('500.tpl');
+        }
+    });
+    $router->post('/add/item', function() use ($smarty, $stock) {
+        try {
+            if (isset($_POST['name']) && isset($_POST['location']) && isset($_POST['count'])) {
+                $stock->insertItem($_POST['name'], $_POST['location'], $_POST['count']);
+            }
+            header('Location: /');
+        } catch (Exception $e) {
+            $smarty->assign('error', $e->getMessage());
+            $smarty->display('500.tpl');
+        }
+    });
+    $router->get('/add/site', function() use ($smarty, $stock) {
+        try {
+            $smarty->assign('sites', $stock->getSites());
+            $smarty->assign('locations', $stock->getLocations());
+            $smarty->display('addsite.tpl');
+        } catch (Exception $e) {
+            $smarty->assign('error', $e->getMessage());
+            $smarty->display('500.tpl');
+        }
+    });
+    $router->post('/add/site', function() use ($smarty, $stock) {
+        try {
+            if (isset($_POST['name'])) {
+                $stock->insertSite($_POST['name']);
+            }
+            header('Location: /');
+        } catch (Exception $e) {
+            $smarty->assign('error', $e->getMessage());
+            $smarty->display('500.tpl');
+        }
+    });
+    $router->get('/add/location', function() use ($smarty, $stock) {
+        try {
+            $smarty->assign('sites', $stock->getSites());
+            $smarty->assign('locations', $stock->getLocations());
+            $smarty->display('addlocation.tpl');
+        } catch (Exception $e) {
+            $smarty->assign('error', $e->getMessage());
+            $smarty->display('500.tpl');
+        }
+    });
+    $router->post('/add/location', function() use ($smarty, $stock) {
+        try {
+            if (isset($_POST['name']) && isset($_POST['site'])) {
+                $stock->insertLocation($_POST['name'], $_POST['site']);
+            }
+            header('Location: /');
+        } catch (Exception $e) {
+            $smarty->assign('error', $e->getMessage());
+            $smarty->display('500.tpl');
+        }
+    });
+    $router->post('/site/(\d+)', function($siteid) use ($smarty, $stock) {
+        try {
+            if (isset($_POST['itemid']) && isset($_POST['count'])) {
+                $stock->editItem($_POST['itemid'], $_POST['count']);
+            }
+            header('Location: /site/'.$siteid);
+        } catch (Exception $e) {
+            $smarty->assign('error', $e->getMessage());
+            $smarty->display('500.tpl');
+        }
+    });
+    $router->run();
