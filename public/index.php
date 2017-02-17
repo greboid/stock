@@ -40,13 +40,13 @@
                         if (isset($_POST['name']) && isset($_POST['site'])) {
                             insertLocation($_POST['name'], $_POST['site']);
                         }
-                        showTemplateWithSitesAndLocations('addlocation.tpl');
+                        showTemplateWithSitesAndLocations($smarty, 'addlocation.tpl');
                     break;
                     case 'addsite':
                         if (isset($_POST['name'])) {
                             insertSite($_POST['name']);
                         }
-                        showTemplateWithSitesAndLocations('addsite.tpl');
+                        showTemplateWithSitesAndLocations($smarty, 'addsite.tpl');
                     break;
                     case 'edititem':
                         if (isset($_POST['itemid']) && isset($_POST['count'])) {
@@ -73,8 +73,7 @@
         $smarty->display('500.tpl');
     }
 
-    function showTemplateWithSitesAndLocations($template) {
-
+    function showTemplateWithSitesAndLocations(&$smarty, $template) {
             $smarty->assign('sites', getSites());
             $smarty->assign('locations', getLocations());
             $smarty->display($template);
