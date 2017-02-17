@@ -20,10 +20,6 @@
         $smarty->assign('error', $e->getMessage());
         $smarty->display('500.tpl');
     }
-    if (substr($_SERVER['REMOTE_ADDR'], 7) == '192.168') {
-        $error = true;
-        $smarty->display('403.tpl');
-    }
 
     $site = FALSE;
 
