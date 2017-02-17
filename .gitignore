@@ -3,3 +3,5 @@ libs/
 templates_cache/
 public/.well-known
 config.local.php
+
+/vendor/

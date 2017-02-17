@@ -29,10 +29,6 @@ if (!defined('LOCATIONS_TABLE')) {
 if (!defined('STOCK_TABLE')) {
     define('STOCK_TABLE', 'stock');
 }
-##Paths
-if (!defined('LIBS_PATH')) {
-    define('LIBS_PATH', '../libs/');
-}
 if (!defined('TEMPLATES_PATH')) {
     define('TEMPLATES_PATH', '../templates/');
 }

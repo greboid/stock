@@ -1,7 +1,7 @@
 <?php
-    require_once('..\\config.php');
-    require_once(LIBS_PATH.'Smarty.class.php');
-    require_once('..\\stock.php');
+    require './../vendor/autoload.php';
+    require_once('../config.php');
+    require_once('../stock.php');
 
     $smarty = new Smarty();
     $smarty->setTemplateDir(TEMPLATES_PATH);
