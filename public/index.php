@@ -1,8 +1,10 @@
 <?php
     require './../vendor/autoload.php';
     require_once('../config.php');
-    require_once('../stock.php');
 
+    use greboid\stock\Stock;
+
+    $stock = new Stock();
     $smarty = new Smarty();
     $smarty->setTemplateDir(TEMPLATES_PATH);
     $smarty->setCompileDir(TEMPLATES_CACHE_PATH);
@@ -11,8 +13,8 @@
     $error = false;
 
     try {
-        $smarty->assign('sites', getSites());
-        $smarty->assign('locations', getLocations());
+        $smarty->assign('sites', $stock->getSites());
+        $smarty->assign('locations', $stock->getLocations());
     } catch (Exception $e) {
         $error = true;
         $smarty->assign('error', $e->getMessage());
@@ -32,36 +34,38 @@
                 switch ($_REQUEST['action']) {
                     case 'additem':
                         if (isset($_POST['name']) && isset($_POST['location']) && isset($_POST['count'])) {
-                            insertItem($_POST['name'], $_POST['location'], $_POST['count']);
+                            $stock->insertItem($_POST['name'], $_POST['location'], $_POST['count']);
                         }
                         $smarty->display('additem.tpl');
                     break;
                     case 'addlocation':
                         if (isset($_POST['name']) && isset($_POST['site'])) {
-                            insertLocation($_POST['name'], $_POST['site']);
+                            $stock->insertLocation($_POST['name'], $_POST['site']);
                         }
-                        showTemplateWithSitesAndLocations($smarty, 'addlocation.tpl');
+                        showTemplateWithSitesAndLocations($smarty, $stock, 'addlocation.tpl');
                     break;
                     case 'addsite':
                         if (isset($_POST['name'])) {
-                            insertSite($_POST['name']);
+                            $stock->insertSite($_POST['name']);
                         }
-                        showTemplateWithSitesAndLocations($smarty, 'addsite.tpl');
+                        showTemplateWithSitesAndLocations($smarty, $stock, 'addsite.tpl');
                     break;
                     case 'edititem':
                         if (isset($_POST['itemid']) && isset($_POST['count'])) {
-                            editItem($_POST['itemid'], $_POST['count']);
+                            $stock->editItem($_POST['itemid'], $_POST['count']);
                         }
                         $smarty->assign('siteid', $_REQUEST['site']);
-                        $smarty->assign('site', getSiteName($_REQUEST['site']));
-                        $smarty->assign('stock', getStock($_REQUEST['site']));
+                        $smarty->assign('site', $stock->getSiteName($_REQUEST['site']));
+                        $smarty->assign('stock', $stock->getStock($_REQUEST['site']));
                         $smarty->display('stock.tpl');
                     break;
                 }
-            } else if (isset($_REQUEST['site']) && is_numeric($_REQUEST['site']) && getSiteName($_REQUEST['site']) !== FALSE) {
+            } else if (isset($_REQUEST['site'])
+                       && is_numeric($_REQUEST['site'])
+                       && $stock->getSiteName($_REQUEST['site']) !== FALSE) {
                 $smarty->assign('siteid', $_REQUEST['site']);
-                $smarty->assign('site', getSiteName($_REQUEST['site']));
-                $smarty->assign('stock', getStock($_REQUEST['site']));
+                $smarty->assign('site', $stock->getSiteName($_REQUEST['site']));
+                $smarty->assign('stock', $stock->getStock($_REQUEST['site']));
                 $smarty->display('stock.tpl');
             } else {
                 $smarty->display('index.tpl');
@@ -73,9 +77,9 @@
         $smarty->display('500.tpl');
     }
 
-    function showTemplateWithSitesAndLocations(&$smarty, $template) {
-            $smarty->assign('sites', getSites());
-            $smarty->assign('locations', getLocations());
+    function showTemplateWithSitesAndLocations($smarty, $stock, $template) {
+            $smarty->assign('sites', $stock->getSites());
+            $smarty->assign('locations', $stock->getLocations());
             $smarty->display($template);
 
     }
