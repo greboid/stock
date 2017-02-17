@@ -1,5 +1,5 @@
 *.sublime-workspace
 libs/
-templates_c/
+templates_cache/
 public/.well-known
-config.php
+config.local.php

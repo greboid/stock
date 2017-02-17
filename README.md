@@ -7,4 +7,4 @@ Stock system for managing an inventory of stock spanning several sites and locat
  * Create a database and associated user
  * Copy to server
  * Download dependencies (smarty only so far)
- * Move config_sample.php to config.php and update settings
+ * Create config.local.php and add any details are are different from config.php
