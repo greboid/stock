@@ -8,7 +8,7 @@
     </head>
     <body>
         <div id="wrapper">
-            <p>Error loading page: {$error}</p>
+            <p>Error loading page: {$error|escape:'htmlall'}</p>
         </div>
     </body>
 </html>

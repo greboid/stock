@@ -29,6 +29,7 @@
         }
     });
     $router->get('/site/(\d+)', function($siteid) use ($smarty, $stock) {
+        $siteid = filter_var($siteid, FILTER_UNSAFE_RAW);
         try {
             $smarty->assign('sites', $stock->getSites());
             $smarty->assign('locations', $stock->getLocations());
@@ -54,7 +55,10 @@
     $router->post('/add/item', function() use ($smarty, $stock) {
         try {
             if (isset($_POST['name']) && isset($_POST['location']) && isset($_POST['count'])) {
-                $stock->insertItem($_POST['name'], $_POST['location'], $_POST['count']);
+                $name = filter_var($_POST['name'], FILTER_UNSAFE_RAW);
+                $location = filter_var($_POST['location'], FILTER_UNSAFE_RAW);
+                $count = filter_var($_POST['count'], FILTER_UNSAFE_RAW);
+                $stock->insertItem($name, $location, $count);
             }
             header('Location: /');
         } catch (Exception $e) {
@@ -75,7 +79,8 @@
     $router->post('/add/site', function() use ($smarty, $stock) {
         try {
             if (isset($_POST['name'])) {
-                $stock->insertSite($_POST['name']);
+                $name = filter_var($_POST['name'], FILTER_UNSAFE_RAW);
+                $stock->insertSite($name);
             }
             header('Location: /');
         } catch (Exception $e) {
@@ -96,7 +101,9 @@
     $router->post('/add/location', function() use ($smarty, $stock) {
         try {
             if (isset($_POST['name']) && isset($_POST['site'])) {
-                $stock->insertLocation($_POST['name'], $_POST['site']);
+                $name = filter_var($_POST['name'], FILTER_UNSAFE_RAW);
+                $site = filter_var($_POST['site'], FILTER_UNSAFE_RAW);
+                $stock->insertLocation($name, $site);
             }
             header('Location: /');
         } catch (Exception $e) {
@@ -106,8 +113,10 @@
     });
     $router->post('/site/(\d+)', function($siteid) use ($smarty, $stock) {
         try {
+            $itemid = filter_var($_POST['itemid'], FILTER_UNSAFE_RAW);
+            $count = filter_var($_POST['count'], FILTER_UNSAFE_RAW);
             if (isset($_POST['itemid']) && isset($_POST['count'])) {
-                $stock->editItem($_POST['itemid'], $_POST['count']);
+                $stock->editItem($itemid, $count);
             }
             header('Location: /site/'.$siteid);
         } catch (Exception $e) {

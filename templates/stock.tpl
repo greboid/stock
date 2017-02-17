@@ -2,7 +2,7 @@
     <div class="content pure-u-1 pure-u-md-5-6">
         <section class="post">
             <header class="post-header">
-                <h1>Stock: {$site} </h1>
+                <h1>Stock: {$site|escape:'htmlall'} </h1>
             </header>
                     <table class="pure-table pure-table-horizontal pure-table-striped">
                         <thead>
@@ -19,12 +19,12 @@
                                 <tr>
                                     <form class="pure-form pure-form-aligned" method="post">
                                         <input type="hidden" id="action" name="action" value="edititem">
-                                        <input type="hidden" id="itemid" name="itemid" value="{$id}">
-                                        <input type="hidden" id="siteid" name="site" value="{$siteid}">
-                                        <td>{$item.name}</td>
-                                        <td>{$item.site}</td>
-                                        <td>{$item.location}</td>
-                                        <td><input type="number" name="count" value="{$item.count}"></td>
+                                        <input type="hidden" id="itemid" name="itemid" value="{$id|escape:'htmlall'}">
+                                        <input type="hidden" id="siteid" name="site" value="{$siteid|escape:'htmlall'}">
+                                        <td>{$item.name|escape:'htmlall'}</td>
+                                        <td>{$item.site|escape:'htmlall'}</td>
+                                        <td>{$item.location|escape:'htmlall'}</td>
+                                        <td><input type="number" name="count" value="{$item.count|escape:'htmlall'}"></td>
                                         <td>
                                             <button type="submit" class="pure-button pure-button-success pure-button-xsmall">Edit</button>
                                         </td>

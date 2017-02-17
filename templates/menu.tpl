@@ -5,7 +5,7 @@
             <li class="pure-menu-heading">Sites</li>
             {foreach from=$sites key=id item=site}
                 <li class="pure-menu-item">
-                    <a class="pure-menu-link" href="/site/{$id}">{$site}</a>
+                    <a class="pure-menu-link" href="/site/{$id|escape:'htmlall'}">{$site|escape:'htmlall'|truncate:30}</a>
                 </li>
             {/foreach}
             <li>
