@@ -157,6 +157,7 @@
             if (empty(trim($name))) {
                 throw new Exception('The name cannot be blank.');
             }
+            $name = preg_replace('#\.|\.\.|\\\\|/#', '', $name);
             $dbconnection = $this->dbConnect();
             $statement = $dbconnection->prepare('INSERT INTO '.SITES_TABLE.' (site_name) VALUES (?)');
             $statement->bind_param('s', $name);
