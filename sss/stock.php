@@ -81,6 +81,9 @@
         }
 
         function insertItem($name, $location, $count=0) {
+            if ($count > MAX_STOCK) {
+                throw new Exception('Stock count greater than configured max.');
+            }
             $dbconnection = $this->dbConnect();
             $statement = $dbconnection->prepare('INSERT INTO '.STOCK_TABLE.' (stock_name, stock_location, stock_count) VALUES (?,?,?)');
             $statement->bind_param('sii', $name, $location, $count);
@@ -102,6 +105,12 @@
         }
 
         function editItem($itemID, $count) {
+            if ($count > MAX_STOCK) {
+                throw new Exception('Stock count greater than configured max.');
+            }
+            if ($count < 0) {
+                throw new Exception('Stock count cannot be greater than low.');
+            }
             $dbconnection = $this->dbConnect();
             $statement = $dbconnection->prepare('UPDATE '.STOCK_TABLE.' SET stock_count=? where stock_id=?');
             $statement->bind_param('ii', $count, $itemID);

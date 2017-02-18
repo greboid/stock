@@ -41,3 +41,6 @@ if (!defined('CACHE_PATH')) {
 if (!defined('CONFIG_PATH')) {
     define('CONFIG_PATH', '../configs/');
 }
+if (!defined('MAX_STOCK')) {
+    define('MAX_STOCK', 1000000);
+}

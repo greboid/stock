@@ -24,7 +24,7 @@
                                         <td>{$item.name|escape:'htmlall'}</td>
                                         <td>{$item.site|escape:'htmlall'}</td>
                                         <td>{$item.location|escape:'htmlall'}</td>
-                                        <td><input type="number" name="count" value="{$item.count|escape:'htmlall'}"></td>
+                                        <td><input type="number" name="count" value="{$item.count|escape:'htmlall'}" required  min="0" max="{$max_stock}"></td>
                                         <td>
                                             <button type="submit" class="pure-button pure-button-success pure-button-xsmall">Edit</button>
                                         </td>

@@ -19,9 +19,9 @@
                                     <select id="location" name="location" required>
                                         <option selected=""></option>
                                         {foreach from=$locations key=siteID item=site}
-                                            <optgroup label="{$site['name']}">
+                                            <optgroup label="{$site['name']|escape:'htmlall'}">
                                             {foreach from=$site['locations'] key=locationID item=location}
-                                                <option value="{$locationID}">{$location}</option>
+                                                <option value="{$locationID|escape:'htmlall'}">{$location}</option>
                                             {/foreach}
                                             </optgroup>
                                         {/foreach}
@@ -29,7 +29,7 @@
                                 </div>
                                 <div class="pure-control-group">
                                     <label for="count">Initial Stock Count</label>
-                                    <input id="count" name="count" type="number" placeholder="Initial count" required min="0">
+                                    <input id="count" name="count" type="number" placeholder="Initial count" required min="0" max="{$max_stock}">
                                 </div>
                                 <div class="pure-controls">
                                     <button type="submit" class="pure-button pure-button-primary">Submit</button>

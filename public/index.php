@@ -12,6 +12,7 @@
     $smarty->setCompileDir(TEMPLATES_CACHE_PATH);
     $smarty->setCacheDir(CACHE_PATH);
     $smarty->setConfigDir(CONFIG_PATH);
+    $smarty->assign('max_stock', MAX_STOCK);
     $error = false;
 
     $router->set404(function() use ($smarty) {

@@ -16,7 +16,7 @@
                                     <select id="site" name="site" required>
                                         <option selected=""></option>
                                         {foreach from=$sites key=siteID item=site}
-                                            <option value="{$siteID|escape:'htmlall'}">{$site|escape:'html','UTF-8'}</option>
+                                            <option value="{$siteID|escape:'htmlall'}">{$site|escape:'htmlall'}</option>
                                         {/foreach}
                                     </select>
                                 </div>
