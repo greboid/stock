@@ -32,12 +32,17 @@
     $router->get('/site/(\d+)', function($siteid) use ($smarty, $stock) {
         $siteid = filter_var($siteid, FILTER_UNSAFE_RAW);
         try {
-            $smarty->assign('sites', $stock->getSites());
-            $smarty->assign('locations', $stock->getLocations());
-            $smarty->assign('siteid', $siteid);
-            $smarty->assign('site', $stock->getSiteName($siteid));
-            $smarty->assign('stock', $stock->getStock($siteid));
-            $smarty->display('stock.tpl');
+            if ($stock->getSiteName($siteid) !== FALSE) {
+                $smarty->assign('sites', $stock->getSites());
+                $smarty->assign('locations', $stock->getLocations());
+                $smarty->assign('siteid', $siteid);
+                $smarty->assign('site', $stock->getSiteName($siteid));
+                $smarty->assign('stock', $stock->getStock($siteid));
+                $smarty->display('stock.tpl');
+            } else {
+                header('HTTP/1.1 404 Not Found');
+                $smarty->display('404.tpl');
+            }
         } catch (Exception $e) {
             $smarty->assign('error', $e->getMessage());
             $smarty->display('500.tpl');
@@ -60,6 +65,9 @@
                 $location = filter_var($_POST['location'], FILTER_UNSAFE_RAW);
                 $count = filter_var($_POST['count'], FILTER_UNSAFE_RAW);
                 $stock->insertItem($name, $location, $count);
+            } else {
+                $smarty->assign('error', 'Missing required value.');
+                $smarty->display('500.tpl');
             }
             header('Location: /');
         } catch (Exception $e) {
@@ -82,6 +90,9 @@
             if (isset($_POST['name'])) {
                 $name = filter_var($_POST['name'], FILTER_UNSAFE_RAW);
                 $stock->insertSite($name);
+            } else {
+                $smarty->assign('error', 'Missing required value.');
+                $smarty->display('500.tpl');
             }
             header('Location: /');
         } catch (Exception $e) {
@@ -105,6 +116,9 @@
                 $name = filter_var($_POST['name'], FILTER_UNSAFE_RAW);
                 $site = filter_var($_POST['site'], FILTER_UNSAFE_RAW);
                 $stock->insertLocation($name, $site);
+            } else {
+                $smarty->assign('error', 'Missing required value.');
+                $smarty->display('500.tpl');
             }
             header('Location: /');
         } catch (Exception $e) {
@@ -118,6 +132,9 @@
             $count = filter_var($_POST['count'], FILTER_UNSAFE_RAW);
             if (isset($_POST['itemid']) && isset($_POST['count'])) {
                 $stock->editItem($itemid, $count);
+            } else {
+                $smarty->assign('error', 'Missing required value.');
+                $smarty->display('500.tpl');
             }
             header('Location: /site/'.$siteid);
         } catch (Exception $e) {

@@ -2,6 +2,8 @@
 
     namespace greboid\stock;
 
+    use \Exception;
+
     class Stock {
         function dbConnect() {
             mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
@@ -22,7 +24,7 @@
 
         function getSites() {
             $dbconnection = $this->dbConnect();
-            $statement = $dbconnection->prepare('SELECT site_id, site_name FROM '.SITES_TABLE);
+            $statement = $dbconnection->prepare('SELECT site_id, site_name FROM '.SITES_TABLE.' ORDER BY site_name');
             $statement->execute();
             $statement->bind_result($site_id, $site_name);
 
@@ -81,8 +83,14 @@
         }
 
         function insertItem($name, $location, $count=0) {
+            if (empty(trim($name))) {
+                throw new Exception('The name cannot be blank.');
+            }
             if ($count > MAX_STOCK) {
-                throw new Exception('Stock count greater than configured max.');
+                throw new Exception('Stock count cannot be greater than '.MAX_STOCK);
+            }
+            if ($count < 0) {
+                throw new Exception('Stock count cannot be less than zero.');
             }
             $dbconnection = $this->dbConnect();
             $statement = $dbconnection->prepare('INSERT INTO '.STOCK_TABLE.' (stock_name, stock_location, stock_count) VALUES (?,?,?)');
@@ -91,6 +99,9 @@
         }
 
         function insertLocation($name, $site) {
+            if (empty(trim($name))) {
+                throw new Exception('The name cannot be blank.');
+            }
             $dbconnection = $this->dbConnect();
             $statement = $dbconnection->prepare('INSERT INTO '.LOCATIONS_TABLE.' (location_name, location_site) VALUES (?,?)');
             $statement->bind_param('si', $name, $site);
@@ -98,6 +109,9 @@
         }
 
         function insertSite($name) {
+            if (empty(trim($name))) {
+                throw new Exception('The name cannot be blank.');
+            }
             $dbconnection = $this->dbConnect();
             $statement = $dbconnection->prepare('INSERT INTO '.SITES_TABLE.' (site_name) VALUES (?)');
             $statement->bind_param('s', $name);
@@ -106,10 +120,10 @@
 
         function editItem($itemID, $count) {
             if ($count > MAX_STOCK) {
-                throw new Exception('Stock count greater than configured max.');
+                throw new Exception('Stock count cannot be greater than '.MAX_STOCK);
             }
             if ($count < 0) {
-                throw new Exception('Stock count cannot be greater than low.');
+                throw new Exception('Stock count cannot be less than zero.');
             }
             $dbconnection = $this->dbConnect();
             $statement = $dbconnection->prepare('UPDATE '.STOCK_TABLE.' SET stock_count=? where stock_id=?');
