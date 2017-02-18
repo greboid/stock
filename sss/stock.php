@@ -122,8 +122,12 @@
         }
 
         function insertItem($name, $location, $count=0) {
-            if (empty(trim($name))) {
+            $name = trim($name);
+            if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
+            }
+            if (preg_match('#\.|\.\.|\\\\|/#', $name)) {
+                throw new Exception('The name cannot contain ., .. ,/ or \\');
             }
             if ($count > MAX_STOCK) {
                 throw new Exception('Stock count cannot be greater than '.MAX_STOCK);
@@ -141,8 +145,12 @@
         }
 
         function insertLocation($name, $site) {
-            if (empty(trim($name))) {
+            $name = trim($name);
+            if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
+            }
+            if (preg_match('#\.|\.\.|\\\\|/#', $name)) {
+                throw new Exception('The name cannot contain ., .. ,/ or \\');
             }
             if (!$this->getSiteName($site)) {
                 throw new Exception('Specified site does not exist.');
@@ -154,10 +162,13 @@
         }
 
         function insertSite($name) {
-            if (empty(trim($name))) {
+            $name = trim($name);
+            if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
             }
-            $name = preg_replace('#\.|\.\.|\\\\|/#', '', $name);
+            if (preg_match('#\.|\.\.|\\\\|/#', $name)) {
+                throw new Exception('The name cannot contain ., .. ,/ or \\');
+            }
             $dbconnection = $this->dbConnect();
             $statement = $dbconnection->prepare('INSERT INTO '.SITES_TABLE.' (site_name) VALUES (?)');
             $statement->bind_param('s', $name);

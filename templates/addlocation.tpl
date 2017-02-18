@@ -9,7 +9,7 @@
                             <fieldset>
                                 <div class="pure-control-group">
                                     <label for="name">Name</label>
-                                    <input id="name" name="name" type="text" placeholder="name" required>
+                                    <input id="name" name="name" type="text" placeholder="name" required pattern="#\.|\.\.|\\\\|/#">
                                 </div>
                                 <div class="pure-control-group">
                                     <label for="site">Location</label>
