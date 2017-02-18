@@ -15,11 +15,29 @@
             if ($siteID == 0) {
                 return "All Sites";
             }
-            $sites = $this->getSites();
-            if (isset($sites[$siteID])) {
-                return $sites[$siteID];
+            $dbconnection = $this->dbConnect();
+            $statement = $dbconnection->prepare('SELECT site_name FROM '.SITES_TABLE.' WHERE site_id=?');
+            $statement->bind_param('i', $siteID);
+            $statement->execute();
+            $statement->bind_result($siteName);
+            $statement->fetch();
+            if ($siteName == NULL) {
+                return FALSE;
             }
-            return FALSE;
+            return $siteName;
+        }
+
+        function getLocationName($locationID) {
+            $dbconnection = $this->dbConnect();
+            $statement = $dbconnection->prepare('SELECT location_name FROM '.LOCATIONS_TABLE.' WHERE location_id=?');
+            $statement->bind_param('i', $locationID);
+            $statement->execute();
+            $statement->bind_result($locationName);
+            $statement->fetch();
+            if ($locationName == NULL) {
+                return FALSE;
+            }
+            return $locationName;
         }
 
         function getSites() {
@@ -60,6 +78,9 @@
         }
 
         function getStock($site) {
+            if (!$this->getSiteName($site)) {
+                throw new Exception('Specified site does not exist.');
+            }
             $dbconnection = $this->dbConnect();
             $sql = 'SELECT stock_id, site_name, location_name, stock_name, stock_count
                                   FROM '.STOCK_TABLE.'
@@ -92,6 +113,9 @@
             if ($count < 0) {
                 throw new Exception('Stock count cannot be less than zero.');
             }
+            if (!$this->getLocationName($location)) {
+                throw new Exception('Specified location does not exist.');
+            }
             $dbconnection = $this->dbConnect();
             $statement = $dbconnection->prepare('INSERT INTO '.STOCK_TABLE.' (stock_name, stock_location, stock_count) VALUES (?,?,?)');
             $statement->bind_param('sii', $name, $location, $count);
@@ -101,6 +125,9 @@
         function insertLocation($name, $site) {
             if (empty(trim($name))) {
                 throw new Exception('The name cannot be blank.');
+            }
+            if (!$this->getSiteName($site)) {
+                throw new Exception('Specified site does not exist.');
             }
             $dbconnection = $this->dbConnect();
             $statement = $dbconnection->prepare('INSERT INTO '.LOCATIONS_TABLE.' (location_name, location_site) VALUES (?,?)');
