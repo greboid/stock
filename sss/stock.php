@@ -29,6 +29,9 @@
         }
 
         function getSiteID($siteName) {
+            if (strtolower($siteName) == 'all') {
+                return 0;
+            }
             $dbconnection = $this->dbConnect();
             $statement = $dbconnection->prepare('SELECT site_id FROM '.SITES_TABLE.' WHERE site_name=?');
             $statement->bind_param('s', $siteName);
