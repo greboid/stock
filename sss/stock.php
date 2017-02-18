@@ -3,11 +3,12 @@
     namespace greboid\stock;
 
     use \Exception;
+    use \mysqli;
 
     class Stock {
         function dbConnect() {
             mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-            $dbconnection = new \mysqli(STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW, STOCK_DB);
+            $dbconnection = new mysqli(STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW, STOCK_DB);
             return $dbconnection;
         }
 
