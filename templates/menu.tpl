@@ -5,11 +5,11 @@
             <li class="pure-menu-heading">Sites</li>
             {foreach from=$sites key=id item=site}
                 <li class="pure-menu-item">
-                    <a class="pure-menu-link" href="/site/{$id|escape:'htmlall'}">{$site|escape:'htmlall'|truncate:30}</a>
+                    <a class="pure-menu-link" href="/site/{$site|escape:'htmlall'}">{$site|escape:'htmlall'|truncate:30}</a>
                 </li>
             {/foreach}
             <li>
-                <a class="pure-menu-link" href="/site/0">All Sites</a>
+                <a class="pure-menu-link" href="/site/all">All Sites</a>
             </li>
             <li class="pure-menu-heading">Admin</li>
             <li class="pure-menu-item">

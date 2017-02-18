@@ -48,7 +48,7 @@
             $smarty->display('500.tpl');
         }
     });
-    $router->get('/site/(\w+)', function($siteName) use ($smarty, $stock) {
+    $router->get('/site/(.*)', function($siteName) use ($smarty, $stock) {
         $siteName = filter_var($siteName, FILTER_UNSAFE_RAW);
         $siteid = $stock->getSiteID($siteName);
         if ($siteid === FALSE) {
