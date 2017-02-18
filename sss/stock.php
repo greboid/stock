@@ -28,6 +28,19 @@
             return $siteName;
         }
 
+        function getSiteID($siteName) {
+            $dbconnection = $this->dbConnect();
+            $statement = $dbconnection->prepare('SELECT site_id FROM '.SITES_TABLE.' WHERE site_name=?');
+            $statement->bind_param('s', $siteName);
+            $statement->execute();
+            $statement->bind_result($siteID);
+            $statement->fetch();
+            if ($siteID == NULL) {
+                return FALSE;
+            }
+            return $siteID;
+        }
+
         function getLocationName($locationID) {
             $dbconnection = $this->dbConnect();
             $statement = $dbconnection->prepare('SELECT location_name FROM '.LOCATIONS_TABLE.' WHERE location_id=?');
