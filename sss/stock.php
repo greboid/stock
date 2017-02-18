@@ -29,7 +29,8 @@
         }
 
         function getSiteID($siteName) {
-            if (strtolower($siteName) == 'all') {
+            $siteName = strtolower($siteName);
+            if ($siteName == 'all') {
                 return 0;
             }
             $dbconnection = $this->dbConnect();
