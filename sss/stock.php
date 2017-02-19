@@ -6,18 +6,42 @@
     use \mysqli;
 
     class Stock {
+
+        private $dbconnection;
+
+        function __construct() {
+            if (!$this->dbConnect()) {
+                throw new Exception('Unable to connect to the database.');
+            }
+        }
+
         function dbConnect() {
             mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-            $dbconnection = new mysqli(STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW, STOCK_DB);
-            return $dbconnection;
+            try {
+                $this->dbconnection = new mysqli(STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW, STOCK_DB);
+            } catch (Exception $e) {
+                return FALSE;
+            }
+            return TRUE;
+        }
+
+        function checkVersion() {
+            try {
+            $statement = $this->dbconnection->prepare('SELECT version from '.VERSION_TABLE);
+            $statement->execute();
+            $statement->bind_result($version);
+            $statement->fetch();
+            } catch (Exception $e) {
+                return FALSE;
+            }
+            return $version;
         }
 
         function getSiteName($siteID) {
             if ($siteID == 0) {
                 return "All Sites";
             }
-            $dbconnection = $this->dbConnect();
-            $statement = $dbconnection->prepare('SELECT site_name FROM '.SITES_TABLE.' WHERE site_id=?');
+            $statement = $this->dbconnection->prepare('SELECT site_name FROM '.SITES_TABLE.' WHERE site_id=?');
             $statement->bind_param('i', $siteID);
             $statement->execute();
             $statement->bind_result($siteName);
@@ -33,8 +57,7 @@
             if ($siteName == 'all') {
                 return 0;
             }
-            $dbconnection = $this->dbConnect();
-            $statement = $dbconnection->prepare('SELECT site_id FROM '.SITES_TABLE.' WHERE site_name=?');
+            $statement = $this->dbconnection->prepare('SELECT site_id FROM '.SITES_TABLE.' WHERE site_name=?');
             $statement->bind_param('s', $siteName);
             $statement->execute();
             $statement->bind_result($siteID);
@@ -46,8 +69,7 @@
         }
 
         function getLocationName($locationID) {
-            $dbconnection = $this->dbConnect();
-            $statement = $dbconnection->prepare('SELECT location_name FROM '.LOCATIONS_TABLE.' WHERE location_id=?');
+            $statement = $this->dbconnection->prepare('SELECT location_name FROM '.LOCATIONS_TABLE.' WHERE location_id=?');
             $statement->bind_param('i', $locationID);
             $statement->execute();
             $statement->bind_result($locationName);
@@ -59,8 +81,7 @@
         }
 
         function getItemName($itemID) {
-            $dbconnection = $this->dbConnect();
-            $statement = $dbconnection->prepare('SELECT stock_name FROM '.STOCK_TABLE.' WHERE stock_id=?');
+            $statement = $this->dbconnection->prepare('SELECT stock_name FROM '.STOCK_TABLE.' WHERE stock_id=?');
             $statement->bind_param('i', $itemID);
             $statement->execute();
             $statement->bind_result($itemName);
@@ -72,8 +93,7 @@
         }
 
         function getSiteForLocation($locationID) {
-            $dbconnection = $this->dbConnect();
-            $statement = $dbconnection->prepare('SELECT site_name
+            $statement = $this->dbconnection->prepare('SELECT site_name
                                                 FROM '.LOCATIONS_TABLE.'
                                                 LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id
                                                 WHERE location_id=?');
@@ -88,8 +108,7 @@
         }
 
         function getSites() {
-            $dbconnection = $this->dbConnect();
-            $statement = $dbconnection->prepare('SELECT site_id, site_name FROM '.SITES_TABLE.' ORDER BY site_name');
+            $statement = $this->dbconnection->prepare('SELECT site_id, site_name FROM '.SITES_TABLE.' ORDER BY site_name');
             $statement->execute();
             $statement->bind_result($site_id, $site_name);
 
@@ -101,8 +120,7 @@
         }
 
         function getLocations() {
-            $dbconnection = $this->dbConnect();
-            $statement = $dbconnection->prepare('SELECT site_id, site_name FROM '.SITES_TABLE);
+            $statement = $this->dbconnection->prepare('SELECT site_id, site_name FROM '.SITES_TABLE);
             $statement->execute();
             $statement->bind_result($id, $name);
             $locations = array();
@@ -111,7 +129,7 @@
             }
             $statement->close();
             foreach(array_keys($locations) as $siteid) {
-                $statement = $dbconnection->prepare('SELECT location_id, location_name
+                $statement = $this->dbconnection->prepare('SELECT location_id, location_name
                                            FROM '.LOCATIONS_TABLE.' where location_site=?');
                 $statement->bind_param('i', $siteid);
                 $statement->execute();
@@ -125,8 +143,7 @@
         }
 
         function getLocationStockCounts() {
-            $dbconnection = $this->dbConnect();
-            $statement = $dbconnection->prepare('SELECT location_id, location_name FROM '.LOCATIONS_TABLE);
+            $statement = $this->dbconnection->prepare('SELECT location_id, location_name FROM '.LOCATIONS_TABLE);
             $statement->execute();
             $statement->bind_result($id, $name);
             $locations = array();
@@ -135,7 +152,7 @@
             }
             $statement->close();
             foreach($locations as &$location) {
-                $statement = $dbconnection->prepare('SELECT COUNT(*)
+                $statement = $this->dbconnection->prepare('SELECT COUNT(*)
                                                     FROM '.STOCK_TABLE.' WHERE stock_location=?');
                 $statement->bind_param('i', $location['id']);
                 $statement->execute();
@@ -153,7 +170,6 @@
             if (!$this->getSiteName($site)) {
                 throw new Exception('Specified site does not exist.');
             }
-            $dbconnection = $this->dbConnect();
             $sql = 'SELECT stock_id, site_name, location_name, stock_name, stock_count
                                   FROM '.STOCK_TABLE.'
                                   LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
@@ -162,7 +178,7 @@
                 $sql .= " WHERE site_id=?";
             }
             $sql .= " ORDER BY stock_name, location_name, site_name ASC";
-            $statement = $dbconnection->prepare($sql);
+            $statement = $this->dbconnection->prepare($sql);
             if ($site != 0) {
                 $statement->bind_param('i', $site);
             }
@@ -179,7 +195,6 @@
             if (!$this->getLocationName($location)) {
                 throw new Exception('Specified location does not exist.');
             }
-            $dbconnection = $this->dbConnect();
             $sql = 'SELECT stock_id, site_name, location_name, stock_name, stock_count
                                   FROM '.STOCK_TABLE.'
                                   LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
@@ -188,7 +203,7 @@
                 $sql .= " WHERE location_id=?";
             }
             $sql .= " ORDER BY stock_name, location_name, site_name ASC";
-            $statement = $dbconnection->prepare($sql);
+            $statement = $this->dbconnection->prepare($sql);
             if ($location != 0) {
                 $statement->bind_param('i', $location);
             }
@@ -218,8 +233,7 @@
             if (!$this->getLocationName($location)) {
                 throw new Exception('Specified location does not exist.');
             }
-            $dbconnection = $this->dbConnect();
-            $statement = $dbconnection->prepare('INSERT INTO '.STOCK_TABLE.' (stock_name, stock_location, stock_count) VALUES (?,?,?)');
+            $statement = $this->dbconnection->prepare('INSERT INTO '.STOCK_TABLE.' (stock_name, stock_location, stock_count) VALUES (?,?,?)');
             $statement->bind_param('sii', $name, $location, $count);
             $statement->execute();
         }
@@ -235,8 +249,8 @@
             if (!$this->getSiteName($site)) {
                 throw new Exception('Specified site does not exist.');
             }
-            $dbconnection = $this->dbConnect();
-            $statement = $dbconnection->prepare('INSERT INTO '.LOCATIONS_TABLE.' (location_name, location_site) VALUES (?,?)');
+
+            $statement = $this->dbconnection->prepare('INSERT INTO '.LOCATIONS_TABLE.' (location_name, location_site) VALUES (?,?)');
             $statement->bind_param('si', $name, $site);
             $statement->execute();
         }
@@ -249,8 +263,8 @@
             if (preg_match('#\.|\.\.|\\\\|/#', $name)) {
                 throw new Exception('The name cannot contain ., .. ,/ or \\');
             }
-            $dbconnection = $this->dbConnect();
-            $statement = $dbconnection->prepare('INSERT INTO '.SITES_TABLE.' (site_name) VALUES (?)');
+
+            $statement = $this->dbconnection->prepare('INSERT INTO '.SITES_TABLE.' (site_name) VALUES (?)');
             $statement->bind_param('s', $name);
             $statement->execute();
         }
@@ -262,8 +276,7 @@
             if ($count < 0) {
                 throw new Exception('Stock count cannot be less than zero.');
             }
-            $dbconnection = $this->dbConnect();
-            $statement = $dbconnection->prepare('UPDATE '.STOCK_TABLE.' SET stock_count=? where stock_id=?');
+            $statement = $this->dbconnection->prepare('UPDATE '.STOCK_TABLE.' SET stock_count=? where stock_id=?');
             $statement->bind_param('ii', $count, $itemID);
             $statement->execute();
         }
@@ -275,8 +288,7 @@
             if (count($this->getSiteStock($siteID)) != 0) {
                 throw new Exception('Unable to delete site, it still conains stock.');
             }
-            $dbconnection = $this->dbConnect();
-            $statement = $dbconnection->prepare('DELETE FROM '.SITES_TABLE.' WHERE site_id=?');
+            $statement = $this->dbconnection->prepare('DELETE FROM '.SITES_TABLE.' WHERE site_id=?');
             $statement->bind_param('i', $siteID);
             $statement->execute();
         }
@@ -288,8 +300,7 @@
             if (count($this->getLocationStock($locationID)) != 0) {
                 throw new Exception('Unable to delete location, it still conains stock.');
             }
-            $dbconnection = $this->dbConnect();
-            $statement = $dbconnection->prepare('DELETE FROM '.LOCATIONS_TABLE.' WHERE location_id=?');
+            $statement = $this->dbconnection->prepare('DELETE FROM '.LOCATIONS_TABLE.' WHERE location_id=?');
             $statement->bind_param('i', $locationID);
             $statement->execute();
         }
@@ -298,8 +309,7 @@
             if (!$this->getItemName($itemID)) {
                 throw new Exception('Specified item does not exist.');
             }
-            $dbconnection = $this->dbConnect();
-            $statement = $dbconnection->prepare('DELETE FROM '.STOCK_TABLE.' WHERE stock_id=?');
+            $statement = $this->dbconnection->prepare('DELETE FROM '.STOCK_TABLE.' WHERE stock_id=?');
             $statement->bind_param('i', $itemID);
             $statement->execute();
         }
