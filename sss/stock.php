@@ -27,10 +27,10 @@
 
         function checkVersion() {
             try {
-            $statement = $this->dbconnection->prepare('SELECT version from '.VERSION_TABLE);
-            $statement->execute();
-            $statement->bind_result($version);
-            $statement->fetch();
+                $statement = $this->dbconnection->prepare('SELECT version from '.VERSION_TABLE);
+                $statement->execute();
+                $statement->bind_result($version);
+                $statement->fetch();
             } catch (Exception $e) {
                 return FALSE;
             }

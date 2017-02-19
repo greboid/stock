@@ -15,6 +15,15 @@
     $smarty->assign('max_stock', MAX_STOCK);
     $error = false;
 
+
+    $router->before('GET', '/.*', function() use ($smarty, $stock) {
+        $version = $stock->checkVersion();
+        if (!$version) {
+            $smarty->assign('version', $version);
+            $smarty->display('install.tpl');
+            exit();
+        }
+    });
     $router->set404(function() use ($smarty) {
         header('HTTP/1.1 404 Not Found');
         $smarty->display('404.tpl');
