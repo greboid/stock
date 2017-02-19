@@ -37,7 +37,7 @@
                 $smarty->assign('locations', $stock->getLocations());
                 $smarty->assign('siteid', $siteid);
                 $smarty->assign('site', $stock->getSiteName($siteid));
-                $smarty->assign('stock', $stock->getStock($siteid));
+                $smarty->assign('stock', $stock->getSiteStock($siteid));
                 $smarty->display('stock.tpl');
             } else {
                 header('HTTP/1.1 404 Not Found');
@@ -61,7 +61,7 @@
                 $smarty->assign('locations', $stock->getLocations());
                 $smarty->assign('siteid', $siteid);
                 $smarty->assign('site', $stock->getSiteName($siteid));
-                $smarty->assign('stock', $stock->getStock($siteid));
+                $smarty->assign('stock', $stock->getSiteStock($siteid));
                 $smarty->display('stock.tpl');
             } else {
                 header('HTTP/1.1 404 Not Found');
@@ -180,6 +180,26 @@
         try {
             $stock->deleteSite($siteid);
             header('Location: /manage/sites');
+        } catch (Exception $e) {
+            $smarty->assign('error', $e->getMessage());
+            $smarty->display('500.tpl');
+        }
+    });
+    $router->get('/manage/locations', function() use ($smarty, $stock) {
+        try {
+            $smarty->assign('sites', $stock->getSites());
+            $smarty->assign('locations', $stock->getLocations());
+            $smarty->assign('locationsstockcount', $stock->getLocationStockCounts());
+            $smarty->display('managelocations.tpl');
+        } catch (Exception $e) {
+            $smarty->assign('error', $e->getMessage());
+            $smarty->display('500.tpl');
+        }
+    });
+    $router->post('/delete/location/(.*)', function($locationid) use ($smarty, $stock) {
+        try {
+            $stock->deleteLocation($locationid);
+            header('Location: /manage/locations');
         } catch (Exception $e) {
             $smarty->assign('error', $e->getMessage());
             $smarty->display('500.tpl');
