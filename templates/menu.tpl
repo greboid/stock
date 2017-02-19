@@ -28,6 +28,9 @@
             <li class="pure-menu-item">
                 <a class="pure-menu-link" href="/manage/locations">Manage Locations</a>
             </li>
+            <li class="pure-menu-item">
+                <a class="pure-menu-link" href="/manage/items">Manage Items</a>
+            </li>
         </ul>
     </nav>
 </div>

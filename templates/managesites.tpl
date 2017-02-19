@@ -5,7 +5,7 @@
                 <h1>Manage Sites</h1>
             </header>
             <section class="post-description">
-                <table class="pure-table pure-table-stripped">
+                <table class="pure-table pure-table-horizontal pure-table-striped">
                 <thead>
                     <tr>
                         <th>Site Name</th>
@@ -15,13 +15,13 @@
                 </thead>
                 <tbody>
                     {foreach from=$sites key=siteid item=site}
-                        <form action="/delete/site/{$siteid}" method="post">
-                            <tr>
+                        <tr>
+                            <form action="/delete/site/{$siteid}" method="post">
                                 <td>{$site|escape:'htmlall'}</td>
                                 <td>{$locations[$siteid]['locations']|@count}</td>
                                 <td><button class="pure-button" >Delete</button></td>
-                            </tr>
-                        </form>
+                            </form>
+                        </tr>
                     {/foreach}
                 </tbody>
                 </table>

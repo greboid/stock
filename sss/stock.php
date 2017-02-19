@@ -58,6 +58,19 @@
             return $locationName;
         }
 
+        function getItemName($itemID) {
+            $dbconnection = $this->dbConnect();
+            $statement = $dbconnection->prepare('SELECT stock_name FROM '.STOCK_TABLE.' WHERE stock_id=?');
+            $statement->bind_param('i', $itemID);
+            $statement->execute();
+            $statement->bind_result($itemName);
+            $statement->fetch();
+            if ($itemName == NULL) {
+                return FALSE;
+            }
+            return $itemName;
+        }
+
         function getSiteForLocation($locationID) {
             $dbconnection = $this->dbConnect();
             $statement = $dbconnection->prepare('SELECT site_name
@@ -278,6 +291,16 @@
             $dbconnection = $this->dbConnect();
             $statement = $dbconnection->prepare('DELETE FROM '.LOCATIONS_TABLE.' WHERE location_id=?');
             $statement->bind_param('i', $locationID);
+            $statement->execute();
+        }
+
+        function deleteItem($itemID) {
+            if (!$this->getItemName($itemID)) {
+                throw new Exception('Specified item does not exist.');
+            }
+            $dbconnection = $this->dbConnect();
+            $statement = $dbconnection->prepare('DELETE FROM '.STOCK_TABLE.' WHERE stock_id=?');
+            $statement->bind_param('i', $itemID);
             $statement->execute();
         }
     }

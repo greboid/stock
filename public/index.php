@@ -176,7 +176,7 @@
             $smarty->display('500.tpl');
         }
     });
-    $router->post('/delete/site/(.*)', function($siteid) use ($smarty, $stock) {
+    $router->post('/delete/site/(\d+)', function($siteid) use ($smarty, $stock) {
         try {
             $stock->deleteSite($siteid);
             header('Location: /manage/sites');
@@ -196,10 +196,30 @@
             $smarty->display('500.tpl');
         }
     });
-    $router->post('/delete/location/(.*)', function($locationid) use ($smarty, $stock) {
+    $router->post('/delete/location/(\d+)', function($locationid) use ($smarty, $stock) {
         try {
             $stock->deleteLocation($locationid);
             header('Location: /manage/locations');
+        } catch (Exception $e) {
+            $smarty->assign('error', $e->getMessage());
+            $smarty->display('500.tpl');
+        }
+    });
+    $router->get('/manage/items', function() use ($smarty, $stock) {
+        try {
+            $smarty->assign('sites', $stock->getSites());
+            $smarty->assign('locations', $stock->getLocations());
+            $smarty->assign('stock', $stock->getSiteStock(0));
+            $smarty->display('manageitems.tpl');
+        } catch (Exception $e) {
+            $smarty->assign('error', $e->getMessage());
+            $smarty->display('500.tpl');
+        }
+    });
+    $router->post('/delete/item/(\d+)', function($itemid) use ($smarty, $stock) {
+        try {
+            $stock->deleteItem($itemid);
+            header('Location: /manage/items');
         } catch (Exception $e) {
             $smarty->assign('error', $e->getMessage());
             $smarty->display('500.tpl');
