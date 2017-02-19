@@ -73,6 +73,9 @@
         }
     });
     $router->get('/add/item', function() use ($smarty, $stock) {
+        if (count($stock->getSites()) == 0) {
+            header('Location: /add/location');
+        }
         try {
             $smarty->assign('sites', $stock->getSites());
             $smarty->assign('locations', $stock->getLocations());
@@ -125,6 +128,9 @@
         }
     });
     $router->get('/add/location', function() use ($smarty, $stock) {
+        if (count($stock->getLocations()) == 0) {
+            header('Location: /add/site');
+        }
         try {
             $smarty->assign('sites', $stock->getSites());
             $smarty->assign('locations', $stock->getLocations());
