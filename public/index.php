@@ -166,4 +166,23 @@
             $smarty->display('500.tpl');
         }
     });
+    $router->get('/manage/sites', function() use ($smarty, $stock) {
+        try {
+            $smarty->assign('sites', $stock->getSites());
+            $smarty->assign('locations', $stock->getLocations());
+            $smarty->display('managesites.tpl');
+        } catch (Exception $e) {
+            $smarty->assign('error', $e->getMessage());
+            $smarty->display('500.tpl');
+        }
+    });
+    $router->post('/delete/site/(.*)', function($siteid) use ($smarty, $stock) {
+        try {
+            $stock->deleteSite($siteid);
+            header('Location: /manage/sites');
+        } catch (Exception $e) {
+            $smarty->assign('error', $e->getMessage());
+            $smarty->display('500.tpl');
+        }
+    });
     $router->run();

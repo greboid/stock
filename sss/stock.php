@@ -187,4 +187,17 @@
             $statement->bind_param('ii', $count, $itemID);
             $statement->execute();
         }
+
+        function deleteSite($siteID) {
+            if (!$this->getSiteName($siteID)) {
+                throw new Exception('Specified site does not exist.');
+            }
+            if (count($this->getStock($siteID)) != 0) {
+                throw new Exception('Unable to delete site, it still conains stock.');
+            }
+            $dbconnection = $this->dbConnect();
+            $statement = $dbconnection->prepare('DELETE FROM '.SITES_TABLE.' WHERE site_id=?');
+            $statement->bind_param('i', $siteID);
+            $statement->execute();
+        }
     }

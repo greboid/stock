@@ -11,7 +11,7 @@
             <li>
                 <a class="pure-menu-link" href="/site/all">All Sites</a>
             </li>
-            <li class="pure-menu-heading">Admin</li>
+            <li class="pure-menu-heading">Add</li>
             <li class="pure-menu-item">
                 <a class="pure-menu-link" href="/add/item">Add Item</a>
             </li>
@@ -20,6 +20,10 @@
             </li>
             <li class="pure-menu-item">
                 <a class="pure-menu-link" href="/add/site">Add Site</a>
+            </li>
+            <li class="pure-menu-heading">Manage</li>
+            <li class="pure-menu-item">
+                <a class="pure-menu-link" href="/manage/sites">Manage Sites</a>
             </li>
         </ul>
     </nav>
