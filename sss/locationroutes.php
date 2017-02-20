@@ -7,6 +7,31 @@
     class LocationRoutes {
 
         function addRoutes($router, $smarty, $stock) {
+
+            $router->get('/location/(.*)', function($locationName) use ($smarty, $stock) {
+                $locationName = filter_var($locationName, FILTER_UNSAFE_RAW);
+                $locationid = $stock->getLocationID($locationName);
+                if ($locationid === FALSE) {
+                    header('HTTP/1.1 404 Not Found');
+                    $smarty->display('404.tpl');
+                }
+                try {
+                    if ($stock->getLocationName($locationid) !== FALSE) {
+                        $smarty->assign('sites', $stock->getSites());
+                        $smarty->assign('locations', $stock->getLocations());
+                        $smarty->assign('locationid', $locationid);
+                        $smarty->assign('site', $stock->getLocationName($locationid));
+                        $smarty->assign('stock', $stock->getLocationStock($locationid));
+                        $smarty->display('stock.tpl');
+                    } else {
+                        header('HTTP/1.1 404 Not Found');
+                        $smarty->display('404.tpl');
+                    }
+                } catch (Exception $e) {
+                    $smarty->assign('error', $e->getMessage());
+                    $smarty->display('500.tpl');
+                }
+            });
             $router->get('/add/location', function() use ($smarty, $stock) {
                 if (count($stock->getLocations()) == 0) {
                     header('Location: /add/site');

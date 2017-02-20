@@ -2,15 +2,25 @@
     <h1 class="brand-title">Stock</h1>
     <nav class="pure-menu custom-restricted-width">
         <ul class="pure-menu-list">
-            <li class="pure-menu-heading">Sites</li>
-            {foreach from=$sites key=id item=site}
+            <li class="pure-menu-heading">Stock</li>
+            <li>
+                <a class="pure-menu-link" href="/site/all">All</a>
+            </li>
+
+            {foreach from=$sites key=siteid item=site}
                 <li class="pure-menu-item">
                     <a class="pure-menu-link" href="/site/{$site|escape:'htmlall'}">{$site|escape:'htmlall'|truncate:30}</a>
+                    <ul>
+                        {foreach from=$locations[$siteid]['locations'] item=location}
+                            {foreach from=$location item=loc}
+                            <li>
+                                <a class="pure-menu-link" href="/location/{$loc|escape:'htmlall'}">{$loc|escape:'htmlall'|truncate:30}</a>
+                            </li>
+                            {/foreach}
+                        {/foreach}
+                    </ul>
                 </li>
             {/foreach}
-            <li>
-                <a class="pure-menu-link" href="/site/all">All Sites</a>
-            </li>
             <li class="pure-menu-heading">Add</li>
             <li class="pure-menu-item">
                 <a class="pure-menu-link" href="/add/item">Add Item</a>

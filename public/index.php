@@ -40,6 +40,14 @@
         header('HTTP/1.1 404 Not Found');
         $smarty->display('404.tpl');
     });
+    $router->get('/setup/dropandcreate', function() use ($smarty, $stock) {
+        $stock->dropAndCreate();
+        header('Location: /');
+    });
+    $router->get('/setup/dbupgrade', function() use ($smarty, $stock) {
+        $stock->upgrade();
+        header('Location: /');
+    });
     $router->get('/', function() use($smarty, $stock) {
         try {
             $smarty->assign('sites', $stock->getSites());
@@ -50,15 +58,9 @@
             $smarty->display('500.tpl');
         }
     });
+
     $itemRoutes->addRoutes($router, $smarty, $stock);
     $locationRoutes->addRoutes($router, $smarty, $stock);
     $siteRoutes->addRoutes($router, $smarty, $stock);
-    $router->get('/setup/dropandcreate', function() use ($smarty, $stock) {
-        $stock->dropAndCreate();
-        header('Location: /');
-    });
-    $router->get('/setup/dbupgrade', function() use ($smarty, $stock) {
-        $stock->upgrade();
-        header('Location: /');
-    });
+
     $router->run();

@@ -81,6 +81,18 @@
             return $locationName;
         }
 
+        function getLocationID($locationName) {
+            $statement = $this->dbconnection->prepare('SELECT location_id FROM '.LOCATIONS_TABLE.' WHERE location_name=?');
+            $statement->bind_param('s', $locationName);
+            $statement->execute();
+            $statement->bind_result($locationID);
+            $statement->fetch();
+            if ($locationID == NULL) {
+                return FALSE;
+            }
+            return $locationID;
+        }
+
         function getItemName($itemID) {
             $statement = $this->dbconnection->prepare('SELECT stock_name FROM '.STOCK_TABLE.' WHERE stock_id=?');
             $statement->bind_param('i', $itemID);
