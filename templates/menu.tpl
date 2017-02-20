@@ -31,6 +31,9 @@
             <li class="pure-menu-item">
                 <a class="pure-menu-link" href="/add/site">Add Site</a>
             </li>
+            <li class="pure-menu-item">
+                <a class="pure-menu-link" href="/add/category">Add Category</a>
+            </li>
             <li class="pure-menu-heading">Manage</li>
             <li class="pure-menu-item">
                 <a class="pure-menu-link" href="/manage/sites">Manage Sites</a>

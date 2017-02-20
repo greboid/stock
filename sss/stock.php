@@ -193,6 +193,18 @@
             return $locations;
         }
 
+        function getCategories() {
+            $statement = $this->dbconnection->prepare('SELECT category_id, category_name FROM '.CATEGORIES_TABLE.' ORDER BY category_name');
+            $statement->execute();
+            $statement->bind_result($category_id, $category_name);
+
+            $categories = array();
+            while ($statement->fetch()) {
+                $categories[$category_id] = $category_name;
+            }
+            return $categories;
+        }
+
         function getLocationStockCounts() {
             $statement = $this->dbconnection->prepare('SELECT location_id, location_name FROM '.LOCATIONS_TABLE);
             $statement->execute();
@@ -321,6 +333,20 @@
             $statement->execute();
         }
 
+        function insertCategory($name, $parent=0) {
+            $name = trim($name);
+            if (empty($name)) {
+                throw new Exception('The name cannot be blank.');
+            }
+            if (preg_match('#\.|\.\.|\\\\|/#', $name)) {
+                throw new Exception('The name cannot contain ., .. ,/ or \\');
+            }
+
+            $statement = $this->dbconnection->prepare('INSERT INTO '.CATEGORIES_TABLE.' (category_parent, category_name) VALUES (?,?)');
+            $statement->bind_param('is', $parent, $name);
+            $statement->execute();
+        }
+
         function editItem($itemID, $count) {
             if ($count > MAX_STOCK) {
                 throw new Exception('Stock count cannot be greater than '.MAX_STOCK);
@@ -397,7 +423,7 @@
                   CONSTRAINT `stock-locations` FOREIGN KEY (`stock_location`) REFERENCES `'.LOCATIONS_TABLE.'` (`location_id`)
                 );
                 create table `'.CATEGORIES_TABLE.'` (
-                    `category_id` int (11),
+                    `category_id` int (11) NOT NULL AUTO_INCREMENT,
                     `category_parent` int (11),
                     `category_name` varchar (765),
                       PRIMARY KEY (`category_id`)
@@ -425,7 +451,7 @@
             try {
                 $statement = $this->dbconnection->multi_query("
                     create table `".CATEGORIES_TABLE."` (
-                        `category_id` int (11),
+                        `category_id` int (11) NOT NULL AUTO_INCREMENT,
                         `category_parent` int (11),
                         `category_name` varchar (765),
                           PRIMARY KEY (`category_id`)

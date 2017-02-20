@@ -5,6 +5,7 @@
     use \greboid\stock\Stock;
     use \greboid\stock\ItemRoutes;
     use \greboid\stock\LocationRoutes;
+    use \greboid\stock\CategoryRoutes;
     use \greboid\stock\SiteRoutes;
     use \Bramus\Router\Router;
 
@@ -12,6 +13,7 @@
     $smarty = new Smarty();
     $itemRoutes = new ItemRoutes();
     $locationRoutes = new LocationRoutes();
+    $categoryRoutes = new CategoryRoutes();
     $siteRoutes = new SiteRoutes();
     $smarty->setTemplateDir(TEMPLATES_PATH);
     $smarty->setCompileDir(TEMPLATES_CACHE_PATH);
@@ -61,6 +63,7 @@
 
     $itemRoutes->addRoutes($router, $smarty, $stock);
     $locationRoutes->addRoutes($router, $smarty, $stock);
+    $categoryRoutes->addRoutes($router, $smarty, $stock);
     $siteRoutes->addRoutes($router, $smarty, $stock);
 
     $router->run();
