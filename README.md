@@ -6,5 +6,5 @@ Stock system for managing an inventory of stock spanning several sites and locat
 
  * Create a database and associated user
  * Copy to server
- * Download dependencies (smarty only so far)
+ * Run composer to install dependencies (php composer.phar install)
  * Create config.local.php and add any details are are different from config.php
