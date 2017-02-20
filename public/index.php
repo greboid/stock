@@ -246,4 +246,12 @@
             $smarty->display('500.tpl');
         }
     });
+    $router->get('/setup/dropandcreate', function() use ($smarty, $stock) {
+        $stock->dropAndCreate();
+        header('Location: /');
+    });
+    $router->get('/setup/dbupgrade', function() use ($smarty, $stock) {
+        $stock->upgrade();
+        header('Location: /');
+    });
     $router->run();

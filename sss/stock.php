@@ -314,4 +314,48 @@
             $statement->bind_param('i', $itemID);
             $statement->execute();
         }
+
+        function dropAndCreate() {
+            $statement = $this->dbconnection->multi_query('
+                SET FOREIGN_KEY_CHECKS=0;
+                DROP TABLE IF EXISTS `'.SITES_TABLE.'`;
+                DROP TABLE IF EXISTS `'.STOCK_TABLE.'`;
+                DROP TABLE IF EXISTS `'.LOCATIONS_TABLE.'`;
+                DROP TABLE IF EXISTS `'.VERSION_TABLE.'`;
+                CREATE TABLE `'.SITES_TABLE.'` (
+                  `site_id` int(11) NOT NULL AUTO_INCREMENT,
+                  `site_name` varchar(255) NOT NULL,
+                  PRIMARY KEY (`site_id`),
+                  UNIQUE KEY `site_name` (`site_name`)
+                );
+                CREATE TABLE `'.LOCATIONS_TABLE.'` (
+                  `location_id` int(11) NOT NULL AUTO_INCREMENT,
+                  `location_site` int(11) DEFAULT NULL,
+                  `location_name` varchar(255) DEFAULT NULL,
+                  PRIMARY KEY (`location_id`),
+                  KEY `location_site` (`location_site`),
+                  CONSTRAINT `locations-sites` FOREIGN KEY (`location_site`) REFERENCES `'.SITES_TABLE.'` (`site_id`)
+                );
+                CREATE TABLE `'.STOCK_TABLE.'` (
+                  `stock_id` int(11) NOT NULL AUTO_INCREMENT,
+                  `stock_name` varchar(255) NOT NULL,
+                  `stock_count` int(11) NOT NULL,
+                  `stock_location` int(11) NOT NULL,
+                  PRIMARY KEY (`stock_id`),
+                  KEY `stock_location` (`stock_location`),
+                  CONSTRAINT `stock-locations` FOREIGN KEY (`stock_location`) REFERENCES `'.LOCATIONS_TABLE.'` (`location_id`)
+                );
+                CREATE TABLE `'.VERSION_TABLE.'` (
+                  `version` int(11) NOT NULL
+                );
+
+                INSERT INTO `'.VERSION_TABLE.'`(`version`) values (0);
+                SET FOREIGN_KEY_CHECKS=1;
+                ');
+            while ($this->dbconnection->next_result()) {;}
+        }
+
+        function upgrade() {
+            //Doesn't do anything yet.
+        }
     }

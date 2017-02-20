@@ -30,7 +30,7 @@ if (!defined('STOCK_TABLE')) {
     define('STOCK_TABLE', 'stock');
 }
 if (!defined('VERSION_TABLE')) {
-    define('VERSION_TABLE', 'p_version');
+    define('VERSION_TABLE', 'version');
 }
 if (!defined('TEMPLATES_PATH')) {
     define('TEMPLATES_PATH', '../templates/');
