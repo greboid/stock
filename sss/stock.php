@@ -193,12 +193,42 @@
             return $locations;
         }
 
+        function getCategoryName($categoryID) {
+            $statement = $this->dbconnection->prepare('SELECT category_name FROM '.CATEGORIES_TABLE.' where category_id=?');
+            $statement->bind_param('i', $categoryID);
+            $statement->execute();
+            $statement->bind_result($categoryName);
+            $statement->fetch();
+            if ($categoryName == NULL) {
+                return FALSE;
+            }
+            return $categoryName;
+        }
+
         function getCategories() {
             $sql = 'SELECT categories.category_id AS category_id, parents.category_name AS category_parent, categories.category_name AS category_name
                                                       FROM '.CATEGORIES_TABLE.' as categories
                                                       LEFT JOIN '.CATEGORIES_TABLE.' as parents ON categories.category_parent=parents.category_id
                                                       ORDER BY category_name';
             $statement = $this->dbconnection->prepare($sql);
+            $statement->execute();
+            $statement->bind_result($category_id, $category_parent, $category_name);
+
+            $categories = array();
+            while ($statement->fetch()) {
+                $categories[$category_id] = array('name'=>$category_name, 'parent'=>$category_parent);
+            }
+            return $categories;
+        }
+
+        function getSubCategories($parentCategory) {
+            $sql = 'SELECT categories.category_id AS category_id, parents.category_name AS category_parent, categories.category_name AS category_name
+                                                      FROM '.CATEGORIES_TABLE.' as categories
+                                                      LEFT JOIN '.CATEGORIES_TABLE.' as parents ON categories.category_parent=parents.category_id
+                                                      WHERE categories.category_parent=?
+                                                      ORDER BY category_name';
+            $statement = $this->dbconnection->prepare($sql);
+            $statement->bind_param('i', $parentCategory);
             $statement->execute();
             $statement->bind_result($category_id, $category_parent, $category_name);
 
@@ -384,6 +414,18 @@
             }
             $statement = $this->dbconnection->prepare('DELETE FROM '.LOCATIONS_TABLE.' WHERE location_id=?');
             $statement->bind_param('i', $locationID);
+            $statement->execute();
+        }
+
+        function deleteCategory($categoryID) {
+            if (!$this->getCategoryName($categoryID)) {
+                throw new Exception('Specified category does not exist.');
+            }
+            if (count($this->getSubCategories($categoryID)) != 0) {
+                throw new Exception('Unable to delete category, it still has sub-categories.');
+            }
+            $statement = $this->dbconnection->prepare('DELETE FROM '.CATEGORIES_TABLE.' WHERE category_id=?');
+            $statement->bind_param('i', $categoryID);
             $statement->execute();
         }
 
