@@ -6,7 +6,6 @@
     use \Bramus\Router\Router;
 
     $router = new Router();
-    $stock = new Stock();
     $smarty = new Smarty();
     $smarty->setTemplateDir(TEMPLATES_PATH);
     $smarty->setCompileDir(TEMPLATES_CACHE_PATH);
@@ -15,10 +14,17 @@
     $smarty->assign('max_stock', MAX_STOCK);
     $error = false;
 
+    try {
+        $stock = new Stock();
+    } catch (Exception $e) {
+        $smarty->assign('error', 'The database connection settings are wrong, please check the config');
+        $smarty->display('500.tpl');
+    }
 
-    $router->before('GET', '/.*', function() use ($smarty, $stock) {
+    //The regex should be matched here, but I can't make the router like it... hack it
+    $router->before('GET', '(.*)', function($route) use ($smarty, $stock) {
         $version = $stock->checkVersion();
-        if (!$version) {
+        if (preg_match('#^(?!setup).*#', $route) && !$version) {
             $smarty->assign('version', $version);
             $smarty->display('install.tpl');
             exit();

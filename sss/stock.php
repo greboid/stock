@@ -8,6 +8,7 @@
     class Stock {
 
         private $dbconnection;
+        private $version = 0;
 
         function __construct() {
             if (!$this->dbConnect()) {
@@ -34,7 +35,7 @@
             } catch (Exception $e) {
                 return FALSE;
             }
-            return $version;
+            return $this->version == $version;
         }
 
         function getSiteName($siteID) {

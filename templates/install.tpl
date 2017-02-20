@@ -25,7 +25,12 @@
                                 <section class="post">
                             </header>
                             <div class="post-description">
-                                <p>Steps here, soon.</p>
+                                <p>There's something wrong with your database structure, if you just upgraded this is normal just run the upgrade, if you've not upgraded however this is probably pretty bad.  You've got two options:
+                                    <ul>
+                                        <li>Fuck it all, lets burn it all to the ground and <a href="/setup/dropandcreate">go from scratch</a>.</li>
+                                        <li>Try running the nice <a href="/setup/dbupgrade">database upgrade</a>.</li>
+                                    </ul>
+                                </p>
                             </div>
                         </section>
                     </div>
