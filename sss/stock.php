@@ -8,7 +8,7 @@
     class Stock {
 
         private $dbconnection;
-        private $version = 0;
+        private $version = 1;
 
         function __construct() {
             if (!$this->dbConnect()) {
@@ -26,7 +26,7 @@
             return TRUE;
         }
 
-        function checkVersion() {
+        function getVersion() {
             try {
                 $statement = $this->dbconnection->prepare('SELECT version from '.VERSION_TABLE);
                 $statement->execute();
@@ -35,7 +35,11 @@
             } catch (Exception $e) {
                 return FALSE;
             }
-            return $this->version == $version;
+            return $version;
+        }
+
+        function checkVersion() {
+            return $this->version == $this->getVersion();
         }
 
         function getSiteName($siteID) {
@@ -392,17 +396,50 @@
                   KEY `stock_location` (`stock_location`),
                   CONSTRAINT `stock-locations` FOREIGN KEY (`stock_location`) REFERENCES `'.LOCATIONS_TABLE.'` (`location_id`)
                 );
+                create table `'.CATEGORIES_TABLE.'` (
+                    `category_id` int (11),
+                    `category_parent` int (11),
+                    `category_name` varchar (765),
+                      PRIMARY KEY (`category_id`)
+                );
                 CREATE TABLE `'.VERSION_TABLE.'` (
                   `version` int(11) NOT NULL
                 );
-
-                INSERT INTO `'.VERSION_TABLE.'`(`version`) values (0);
+                INSERT INTO `'.VERSION_TABLE.'`(`version`) values (1);
                 SET FOREIGN_KEY_CHECKS=1;
                 ');
             while ($this->dbconnection->next_result()) {;}
         }
 
         function upgrade() {
-            //Doesn't do anything yet.
+            $outputs = array();
+            $version = $this->getVersion();
+            while ($version < $this->version) {
+                $funcname = 'upgrade'.$version.'to'.++$version;
+                $outputs[] = $this->$funcname();
+            }
+            return $outputs;
+        }
+
+        function upgrade0to1() {
+            try {
+                $statement = $this->dbconnection->multi_query("
+                    create table `".CATEGORIES_TABLE."` (
+                        `category_id` int (11),
+                        `category_parent` int (11),
+                        `category_name` varchar (765),
+                          PRIMARY KEY (`category_id`)
+                    );
+                    ALTER TABLE `".STOCK_TABLE."`
+                    ADD COLUMN `stock_category` INT(11) NULL AFTER `stock_location`,
+                    ADD CONSTRAINT `stock-category` FOREIGN KEY (`stock_category`) REFERENCES `".CATEGORIES_TABLE."`(`category_id`);
+                    UPDATE `version` SET `version` = '1';
+                ");
+                while ($this->dbconnection->next_result()) {;}
+            } catch (Exception $e) {
+                return FALSE;
+            }
+            return TRUE;
+
         }
     }
