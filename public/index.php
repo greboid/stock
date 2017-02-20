@@ -44,25 +44,6 @@
             $smarty->display('500.tpl');
         }
     });
-    $router->get('/site/(\d+)', function($siteid) use ($smarty, $stock) {
-        $siteid = filter_var($siteid, FILTER_UNSAFE_RAW);
-        try {
-            if ($stock->getSiteName($siteid) !== FALSE) {
-                $smarty->assign('sites', $stock->getSites());
-                $smarty->assign('locations', $stock->getLocations());
-                $smarty->assign('siteid', $siteid);
-                $smarty->assign('site', $stock->getSiteName($siteid));
-                $smarty->assign('stock', $stock->getSiteStock($siteid));
-                $smarty->display('stock.tpl');
-            } else {
-                header('HTTP/1.1 404 Not Found');
-                $smarty->display('404.tpl');
-            }
-        } catch (Exception $e) {
-            $smarty->assign('error', $e->getMessage());
-            $smarty->display('500.tpl');
-        }
-    });
     $router->get('/site/(.*)', function($siteName) use ($smarty, $stock) {
         $siteName = filter_var($siteName, FILTER_UNSAFE_RAW);
         $siteid = $stock->getSiteID($siteName);
