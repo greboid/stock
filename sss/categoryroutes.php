@@ -37,5 +37,25 @@
                     $smarty->display('500.tpl');
                 }
             });
+            $router->get('/manage/categories', function() use ($smarty, $stock) {
+                try {
+                    $smarty->assign('sites', $stock->getSites());
+                    $smarty->assign('locations', $stock->getLocations());
+                    $smarty->assign('categories', $stock->getCategories());
+                    $smarty->display('managecategories.tpl');
+                } catch (Exception $e) {
+                    $smarty->assign('error', $e->getMessage());
+                    $smarty->display('500.tpl');
+                }
+            });
+            $router->post('/delete/category/(\d+)', function($categoryid) use ($smarty, $stock) {
+                try {
+                    $stock->deleteCategory($categoryid);
+                    header('Location: /manage/categories');
+                } catch (Exception $e) {
+                    $smarty->assign('error', $e->getMessage());
+                    $smarty->display('500.tpl');
+                }
+            });
         }
     }

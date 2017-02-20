@@ -44,6 +44,9 @@
             <li class="pure-menu-item">
                 <a class="pure-menu-link" href="/manage/items">Manage Items</a>
             </li>
+            <li class="pure-menu-item">
+                <a class="pure-menu-link" href="/manage/categories">Manage Categories</a>
+            </li>
         </ul>
     </nav>
 </div>

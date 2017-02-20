@@ -194,13 +194,17 @@
         }
 
         function getCategories() {
-            $statement = $this->dbconnection->prepare('SELECT category_id, category_name FROM '.CATEGORIES_TABLE.' ORDER BY category_name');
+            $sql = 'SELECT categories.category_id AS category_id, parents.category_name AS category_parent, categories.category_name AS category_name
+                                                      FROM '.CATEGORIES_TABLE.' as categories
+                                                      LEFT JOIN '.CATEGORIES_TABLE.' as parents ON categories.category_parent=parents.category_id
+                                                      ORDER BY category_name';
+            $statement = $this->dbconnection->prepare($sql);
             $statement->execute();
-            $statement->bind_result($category_id, $category_name);
+            $statement->bind_result($category_id, $category_parent, $category_name);
 
             $categories = array();
             while ($statement->fetch()) {
-                $categories[$category_id] = $category_name;
+                $categories[$category_id] = array('name'=>$category_name, 'parent'=>$category_parent);
             }
             return $categories;
         }
