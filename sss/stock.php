@@ -204,6 +204,7 @@
                 $statement->bind_param('i', $location['id']);
                 $statement->execute();
                 $statement->bind_result($stockcount);
+                $statement->store_result();
                 while ($statement->fetch()) {
                     $location['stockcount'] = $stockcount;
                     $location['sitename'] = $this->getSiteForLocation($location['id']);

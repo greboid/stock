@@ -2,7 +2,7 @@
     <h1 class="brand-title">Stock</h1>
     <nav class="pure-menu custom-restricted-width">
         <ul class="pure-menu-list">
-            <li class="pure-menu-heading">Stock</li>
+            <li class="pure-menu-heading">Locations</li>
             <li>
                 <a class="pure-menu-link" href="/site/all">All</a>
             </li>
