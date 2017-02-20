@@ -22,7 +22,7 @@
                                 <td>{$item.site|escape:'htmlall'}</td>
                                 <td>{$item.location|escape:'htmlall'}</td>
                                 <td>
-                                    <button type="submit" id="countdown" name="countdown" value="2"{if $item.count == 1} disabled{/if}>--</button>
+                                    <button type="submit" id="countdown" name="countdown" value="2"{if $item.count < 2} disabled{/if}>--</button>
                                     <button type="submit" id="countdown" name="countdown" value="1"{if $item.count == 0} disabled{/if}>-</button>
                                     <input type="number" name="count" value="{$item.count|escape:'htmlall'}" required" min="0" max="{$max_stock}">
                                     <button type="submit" id="countup" name="countup" value="1"{if $item.count == $max_stock} disabled{/if}>+</button>
