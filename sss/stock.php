@@ -108,6 +108,23 @@
             return $siteName;
         }
 
+        function getSiteIDForItemID($itemID) {
+            $statement = $this->dbconnection->prepare('
+                SELECT site_id
+                FROM '.STOCK_TABLE.'
+                LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
+                LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id
+                WHERE location_id=?');
+            $statement->bind_param('i', $itemID);
+            $statement->execute();
+            $statement->bind_result($siteID);
+            $statement->fetch();
+            if ($siteID == NULL) {
+                return FALSE;
+            }
+            return $siteID;
+        }
+
         function getSites() {
             $statement = $this->dbconnection->prepare('SELECT site_id, site_name FROM '.SITES_TABLE.' ORDER BY site_name');
             $statement->execute();

@@ -17,14 +17,17 @@
                 <tbody>
                     {foreach from=$stock key=id item=item}
                         <tr>
-                            <form class="pure-form pure-form-aligned" method="post">
-                                <input type="hidden" id="action" name="action" value="edititem">
-                                <input type="hidden" id="itemid" name="itemid" value="{$id|escape:'htmlall'}">
-                                <input type="hidden" id="siteid" name="site" value="{$siteid|escape:'htmlall'}">
+                            <form class="pure-form pure-form-aligned" action="/edit/item/{$id|escape:'htmlall'}" method="post">
                                 <td>{$item.name|escape:'htmlall'}</td>
                                 <td>{$item.site|escape:'htmlall'}</td>
                                 <td>{$item.location|escape:'htmlall'}</td>
-                                <td><input type="number" name="count" value="{$item.count|escape:'htmlall'}" required" min="0" max="{$max_stock}"></td>
+                                <td>
+                                    <button type="submit" id="countdown" name="countdown" value="2"{if $item.count == 0} disabled{/if}>--</button>
+                                    <button type="submit" id="countdown" name="countdown" value="1"{if $item.count == 0} disabled{/if}>-</button>
+                                    <input type="number" name="count" value="{$item.count|escape:'htmlall'}" required" min="0" max="{$max_stock}">
+                                    <button type="submit" id="countup" name="countup" value="1"{if $item.count == $max_stock} disabled{/if}>+</button>
+                                    <button type="submit" id="countup" name="countup" value="2"{if $item.count == $max_stock} disabled{/if}>++</button>
+                                </td>
                                 <td>
                                     <button type="submit" class="pure-button pure-button-success pure-button-xsmall">Edit</button>
                                 </td>

@@ -12,7 +12,7 @@
                             <fieldset>
                                 <div class="pure-control-group">
                                     <label for="name">Name</label>
-                                    <input id="name" name="name" type="text" placeholder="name" required pattern="#\.|\.\.|\\\\|/#">
+                                    <input id="name" name="name" type="text" placeholder="name" required>
                                 </div>
                                 <div class="pure-control-group">
                                     <label for="location">Location</label>

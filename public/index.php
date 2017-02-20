@@ -171,17 +171,22 @@
             $smarty->display('500.tpl');
         }
     });
-    $router->post('/site/(\d+)', function($siteid) use ($smarty, $stock) {
+    $router->post('/edit/item/(\d+)', function($itemid) use ($smarty, $stock) {
+        $count = filter_var($_POST['count'], FILTER_UNSAFE_RAW);
+        $countup = filter_var($_POST['countup'], FILTER_UNSAFE_RAW);
+        $countdown = filter_var($_POST['countdown'], FILTER_UNSAFE_RAW);
         try {
-            $itemid = filter_var($_POST['itemid'], FILTER_UNSAFE_RAW);
-            $count = filter_var($_POST['count'], FILTER_UNSAFE_RAW);
-            if (isset($_POST['itemid']) && isset($_POST['count'])) {
+            if (isset($_POST['countdown']) && isset($_POST['count'])) {
+                $stock->editItem($itemid, $count-$countdown);
+            } else if (isset($_POST['countup']) && isset($_POST['count'])) {
+                $stock->editItem($itemid, $count+$countup);
+            } else if (isset($_POST['count'])) {
                 $stock->editItem($itemid, $count);
             } else {
                 $smarty->assign('error', 'Missing required value.');
                 $smarty->display('500.tpl');
             }
-            header('Location: /site/'.$siteid);
+            header('Location: /site/'.$stock->getSiteIDForItemID($itemid));
         } catch (Exception $e) {
             $smarty->assign('error', $e->getMessage());
             $smarty->display('500.tpl');
