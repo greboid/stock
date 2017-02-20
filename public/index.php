@@ -186,7 +186,7 @@
                 $smarty->assign('error', 'Missing required value.');
                 $smarty->display('500.tpl');
             }
-            header('Location: /site/'.$stock->getSiteIDForItemID($itemid));
+            header('Location: /site/'.$stock->getSiteNameForItemID($itemid));
         } catch (Exception $e) {
             $smarty->assign('error', $e->getMessage());
             $smarty->display('500.tpl');
