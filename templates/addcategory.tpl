@@ -16,7 +16,7 @@
                                     <select id="parent" name="parent">
                                         <option selected=""></option>
                                         {foreach from=$categories key=categoryID item=category}
-                                            <option value="{$categoryID|escape:'htmlall'}">{$category|escape:'htmlall'}</option>
+                                            <option value="{$categoryID|escape:'htmlall'}">{$category['name']|escape:'htmlall'}</option>
                                         {/foreach}
                                     </select>
                                 </div>

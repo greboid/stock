@@ -19,8 +19,10 @@
                 }
             });
             $router->post('/add/category', function() use ($smarty, $stock) {
+                $name = filter_input(INPUT_POST, "name", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+                $parent = filter_input(INPUT_POST, "parent", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
                 try {
-                    if (isset($_POST['name']) && isset($_POST['parent'])) {
+                    if ($name !== FALSE && $parent !== FALSE) {
                         $name = filter_var($_POST['name'], FILTER_UNSAFE_RAW);
                         $parent = filter_var($_POST['parent'], FILTER_UNSAFE_RAW);
                         $stock->insertCategory($name, $parent);

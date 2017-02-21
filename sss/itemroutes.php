@@ -21,8 +21,11 @@
                 }
             });
             $router->post('/add/item', function() use ($smarty, $stock) {
+                $name = filter_input(INPUT_POST, "name", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+                $location = filter_input(INPUT_POST, "location", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+                $count = filter_input(INPUT_POST, "count", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                 try {
-                    if (isset($_POST['name']) && isset($_POST['location']) && isset($_POST['count'])) {
+                    if ($name !== FALSE && $location !== FALSE && $count !== FALSE) {
                         $name = filter_var($_POST['name'], FILTER_UNSAFE_RAW);
                         $location = filter_var($_POST['location'], FILTER_UNSAFE_RAW);
                         $count = filter_var($_POST['count'], FILTER_UNSAFE_RAW);
@@ -38,15 +41,15 @@
                 }
             });
             $router->post('/edit/item/(\d+)', function($itemid) use ($smarty, $stock) {
-                $count = filter_var($_POST['count'], FILTER_UNSAFE_RAW);
-                $countup = filter_var($_POST['countup'], FILTER_UNSAFE_RAW);
-                $countdown = filter_var($_POST['countdown'], FILTER_UNSAFE_RAW);
+                $count = filter_input(INPUT_POST, "count", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+                $countup = filter_input(INPUT_POST, "countup", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+                $countdown = filter_input(INPUT_POST, "countdown", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                 try {
-                    if (isset($_POST['countdown']) && isset($_POST['count'])) {
+                    if ($countdown !== FALSE && $count !== FALSE) {
                         $stock->editItem($itemid, $count-$countdown);
-                    } else if (isset($_POST['countup']) && isset($_POST['count'])) {
+                    } else if ($countup !== FALSE && $count !== FALSE) {
                         $stock->editItem($itemid, $count+$countup);
-                    } else if (isset($_POST['count'])) {
+                    } else if ($count !== FALSE) {
                         $stock->editItem($itemid, $count);
                     } else {
                         $smarty->assign('error', 'Missing required value.');
