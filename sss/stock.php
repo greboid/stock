@@ -62,7 +62,7 @@
             $statement->bind_result($siteName);
             $statement->fetch();
             if ($siteName == null) {
-                return false;
+                return "";
             }
             return $siteName;
         }
@@ -78,7 +78,7 @@
             $statement->bind_result($siteID);
             $statement->fetch();
             if ($siteID == null) {
-                return false;
+                return -1;
             }
             return $siteID;
         }
@@ -93,7 +93,7 @@
             $statement->bind_result($locationName);
             $statement->fetch();
             if ($locationName == null) {
-                return false;
+                return "";
             }
             return $locationName;
         }
@@ -109,7 +109,7 @@
             $statement->bind_result($locationID);
             $statement->fetch();
             if ($locationID == null) {
-                return false;
+                return -1;
             }
             return $locationID;
         }
@@ -121,7 +121,7 @@
             $statement->bind_result($itemName);
             $statement->fetch();
             if ($itemName == null) {
-                return false;
+                return "";
             }
             return $itemName;
         }
@@ -136,7 +136,7 @@
             $statement->bind_result($siteName);
             $statement->fetch();
             if ($siteName == null) {
-                return false;
+                return "";
             }
             return $siteName;
         }
@@ -153,7 +153,7 @@
             $statement->bind_result($siteID);
             $statement->fetch();
             if ($siteID == null) {
-                return false;
+                return -1;
             }
             return $siteID;
         }
@@ -164,13 +164,13 @@
                 FROM '.STOCK_TABLE.'
                 LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
                 LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id
-                WHERE location_id=?');
+                WHERE stock_id=?');
             $statement->bind_param('i', $itemID);
             $statement->execute();
             $statement->bind_result($siteName);
             $statement->fetch();
             if ($siteName == null) {
-                return false;
+                return "";
             }
             return $siteName;
         }

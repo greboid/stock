@@ -32,6 +32,7 @@
                 try {
                     if ($name !== false && $parent !== false) {
                         $stock->insertCategory($name, $parent);
+                        header('Location: /');
                     } else if ($name !== false) {
                         $stock->insertLocation($name);
                         header('Location: /');
