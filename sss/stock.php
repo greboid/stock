@@ -322,7 +322,7 @@
         }
 
         function insertItem($name, $location, $count=0) {
-            $name = trim($name);
+            $name = strtolower(trim($name));
             if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
             }
@@ -344,9 +344,12 @@
         }
 
         function insertLocation($name, $site) {
-            $name = trim($name);
+            $name = strtolower(trim($name));
             if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
+            }
+            if ($name == 'all') {
+                throw new Exception('You cannot use all as a name.');
             }
             if (preg_match('#\.|\.\.|\\\\|/#', $name)) {
                 throw new Exception('The name cannot contain ., .. ,/ or \\');
@@ -361,9 +364,12 @@
         }
 
         function insertSite($name) {
-            $name = trim($name);
+            $name = strtolower(trim($name));
             if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
+            }
+            if ($name == 'all') {
+                throw new Exception('You cannot use all as a name.');
             }
             if (preg_match('#\.|\.\.|\\\\|/#', $name)) {
                 throw new Exception('The name cannot contain ., .. ,/ or \\');
@@ -375,7 +381,7 @@
         }
 
         function insertCategory($name, $parent=0) {
-            $name = trim($name);
+            $name = strtolower(trim($name));
             if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
             }
