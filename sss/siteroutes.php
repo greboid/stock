@@ -22,9 +22,10 @@
                         $smarty->assign('site', $stock->getSiteName($siteid));
                         $smarty->assign('stock', $stock->getSiteStock($siteid));
                         $smarty->display('stock.tpl');
+                    } else {
+                        header('HTTP/1.1 404 Not Found');
+                        $smarty->display('404.tpl');
                     }
-                    header('HTTP/1.1 404 Not Found');
-                    $smarty->display('404.tpl');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
                     $smarty->display('500.tpl');

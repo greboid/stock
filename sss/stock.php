@@ -191,7 +191,7 @@
                                            FROM '.LOCATIONS_TABLE.' where location_site=?');
                 $statement->bind_param('i', $siteid);
                 $statement->execute();
-                $statement->bind_result($$locationID, $name);
+                $statement->bind_result($locationID, $name);
                 $locations[$siteid]['locations'] = array();
                 while ($statement->fetch()) {
                     $locations[$siteid]['locations'][$locationID] = $name;
