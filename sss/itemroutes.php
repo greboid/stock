@@ -30,7 +30,7 @@
             });
             $router->post('/add/item', function() use ($smarty, $stock) {
                 $name = filter_input(INPUT_POST, "name", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
-                $location = filter_input(INPUT_POST, "location", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+                $location = (int) filter_input(INPUT_POST, "location", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                 $count = filter_input(INPUT_POST, "count", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                 try {
                     if ($name !== false && $location !== false && $count !== false) {
@@ -79,6 +79,7 @@
                 }
             });
             $router->post('/delete/item/(\d+)', function($itemid) use ($smarty, $stock) {
+                $itemid = filter_var($itemid, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                 try {
                     $stock->deleteItem($itemid);
                     header('Location: /manage/items');

@@ -81,6 +81,7 @@
                 }
             });
             $router->post('/delete/location/(\d+)', function($locationid) use ($smarty, $stock) {
+                $locationid = filter_var($locationid, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                 try {
                     $stock->deleteLocation($locationid);
                     header('Location: /manage/locations');

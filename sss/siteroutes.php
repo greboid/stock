@@ -75,6 +75,7 @@
                 }
             });
             $router->post('/delete/site/(\d+)', function($siteid) use ($smarty, $stock) {
+                $siteid = filter_var($siteid, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                 try {
                     $stock->deleteSite($siteid);
                     header('Location: /manage/sites');
