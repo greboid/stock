@@ -1,12 +1,20 @@
 <?php
+    declare(strict_types=1);
 
     namespace greboid\stock;
 
     use \Exception;
+    use \greboid\stock\Stock;
+    use \greboid\stock\ItemRoutes;
+    use \greboid\stock\LocationRoutes;
+    use \greboid\stock\CategoryRoutes;
+    use \greboid\stock\SiteRoutes;
+    use \Bramus\Router\Router;
+    use \Smarty;
 
     class CategoryRoutes {
 
-        public function addRoutes($router, $smarty, $stock) {
+        public function addRoutes(Router $router, Smarty $smarty, Stock $stock): void {
             $router->get('/add/category', function() use ($smarty, $stock) {
                 try {
                     $smarty->assign('sites', $stock->getSites());

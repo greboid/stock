@@ -1,9 +1,18 @@
 <?php
+    declare(strict_types=1);
 
     namespace greboid\stock;
 
     use \Exception;
+    use \greboid\stock\Stock;
+    use \greboid\stock\ItemRoutes;
+    use \greboid\stock\LocationRoutes;
+    use \greboid\stock\CategoryRoutes;
+    use \greboid\stock\SiteRoutes;
+    use \Bramus\Router\Router;
     use \mysqli;
+    use \mysqli_driver;
+    use \Smarty;
 
     class Stock {
 
@@ -16,8 +25,9 @@
             }
         }
 
-        public function dbConnect() {
-            mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+        public function dbConnect(): bool {
+            $driver = new mysqli_driver();
+            $driver->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
             try {
                 $this->dbconnection = new mysqli(STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW, STOCK_DB);
             } catch (Exception $e) {
@@ -26,23 +36,23 @@
             return true;
         }
 
-        public function getVersion() {
+        public function getVersion(): int {
             try {
                 $statement = $this->dbconnection->prepare('SELECT version from '.VERSION_TABLE);
                 $statement->execute();
                 $statement->bind_result($version);
                 $statement->fetch();
             } catch (Exception $e) {
-                return false;
+                return -1;
             }
             return $version;
         }
 
-        public function checkVersion() {
+        public function checkVersion(): bool {
             return $this->version == $this->getVersion();
         }
 
-        public function getSiteName($siteID) {
+        public function getSiteName(int $siteID): string {
             if ($siteID == 0) {
                 return "All Sites";
             }
@@ -57,7 +67,7 @@
             return $siteName;
         }
 
-        public function getSiteID($siteName) {
+        public function getSiteID(string $siteName): int {
             $siteName = strtolower($siteName);
             if ($siteName == 'all') {
                 return 0;
@@ -73,7 +83,7 @@
             return $siteID;
         }
 
-        public function getLocationName($locationID) {
+        public function getLocationName(int $locationID): string {
             if ($locationID == 0) {
                 return "All Locations";
             }
@@ -88,7 +98,7 @@
             return $locationName;
         }
 
-        public function getLocationID($locationName) {
+        public function getLocationID(string $locationName): int {
             $locationName = strtolower($locationName);
             if ($locationName == 'all') {
                 return 0;
@@ -104,7 +114,7 @@
             return $locationID;
         }
 
-        public function getItemName($itemID) {
+        public function getItemName(int $itemID): string {
             $statement = $this->dbconnection->prepare('SELECT stock_name FROM '.STOCK_TABLE.' WHERE stock_id=?');
             $statement->bind_param('i', $itemID);
             $statement->execute();
@@ -116,7 +126,7 @@
             return $itemName;
         }
 
-        public function getSiteForLocation($locationID) {
+        public function getSiteForLocation(int $locationID): string {
             $statement = $this->dbconnection->prepare('SELECT site_name
                                                 FROM '.LOCATIONS_TABLE.'
                                                 LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id
@@ -131,7 +141,7 @@
             return $siteName;
         }
 
-        public function getSiteIDForItemID($itemID) {
+        public function getSiteIDForItemID(int $itemID): string {
             $statement = $this->dbconnection->prepare('
                 SELECT site_id
                 FROM '.STOCK_TABLE.'
@@ -148,7 +158,7 @@
             return $siteID;
         }
 
-        public function getSiteNameForItemID($itemID) {
+        public function getSiteNameForItemID(int $itemID): string {
             $statement = $this->dbconnection->prepare('
                 SELECT site_name
                 FROM '.STOCK_TABLE.'
@@ -165,7 +175,7 @@
             return $siteName;
         }
 
-        public function getSites() {
+        public function getSites(): array {
             $statement = $this->dbconnection->prepare('SELECT site_id, site_name FROM '.SITES_TABLE.' ORDER BY site_name');
             $statement->execute();
             $statement->bind_result($siteID, $siteName);
@@ -177,7 +187,7 @@
             return $sites;
         }
 
-        public function getLocations() {
+        public function getLocations(): array {
             $statement = $this->dbconnection->prepare('SELECT site_id, site_name FROM '.SITES_TABLE);
             $statement->execute();
             $statement->bind_result($id, $name);
@@ -200,7 +210,7 @@
             return $locations;
         }
 
-        public function getCategoryName($categoryID) {
+        public function getCategoryName(int $categoryID): string {
             $statement = $this->dbconnection->prepare('SELECT category_name FROM '.CATEGORIES_TABLE.' where category_id=?');
             $statement->bind_param('i', $categoryID);
             $statement->execute();
@@ -212,7 +222,7 @@
             return $categoryName;
         }
 
-        public function getCategories() {
+        public function getCategories(): array {
             $sql = 'SELECT categories.category_id AS category_id, parents.category_name AS category_parent, categories.category_name AS category_name
                                                       FROM '.CATEGORIES_TABLE.' as categories
                                                       LEFT JOIN '.CATEGORIES_TABLE.' as parents ON categories.category_parent=parents.category_id
@@ -228,7 +238,7 @@
             return $categories;
         }
 
-        public function getSubCategories($parentCategory) {
+        public function getSubCategories(int $parentCategory): array {
             $sql = 'SELECT categories.category_id AS category_id, parents.category_name AS category_parent, categories.category_name AS category_name
                                                       FROM '.CATEGORIES_TABLE.' as categories
                                                       LEFT JOIN '.CATEGORIES_TABLE.' as parents ON categories.category_parent=parents.category_id
@@ -246,7 +256,7 @@
             return $categories;
         }
 
-        public function getLocationStockCounts() {
+        public function getLocationStockCounts(): array {
             $statement = $this->dbconnection->prepare('SELECT location_id, location_name FROM '.LOCATIONS_TABLE);
             $statement->execute();
             $statement->bind_result($id, $name);
@@ -271,7 +281,7 @@
             return $locations;
         }
 
-        public function getSiteStock($site) {
+        public function getSiteStock(int $site): array {
             if (!$this->getSiteName($site)) {
                 throw new Exception('Specified site does not exist.');
             }
@@ -296,7 +306,7 @@
             return $stock;
         }
 
-        public function getLocationStock($location) {
+        public function getLocationStock(int $location): array {
             if (!$this->getLocationName($location)) {
                 throw new Exception('Specified location does not exist.');
             }
@@ -321,7 +331,7 @@
             return $stock;
         }
 
-        public function insertItem($name, $location, $count = 0) {
+        public function insertItem(string $name, int $location, int $count = 0): void {
             $name = strtolower(trim($name));
             if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
@@ -343,7 +353,7 @@
             $statement->execute();
         }
 
-        public function insertLocation($name, $site) {
+        public function insertLocation(string $name, int $site): void {
             $name = strtolower(trim($name));
             if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
@@ -363,7 +373,7 @@
             $statement->execute();
         }
 
-        public function insertSite($name) {
+        public function insertSite(string $name): void {
             $name = strtolower(trim($name));
             if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
@@ -380,7 +390,7 @@
             $statement->execute();
         }
 
-        public function insertCategory($name, $parent = 0) {
+        public function insertCategory(string $name, int $parent = 0): void {
             $name = strtolower(trim($name));
             if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
@@ -394,7 +404,7 @@
             $statement->execute();
         }
 
-        public function editItem($itemID, $count) {
+        public function editItem(int $itemID, int $count): void {
             if ($count > MAX_STOCK) {
                 throw new Exception('Stock count cannot be greater than '.MAX_STOCK);
             }
@@ -406,7 +416,7 @@
             $statement->execute();
         }
 
-        public function deleteSite($siteID) {
+        public function deleteSite(int $siteID): void {
             if (!$this->getSiteName($siteID)) {
                 throw new Exception('Specified site does not exist.');
             }
@@ -418,7 +428,7 @@
             $statement->execute();
         }
 
-        public function deleteLocation($locationID) {
+        public function deleteLocation(int $locationID): void {
             if (!$this->getLocationName($locationID)) {
                 throw new Exception('Specified location does not exist.');
             }
@@ -430,7 +440,7 @@
             $statement->execute();
         }
 
-        public function deleteCategory($categoryID) {
+        public function deleteCategory(int $categoryID): void {
             if (!$this->getCategoryName($categoryID)) {
                 throw new Exception('Specified category does not exist.');
             }
@@ -442,7 +452,7 @@
             $statement->execute();
         }
 
-        public function deleteItem($itemID) {
+        public function deleteItem(int $itemID): void {
             if (!$this->getItemName($itemID)) {
                 throw new Exception('Specified item does not exist.');
             }
@@ -451,7 +461,7 @@
             $statement->execute();
         }
 
-        public function dropAndCreate() {
+        public function dropAndCreate(): void {
             $this->dbconnection->multi_query('
                 SET FOREIGN_KEY_CHECKS=0;
                 DROP TABLE IF EXISTS `'.SITES_TABLE.'`;
@@ -498,7 +508,7 @@
             }
         }
 
-        public function upgrade() {
+        public function upgrade(): array {
             $outputs = array();
             $version = $this->getVersion();
             while ($version < $this->version) {
@@ -508,7 +518,7 @@
             return $outputs;
         }
 
-        public function upgrade0to1() {
+        public function upgrade0to1(): bool {
             try {
                 $this->dbconnection->multi_query("
                     create table `".CATEGORIES_TABLE."` (
