@@ -11,6 +11,7 @@
                                     <label for="name">Name</label>
                                     <input id="name" name="name" type="text" placeholder="name" required>
                                 </div>
+                                {if $categories|@count > 0}
                                 <div class="pure-control-group">
                                     <label for="site">Parent</label>
                                     <select id="parent" name="parent">
@@ -20,6 +21,7 @@
                                         {/foreach}
                                     </select>
                                 </div>
+                                {/if}
                                 <div class="pure-controls">
                                     <button type="submit" class="pure-button pure-button-primary">Submit</button>
                                 </div>
