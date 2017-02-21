@@ -23,17 +23,13 @@
                 $parent = filter_input(INPUT_POST, "parent", FILTER_UNSAFE_RAW, FILTER_null_ON_FAILURE);
                 try {
                     if ($name !== false && $parent !== false) {
-                        $name = filter_var($_POST['name'], FILTER_UNSAFE_RAW);
-                        $parent = filter_var($_POST['parent'], FILTER_UNSAFE_RAW);
                         $stock->insertCategory($name, $parent);
-                    } else if (isset($_POST['name'])) {
-                        $name = filter_var($_POST['name'], FILTER_UNSAFE_RAW);
+                    } else if ($name !== false) {
                         $stock->insertLocation($name);
-                    } else {
-                        $smarty->assign('error', 'Missing required value.');
-                        $smarty->display('500.tpl');
+                        header('Location: /');
                     }
-                    header('Location: /');
+                    $smarty->assign('error', 'Missing required value.');
+                    $smarty->display('500.tpl');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
                     $smarty->display('500.tpl');

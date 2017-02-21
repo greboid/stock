@@ -168,11 +168,11 @@
         public function getSites() {
             $statement = $this->dbconnection->prepare('SELECT site_id, site_name FROM '.SITES_TABLE.' ORDER BY site_name');
             $statement->execute();
-            $statement->bind_result($site_id, $site_name);
+            $statement->bind_result($siteID, $siteName);
 
             $sites = array();
             while ($statement->fetch()) {
-                $sites[$site_id] = $site_name;
+                $sites[$siteID] = $siteName;
             }
             return $sites;
         }
@@ -186,15 +186,15 @@
                 $locations[$id] = array('name'=>$name, 'locations'=>array());
             }
             $statement->close();
-            foreach(array_keys($locations) as $siteid) {
+            foreach (array_keys($locations) as $siteid) {
                 $statement = $this->dbconnection->prepare('SELECT location_id, location_name
                                            FROM '.LOCATIONS_TABLE.' where location_site=?');
                 $statement->bind_param('i', $siteid);
                 $statement->execute();
-                $statement->bind_result($location_id, $name);
+                $statement->bind_result($$locationID, $name);
                 $locations[$siteid]['locations'] = array();
                 while ($statement->fetch()) {
-                    $locations[$siteid]['locations'][$location_id] = $name;
+                    $locations[$siteid]['locations'][$locationID] = $name;
                 }
             }
             return $locations;
@@ -219,11 +219,11 @@
                                                       ORDER BY category_name';
             $statement = $this->dbconnection->prepare($sql);
             $statement->execute();
-            $statement->bind_result($category_id, $category_parent, $category_name);
+            $statement->bind_result($categoryID, $categoryParent, $categoryName);
 
             $categories = array();
             while ($statement->fetch()) {
-                $categories[$category_id] = array('name'=>$category_name, 'parent'=>$category_parent);
+                $categories[$categoryID] = array('name'=>$categoryName, 'parent'=>$categoryParent);
             }
             return $categories;
         }
@@ -237,11 +237,11 @@
             $statement = $this->dbconnection->prepare($sql);
             $statement->bind_param('i', $parentCategory);
             $statement->execute();
-            $statement->bind_result($category_id, $category_parent, $category_name);
+            $statement->bind_result($categoryID, $categoryParent, $categoryName);
 
             $categories = array();
             while ($statement->fetch()) {
-                $categories[$category_id] = array('name'=>$category_name, 'parent'=>$category_parent);
+                $categories[$categoryID] = array('name'=>$categoryName, 'parent'=>$categoryParent);
             }
             return $categories;
         }
@@ -255,7 +255,7 @@
                 $locations[$name] = array('name'=>$name, 'id'=>$id, 'stockcount'=>0);
             }
             $statement->close();
-            foreach($locations as &$location) {
+            foreach ($locations as &$location) {
                 $statement = $this->dbconnection->prepare('SELECT COUNT(*)
                                                     FROM '.STOCK_TABLE.' WHERE stock_location=?');
                 $statement->bind_param('i', $location['id']);
@@ -321,7 +321,7 @@
             return $stock;
         }
 
-        public function insertItem($name, $location, $count=0) {
+        public function insertItem($name, $location, $count = 0) {
             $name = strtolower(trim($name));
             if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
@@ -380,7 +380,7 @@
             $statement->execute();
         }
 
-        public function insertCategory($name, $parent=0) {
+        public function insertCategory($name, $parent = 0) {
             $name = strtolower(trim($name));
             if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
@@ -493,7 +493,7 @@
                 INSERT INTO `'.VERSION_TABLE.'`(`version`) values (1);
                 SET FOREIGN_KEY_CHECKS=1;
                 ');
-            while ($this->dbconnection->next_result()) {;}
+            while ($this->dbconnection->next_result()) {}
         }
 
         public function upgrade() {
@@ -520,7 +520,7 @@
                     ADD CONSTRAINT `stock-category` FOREIGN KEY (`stock_category`) REFERENCES `".CATEGORIES_TABLE."`(`category_id`);
                     UPDATE `version` SET `version` = '1';
                 ");
-                while ($this->dbconnection->next_result()) {;}
+                while ($this->dbconnection->next_result()) {}
             } catch (Exception $e) {
                 return false;
             }

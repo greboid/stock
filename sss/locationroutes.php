@@ -23,10 +23,9 @@
                         $smarty->assign('site', $stock->getLocationName($locationid));
                         $smarty->assign('stock', $stock->getLocationStock($locationid));
                         $smarty->display('stock.tpl');
-                    } else {
-                        header('HTTP/1.1 404 Not Found');
-                        $smarty->display('404.tpl');
                     }
+                    header('HTTP/1.1 404 Not Found');
+                    $smarty->display('404.tpl');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
                     $smarty->display('500.tpl');
@@ -47,9 +46,9 @@
             });
             $router->post('/add/location', function() use ($smarty, $stock) {
                 try {
-                    if (isset($_POST['name']) && isset($_POST['site'])) {
-                        $name = filter_var($_POST['name'], FILTER_UNSAFE_RAW);
-                        $site = filter_var($_POST['site'], FILTER_UNSAFE_RAW);
+                    $name = filter_input(INPUT_POST, "name", FILTER_UNSAFE_RAW, FILTER_null_ON_FAILURE);
+                    $site = filter_input(INPUT_POST, "site", FILTER_VALIDATE_INT, FILTER_null_ON_FAILURE);
+                    if ($name !== false && $site !== false) {
                         $stock->insertLocation($name, $site);
                     } else {
                         $smarty->assign('error', 'Missing required value.');

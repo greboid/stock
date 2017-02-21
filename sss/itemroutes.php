@@ -26,15 +26,11 @@
                 $count = filter_input(INPUT_POST, "count", FILTER_VALIDATE_INT, FILTER_null_ON_FAILURE);
                 try {
                     if ($name !== false && $location !== false && $count !== false) {
-                        $name = filter_var($_POST['name'], FILTER_UNSAFE_RAW);
-                        $location = filter_var($_POST['location'], FILTER_UNSAFE_RAW);
-                        $count = filter_var($_POST['count'], FILTER_UNSAFE_RAW);
                         $stock->insertItem($name, $location, $count);
-                    } else {
-                        $smarty->assign('error', 'Missing required value.');
-                        $smarty->display('500.tpl');
+                        header('Location: /');
                     }
-                    header('Location: /');
+                    $smarty->assign('error', 'Missing required value.');
+                    $smarty->display('500.tpl');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
                     $smarty->display('500.tpl');
@@ -47,14 +43,16 @@
                 try {
                     if ($countdown !== false && $count !== false) {
                         $stock->editItem($itemid, $count-$countdown);
+                        header('Location: /site/'.$stock->getSiteNameForItemID($itemid));
                     } else if ($countup !== false && $count !== false) {
                         $stock->editItem($itemid, $count+$countup);
+                        header('Location: /site/'.$stock->getSiteNameForItemID($itemid));
                     } else if ($count !== false) {
                         $stock->editItem($itemid, $count);
-                    } else {
-                        $smarty->assign('error', 'Missing required value.');
-                        $smarty->display('500.tpl');
+                        header('Location: /site/'.$stock->getSiteNameForItemID($itemid));
                     }
+                    $smarty->assign('error', 'Missing required value.');
+                    $smarty->display('500.tpl');
                     header('Location: /site/'.$stock->getSiteNameForItemID($itemid));
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
