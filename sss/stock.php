@@ -493,7 +493,9 @@
                 INSERT INTO `'.VERSION_TABLE.'`(`version`) values (1);
                 SET FOREIGN_KEY_CHECKS=1;
                 ');
-            while ($this->dbconnection->next_result()) {}
+            while ($this->dbconnection->next_result()) {
+                //NOOP just force the code to wait for the query to finish
+            }
         }
 
         public function upgrade() {
@@ -520,7 +522,9 @@
                     ADD CONSTRAINT `stock-category` FOREIGN KEY (`stock_category`) REFERENCES `".CATEGORIES_TABLE."`(`category_id`);
                     UPDATE `version` SET `version` = '1';
                 ");
-                while ($this->dbconnection->next_result()) {}
+                while ($this->dbconnection->next_result()) {
+                    //NOOP just force the code to wait for the query to finish
+                }
             } catch (Exception $e) {
                 return false;
             }
