@@ -74,6 +74,9 @@
         }
 
         function getLocationName($locationID) {
+            if ($locationID == 0) {
+                return "All Locations";
+            }
             $statement = $this->dbconnection->prepare('SELECT location_name FROM '.LOCATIONS_TABLE.' WHERE location_id=?');
             $statement->bind_param('i', $locationID);
             $statement->execute();
@@ -86,6 +89,10 @@
         }
 
         function getLocationID($locationName) {
+            $locationName = strtolower($locationName);
+            if ($locationName == 'all') {
+                return 0;
+            }
             $statement = $this->dbconnection->prepare('SELECT location_id FROM '.LOCATIONS_TABLE.' WHERE location_name=?');
             $statement->bind_param('s', $locationName);
             $statement->execute();
