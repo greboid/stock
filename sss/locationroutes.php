@@ -6,17 +6,17 @@
 
     class LocationRoutes {
 
-        function addRoutes($router, $smarty, $stock) {
+        public function addRoutes($router, $smarty, $stock) {
 
             $router->get('/location/(.*)', function($locationName) use ($smarty, $stock) {
                 $locationName = filter_var($locationName, FILTER_UNSAFE_RAW);
                 $locationid = $stock->getLocationID($locationName);
-                if ($locationid === FALSE) {
+                if ($locationid === false) {
                     header('HTTP/1.1 404 Not Found');
                     $smarty->display('404.tpl');
                 }
                 try {
-                    if ($stock->getLocationName($locationid) !== FALSE) {
+                    if ($stock->getLocationName($locationid) !== false) {
                         $smarty->assign('sites', $stock->getSites());
                         $smarty->assign('locations', $stock->getLocations());
                         $smarty->assign('locationid', $locationid);

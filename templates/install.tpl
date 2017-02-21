@@ -1,4 +1,4 @@
-{if $version == FALSE}
+{if $version == false}
     {assign var=errorText value='Installation'}
 {else}
     {assign var=errorText value='Upgrade'}

@@ -6,7 +6,7 @@
 
     class CategoryRoutes {
 
-        function addRoutes($router, $smarty, $stock) {
+        public function addRoutes($router, $smarty, $stock) {
             $router->get('/add/category', function() use ($smarty, $stock) {
                 try {
                     $smarty->assign('sites', $stock->getSites());
@@ -19,10 +19,10 @@
                 }
             });
             $router->post('/add/category', function() use ($smarty, $stock) {
-                $name = filter_input(INPUT_POST, "name", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
-                $parent = filter_input(INPUT_POST, "parent", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+                $name = filter_input(INPUT_POST, "name", FILTER_UNSAFE_RAW, FILTER_null_ON_FAILURE);
+                $parent = filter_input(INPUT_POST, "parent", FILTER_UNSAFE_RAW, FILTER_null_ON_FAILURE);
                 try {
-                    if ($name !== FALSE && $parent !== FALSE) {
+                    if ($name !== false && $parent !== false) {
                         $name = filter_var($_POST['name'], FILTER_UNSAFE_RAW);
                         $parent = filter_var($_POST['parent'], FILTER_UNSAFE_RAW);
                         $stock->insertCategory($name, $parent);
