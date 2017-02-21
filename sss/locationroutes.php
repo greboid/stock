@@ -47,8 +47,8 @@
             });
             $router->post('/add/location', function() use ($smarty, $stock) {
                 try {
-                    $name = filter_input(INPUT_POST, "name", FILTER_UNSAFE_RAW, FILTER_null_ON_FAILURE);
-                    $site = filter_input(INPUT_POST, "site", FILTER_VALIDATE_INT, FILTER_null_ON_FAILURE);
+                    $name = filter_input(INPUT_POST, "name", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+                    $site = filter_input(INPUT_POST, "site", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                     if ($name !== false && $site !== false) {
                         $stock->insertLocation($name, $site);
                     } else {

@@ -21,9 +21,9 @@
                 }
             });
             $router->post('/add/item', function() use ($smarty, $stock) {
-                $name = filter_input(INPUT_POST, "name", FILTER_UNSAFE_RAW, FILTER_null_ON_FAILURE);
-                $location = filter_input(INPUT_POST, "location", FILTER_UNSAFE_RAW, FILTER_null_ON_FAILURE);
-                $count = filter_input(INPUT_POST, "count", FILTER_VALIDATE_INT, FILTER_null_ON_FAILURE);
+                $name = filter_input(INPUT_POST, "name", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+                $location = filter_input(INPUT_POST, "location", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+                $count = filter_input(INPUT_POST, "count", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                 try {
                     if ($name !== false && $location !== false && $count !== false) {
                         $stock->insertItem($name, $location, $count);
@@ -37,9 +37,9 @@
                 }
             });
             $router->post('/edit/item/(\d+)', function($itemid) use ($smarty, $stock) {
-                $count = filter_input(INPUT_POST, "count", FILTER_VALIDATE_INT, FILTER_null_ON_FAILURE);
-                $countup = filter_input(INPUT_POST, "countup", FILTER_VALIDATE_INT, FILTER_null_ON_FAILURE);
-                $countdown = filter_input(INPUT_POST, "countdown", FILTER_VALIDATE_INT, FILTER_null_ON_FAILURE);
+                $count = filter_input(INPUT_POST, "count", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+                $countup = filter_input(INPUT_POST, "countup", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+                $countdown = filter_input(INPUT_POST, "countdown", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                 try {
                     if ($countdown !== false && $count !== false) {
                         $stock->editItem($itemid, $count-$countdown);
