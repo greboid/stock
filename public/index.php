@@ -56,6 +56,7 @@
         try {
             $smarty->assign('sites', $stock->getSites());
             $smarty->assign('locations', $stock->getLocations());
+            $smarty->assign('categories', $stock->getCategories());
             $smarty->display('index.tpl');
         } catch (Exception $e) {
             $smarty->assign('error', $e->getMessage());

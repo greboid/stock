@@ -217,15 +217,28 @@
             $statement->bind_result($categoryName);
             $statement->fetch();
             if ($categoryName == null) {
-                return false;
+                return "";
             }
             return $categoryName;
         }
 
+        public function getCategoryID(string $categoryName): int {
+            $statement = $this->dbconnection->prepare('SELECT category_id FROM '.CATEGORIES_TABLE.' where category_name=?');
+            $statement->bind_param('s', $categoryName);
+            $statement->execute();
+            $statement->bind_result($categoryID);
+            $statement->fetch();
+            if ($categoryID == null) {
+                return -1;
+            }
+            return $categoryID;
+        }
+
         public function getCategories(): array {
-            $sql = 'SELECT categories.category_id AS category_id, parents.category_name AS category_parent, categories.category_name AS category_name
+            $selectClause = 'SELECT categories.category_id AS category_id, parents.category_name AS category_parent, COALESCE(categories.category_name, "") AS category_name
                                                       FROM '.CATEGORIES_TABLE.' as categories
-                                                      LEFT JOIN '.CATEGORIES_TABLE.' as parents ON categories.category_parent=parents.category_id
+                                                      LEFT JOIN '.CATEGORIES_TABLE.' as parents ON categories.category_parent=parents.category_id';
+            $sql = $selectClause.' WHERE categories.category_parent = 0 OR categories.category_parent IS NULL
                                                       ORDER BY category_name';
             $statement = $this->dbconnection->prepare($sql);
             $statement->execute();
@@ -233,13 +246,25 @@
 
             $categories = array();
             while ($statement->fetch()) {
-                $categories[$categoryID] = array('name'=>$categoryName, 'parent'=>$categoryParent);
+                $categories[$categoryID] = array('id'=>$categoryID, 'name'=>$categoryName, 'parent'=>$categoryParent, 'subcategories'=>array());
+            }
+            $statement->close();
+            foreach ($categories as $key => &$category) {
+                $sql = $selectClause.' WHERE categories.category_parent = ?';
+                $statement = $this->dbconnection->prepare($sql);
+                $statement->bind_param('i', $key);
+                $statement->execute();
+                $statement->bind_result($categoryID, $categoryParent, $categoryName);
+                while ($statement->fetch()) {
+                    $category['subcategories'][] = array('id'=>$categoryID, 'name'=>$categoryName, 'parent'=>$categoryParent, 'subcategories'=>array());
+                }
+                $statement->close();
             }
             return $categories;
         }
 
         public function getSubCategories(int $parentCategory): array {
-            $sql = 'SELECT categories.category_id AS category_id, parents.category_name AS category_parent, categories.category_name AS category_name
+            $sql = 'SELECT categories.category_id AS category_id, parents.category_name AS category_parent, COALESCE(categories.category_name, "") AS category_name
                                                       FROM '.CATEGORIES_TABLE.' as categories
                                                       LEFT JOIN '.CATEGORIES_TABLE.' as parents ON categories.category_parent=parents.category_id
                                                       WHERE categories.category_parent=?
@@ -329,6 +354,33 @@
                 $stock[$id] = array('name'=>$name, 'count'=>$count, 'site'=>$site, 'location'=>$location);
             }
             return $stock;
+        }
+
+        public function getCategoryStock(int $categoryID): array {
+            if ($categoryID != 0 && !$this->getCategoryName($categoryID)) {
+                throw new Exception('Specified category does not exist.');
+            }
+            $sql = 'SELECT stock_id, site_name, location_name, stock_name, stock_count, COALESCE(category_name, "") AS category_name
+                        FROM '.STOCK_TABLE.'
+                        LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
+                        LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id
+                        LEFT JOIN '.CATEGORIES_TABLE.' ON '.STOCK_TABLE.'.stock_category='.CATEGORIES_TABLE.'.category_id';
+            if ($categoryID != 0) {
+                $sql .= ' WHERE stock_category=?';
+            }
+            $statement = $this->dbconnection->prepare($sql);
+            if ($categoryID != 0) {
+                $statement->bind_param('i', $categoryID);
+            }
+            $statement->execute();
+            $statement->store_result();
+            $statement->bind_result($id, $site, $location, $name, $count, $category);
+            $stock = array();
+            while ($statement->fetch()) {
+                $stock[$id] = array('name'=>$name, 'count'=>$count, 'site'=>$site, 'location'=>$location, 'category'=>$category);
+            }
+            return $stock;
+
         }
 
         public function insertItem(string $name, int $location, int $count = 0): void {

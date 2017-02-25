@@ -21,6 +21,19 @@
                     </ul>
                 </li>
             {/foreach}
+            <li class="pure-menu-heading">Categories</li>
+            {foreach from=$categories key=categoryid item=category}
+                <li class="pure-menu-item">
+                    <a class="pure-menu-link" href="/category/{$category['name']|escape:'htmlall'}">{$category['name']|escape:'htmlall'|truncate:30}</a>
+                    <ul>
+                        {foreach from=$category['subcategories'] key=categoryid item=subcategory}
+                            <li>
+                                <a class="pure-menu-link" href="/category/{$subcategory['name']|escape:'htmlall'}">{$subcategory['name']|escape:'htmlall'|truncate:30}</a>
+                            </li>
+                        {/foreach}
+                    </ul>
+                </li>
+            {/foreach}
             <li class="pure-menu-heading">Add</li>
             <li class="pure-menu-item">
                 <a class="pure-menu-link" href="/add/item">Add Item</a>

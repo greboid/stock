@@ -27,6 +27,7 @@
                     if ($stock->getLocationName($locationid) !== false) {
                         $smarty->assign('sites', $stock->getSites());
                         $smarty->assign('locations', $stock->getLocations());
+                        $smarty->assign('categories', $stock->getCategories());
                         $smarty->assign('locationid', $locationid);
                         $smarty->assign('site', $stock->getLocationName($locationid));
                         $smarty->assign('stock', $stock->getLocationStock($locationid));
@@ -47,6 +48,7 @@
                 try {
                     $smarty->assign('sites', $stock->getSites());
                     $smarty->assign('locations', $stock->getLocations());
+                    $smarty->assign('categories', $stock->getCategories());
                     $smarty->display('addlocation.tpl');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
@@ -73,6 +75,7 @@
                 try {
                     $smarty->assign('sites', $stock->getSites());
                     $smarty->assign('locations', $stock->getLocations());
+                    $smarty->assign('categories', $stock->getCategories());
                     $smarty->assign('locationsstockcount', $stock->getLocationStockCounts());
                     $smarty->display('managelocations.tpl');
                 } catch (Exception $e) {

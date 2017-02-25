@@ -15,6 +15,27 @@
     class CategoryRoutes {
 
         public function addRoutes(Router $router, Smarty $smarty, Stock $stock): void {
+            $router->get('/category/(.*)', function($categoryName) use ($smarty, $stock) {
+                $categoryName = filter_var($categoryName, FILTER_UNSAFE_RAW);
+                $categoryID = $stock->getCategoryID($categoryName);
+                $siteID = 0;
+                if ($categoryID === -1) {
+                    header('HTTP/1.1 404 Not Found');
+                    $smarty->display('404.tpl');
+                }
+                try {
+                    $smarty->assign('sites', $stock->getSites());
+                    $smarty->assign('locations', $stock->getLocations());
+                    $smarty->assign('categories', $stock->getCategories());
+                    $smarty->assign('siteid', $siteID);
+                    $smarty->assign('site', $stock->getSiteName($siteID));
+                    $smarty->assign('stock', $stock->getCategoryStock($categoryID));
+                    $smarty->display('stock.tpl');
+                } catch (Exception $e) {
+                    $smarty->assign('error', $e->getMessage());
+                    $smarty->display('500.tpl');
+                }
+            });
             $router->get('/add/category', function() use ($smarty, $stock) {
                 try {
                     $smarty->assign('sites', $stock->getSites());
@@ -28,7 +49,10 @@
             });
             $router->post('/add/category', function() use ($smarty, $stock) {
                 $name = filter_input(INPUT_POST, "name", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
-                $parent = filter_input(INPUT_POST, "parent", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+                $parent = filter_input(INPUT_POST, "parent", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+                if ($parent == null) {
+                    $parent = 0;
+                }
                 try {
                     if ($name !== false && $parent !== false) {
                         $stock->insertCategory($name, $parent);

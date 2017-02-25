@@ -22,6 +22,7 @@
                 try {
                     $smarty->assign('sites', $stock->getSites());
                     $smarty->assign('locations', $stock->getLocations());
+                    $smarty->assign('categories', $stock->getCategories());
                     $smarty->display('additem.tpl');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
@@ -72,6 +73,7 @@
                 try {
                     $smarty->assign('sites', $stock->getSites());
                     $smarty->assign('locations', $stock->getLocations());
+                    $smarty->assign('categories', $stock->getCategories());
                     $smarty->assign('stock', $stock->getSiteStock(0));
                     $smarty->display('manageitems.tpl');
                 } catch (Exception $e) {
