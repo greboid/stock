@@ -15,6 +15,9 @@
     class CategoryRoutes {
 
         public function addRoutes(Router $router, Smarty $smarty, Stock $stock): void {
+            $router->get('/categories/', function() use ($smarty, $stock) {
+                $smarty->display('categories.tpl');
+            });
             $router->get('/category/(.*)', function($categoryName) use ($smarty, $stock) {
                 $categoryName = filter_var($categoryName, FILTER_UNSAFE_RAW);
                 $categoryID = $stock->getCategoryID($categoryName);

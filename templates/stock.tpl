@@ -24,7 +24,7 @@
                                 <td>
                                     <button class="btn btn-sm" type="submit" id="countdown" name="countdown" value="2"{if $item.count < 2} disabled{/if}>--</button>
                                     <button class="btn btn-sm" type="submit" id="countdown" name="countdown" value="1"{if $item.count == 0} disabled{/if}>-</button>
-                                    <input type="number" name="count" value="{$item.count|escape:'htmlall'}" required" min="0" max="{$max_stock}">
+                                    <input type="number" name="count" value="{$item.count|escape:'htmlall'}" required min="0" max="{$max_stock}">
                                     <button class="btn btn-sm" type="submit" id="countup" name="countup" value="1"{if $item.count == $max_stock} disabled{/if}>+</button>
                                     <button class="btn btn-sm" type="submit" id="countup" name="countup" value="2"{if $item.count > ($max_stock-2)} disabled{/if}>++</button>
                                 </td>
