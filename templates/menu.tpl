@@ -1,3 +1,17 @@
+{function name=catMenu}
+  <ul class="pure-menu-list">
+  {foreach $data as $entry}
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="/category/{$entry['name']|escape:'htmlall'}">{$entry['name']|escape:'htmlall'|truncate:30}</a>
+      {if isset($entry['subcategories']) && $entry['subcategories']|@count > 0}
+        <ul>
+          {catMenu data=$entry['subcategories']}
+        </ul>
+      {/if}
+    </li>
+  {/foreach}
+  </ul>
+{/function}
 <div class="sidebar pure-u-1 pure-u-md-1-6">
     <h1 class="brand-title">Stock</h1>
     <nav class="pure-menu custom-restricted-width">
@@ -6,7 +20,6 @@
             <li>
                 <a class="pure-menu-link" href="/site/all">All</a>
             </li>
-
             {foreach from=$sites key=siteid item=site}
                 <li class="pure-menu-item">
                     <a class="pure-menu-link" href="/site/{$site|escape:'htmlall'}">{$site|escape:'htmlall'|truncate:30}</a>
@@ -22,18 +35,7 @@
                 </li>
             {/foreach}
             <li class="pure-menu-heading">Categories</li>
-            {foreach from=$categories key=categoryid item=category}
-                <li class="pure-menu-item">
-                    <a class="pure-menu-link" href="/category/{$category['name']|escape:'htmlall'}">{$category['name']|escape:'htmlall'|truncate:30}</a>
-                    <ul>
-                        {foreach from=$category['subcategories'] key=categoryid item=subcategory}
-                            <li>
-                                <a class="pure-menu-link" href="/category/{$subcategory['name']|escape:'htmlall'}">{$subcategory['name']|escape:'htmlall'|truncate:30}</a>
-                            </li>
-                        {/foreach}
-                    </ul>
-                </li>
-            {/foreach}
+            {catMenu data=$categories}
             <li class="pure-menu-heading">Add</li>
             <li class="pure-menu-item">
                 <a class="pure-menu-link" href="/add/item">Add Item</a>

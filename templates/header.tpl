@@ -12,4 +12,3 @@
     </head>
     <body>
         <div id="layout" class="pure-g">
-        {include file='menu.tpl'}
