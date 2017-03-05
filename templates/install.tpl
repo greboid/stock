@@ -4,18 +4,20 @@
     {assign var=errorText value='Upgrade'}
 {/if}
 
-<!DOCTYPE HTML>
-<html>
-    <head>
-        <title>Stock List</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="/assets/css/403.css">
-    </head>
-    <body>
-        <div id="wrapper">
-            <p>There's something wrong with your database structure, if you just upgraded this is normal just run the upgrade, if you've not upgraded however this is probably pretty bad.  You've got two options;fuck it all, lets burn it all to the ground and <a href="/setup/dropandcreate">go from scratch</a> or try running the nice <a href="/setup/dbupgrade">database upgrade</a>.</p>
+{include file='header.tpl'}
+            <div class="content pure-u-1 pure-u-md-5-6">
+                <div>
+                    <div class="posts">
+                        <h1>Install or Upgrade</h1>
+                            <header class="post-header">
+                                <section class="post">
+                            </header>
+                            <div class="post-description">
+                                <p>There's something wrong with your database structure, if you just upgraded this is normal just run the upgrade, if you've not upgraded however this is probably pretty bad.  You've got two options;fuck it all, lets burn it all to the ground and <a href="/setup/dropandcreate">go from scratch</a> or try running the nice <a href="/setup/dbupgrade">database upgrade</a>.</p>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
         </div>
-    </body>
-</html>
-
+{include file='footer.tpl'}
