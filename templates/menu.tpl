@@ -2,7 +2,7 @@
   <ul class="dropdown-menu">
   {foreach $data as $entry}
     <li>
-      <a" href="/category/{$entry['name']|escape:'htmlall'}">{$entry['name']|escape:'htmlall'|truncate:30}</a>
+      <a href="/category/{$entry['name']|escape:'htmlall'}">{$entry['name']|escape:'htmlall'|truncate:30}</a>
       {if isset($entry['subcategories']) && $entry['subcategories']|@count > 0}
         <ul>
           {catMenu data=$entry['subcategories']}
