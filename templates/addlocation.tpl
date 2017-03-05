@@ -1,4 +1,5 @@
 {include file='header.tpl'}
+{include file='menu.tpl'}
     <div class="content pure-u-1 pure-u-md-5-6">
         <div>
             <div class="posts">

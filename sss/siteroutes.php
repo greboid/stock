@@ -44,6 +44,7 @@
                 try {
                     $smarty->assign('sites', $stock->getSites());
                     $smarty->assign('locations', $stock->getLocations());
+                    $smarty->assign('categories', $stock->getCategories());
                     $smarty->display('addsite.tpl');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
@@ -69,6 +70,7 @@
                 try {
                     $smarty->assign('sites', $stock->getSites());
                     $smarty->assign('locations', $stock->getLocations());
+                    $smarty->assign('categories', $stock->getCategories());
                     $smarty->display('managesites.tpl');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
