@@ -33,6 +33,9 @@
 
     //The regex should be matched here, but I can't make the router like it... hack it
     $router->before('GET', '(.*)', function($route) use ($smarty, $stock) {
+        $smarty->assign('sites', $stock->getSites());
+        $smarty->assign('locations', $stock->getLocations());
+        $smarty->assign('categories', $stock->getCategories());
         $version = $stock->checkVersion();
         if (preg_match('#^(?!setup).*#', $route) && !$version) {
             $smarty->assign('version', $version);
@@ -41,9 +44,6 @@
         }
     });
     $router->set404(function() use ($smarty, $stock) {
-        $smarty->assign('sites', $stock->getSites());
-        $smarty->assign('locations', $stock->getLocations());
-        $smarty->assign('categories', $stock->getCategories());
         header('HTTP/1.1 404 Not Found');
         $smarty->display('404.tpl');
     });
@@ -57,9 +57,6 @@
     });
     $router->get('/', function() use($smarty, $stock) {
         try {
-            $smarty->assign('sites', $stock->getSites());
-            $smarty->assign('locations', $stock->getLocations());
-            $smarty->assign('categories', $stock->getCategories());
             $smarty->display('index.tpl');
         } catch (Exception $e) {
             $smarty->assign('error', $e->getMessage());

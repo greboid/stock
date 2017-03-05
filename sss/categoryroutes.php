@@ -24,9 +24,6 @@
                     $smarty->display('404.tpl');
                 }
                 try {
-                    $smarty->assign('sites', $stock->getSites());
-                    $smarty->assign('locations', $stock->getLocations());
-                    $smarty->assign('categories', $stock->getCategories());
                     $smarty->assign('siteid', $siteID);
                     $smarty->assign('site', $stock->getSiteName($siteID));
                     $smarty->assign('stock', $stock->getCategoryStock($categoryID));
@@ -38,9 +35,6 @@
             });
             $router->get('/add/category', function() use ($smarty, $stock) {
                 try {
-                    $smarty->assign('sites', $stock->getSites());
-                    $smarty->assign('locations', $stock->getLocations());
-                    $smarty->assign('categories', $stock->getCategories());
                     $smarty->display('addCategory.tpl');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
@@ -70,9 +64,6 @@
             });
             $router->get('/manage/categories', function() use ($smarty, $stock) {
                 try {
-                    $smarty->assign('sites', $stock->getSites());
-                    $smarty->assign('locations', $stock->getLocations());
-                    $smarty->assign('categories', $stock->getCategories());
                     $smarty->display('managecategories.tpl');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());

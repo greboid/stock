@@ -24,9 +24,6 @@
                 }
                 try {
                     if ($stock->getSiteName($siteid) !== false) {
-                        $smarty->assign('sites', $stock->getSites());
-                        $smarty->assign('locations', $stock->getLocations());
-                        $smarty->assign('categories', $stock->getCategories());
                         $smarty->assign('siteid', $siteid);
                         $smarty->assign('site', $stock->getSiteName($siteid));
                         $smarty->assign('stock', $stock->getSiteStock($siteid));
@@ -42,9 +39,6 @@
             });
             $router->get('/add/site', function() use ($smarty, $stock) {
                 try {
-                    $smarty->assign('sites', $stock->getSites());
-                    $smarty->assign('locations', $stock->getLocations());
-                    $smarty->assign('categories', $stock->getCategories());
                     $smarty->display('addsite.tpl');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
@@ -68,9 +62,6 @@
             });
             $router->get('/manage/sites', function() use ($smarty, $stock) {
                 try {
-                    $smarty->assign('sites', $stock->getSites());
-                    $smarty->assign('locations', $stock->getLocations());
-                    $smarty->assign('categories', $stock->getCategories());
                     $smarty->display('managesites.tpl');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
