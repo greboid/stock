@@ -30,12 +30,14 @@
         $smarty->assign('error', 'The database connection settings are wrong, please check the config');
         $smarty->display('500.tpl');
     }
-
-    //The regex should be matched here, but I can't make the router like it... hack it
     $router->before('GET', '(.*)', function($route) use ($smarty, $stock) {
         $smarty->assign('sites', $stock->getSites());
         $smarty->assign('locations', $stock->getLocations());
         $smarty->assign('categories', $stock->getCategories());
+    });
+
+    //The regex should be matched here, but I can't make the router like it... hack it
+    $router->before('GET', '(.*)', function($route) use ($smarty, $stock) {
         $version = $stock->checkVersion();
         if (preg_match('#^(?!setup).*#', $route) && !$version) {
             $smarty->assign('version', $version);
