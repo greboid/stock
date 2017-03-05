@@ -44,23 +44,22 @@
             });
             $router->post('/edit/item/(\d+)', function($itemid) use ($smarty, $stock) {
                 $itemid = filter_var($itemid, FILTER_VALIDATE_INT);
-                $count = filter_input(INPUT_POST, "count", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
-                $countup = filter_input(INPUT_POST, "countup", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
-                $countdown = filter_input(INPUT_POST, "countdown", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+                $count = filter_input(INPUT_POST, "count", FILTER_VALIDATE_INT);
+                $countup = filter_input(INPUT_POST, "countup", FILTER_VALIDATE_INT);
+                $countdown = filter_input(INPUT_POST, "countdown", FILTER_VALIDATE_INT);
                 try {
-                    if ($countdown !== false && $count !== false) {
+                    if ($itemid !== null && $countdown !== null) {
                         $stock->editItem($itemid, $count-$countdown);
                         header('Location: /site/'.$stock->getSiteNameForItemID($itemid));
-                    } else if ($countup !== false && $count !== false) {
+                    } else if ($itemid !== null && $countup !== null) {
                         $stock->editItem($itemid, $count+$countup);
                         header('Location: /site/'.$stock->getSiteNameForItemID($itemid));
-                    } else if ($count !== false) {
+                    } else if ($itemid !== null && $count !== false) {
                         $stock->editItem($itemid, $count);
                         header('Location: /site/'.$stock->getSiteNameForItemID($itemid));
                     }
                     $smarty->assign('error', 'Missing required value.');
                     $smarty->display('500.tpl');
-                    header('Location: /site/'.$stock->getSiteNameForItemID($itemid));
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
                     $smarty->display('500.tpl');
