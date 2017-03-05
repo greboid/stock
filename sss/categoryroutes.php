@@ -74,6 +74,7 @@
                 }
             });
             $router->post('/delete/category/(\d+)', function($categoryid) use ($smarty, $stock) {
+                $categoryid = filter_var($categoryid, FILTER_VALIDATE_INT);
                 try {
                     $stock->deleteCategory($categoryid);
                     header('Location: /manage/categories');

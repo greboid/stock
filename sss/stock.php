@@ -235,20 +235,24 @@
         }
 
         public function getCategories(): array {
-            $selectClause = 'SELECT categories.category_id AS category_id, COALESCE(parents.category_id, 0) AS category_parent, COALESCE(categories.category_name, "") AS category_name
+            $selectClause = 'SELECT categories.category_id AS category_id,
+                    COALESCE(parents.category_id, 0) AS category_parent,
+                    parents.category_name as category_parent_name,
+                    COALESCE(categories.category_name, "") AS category_name
                                                               FROM '.CATEGORIES_TABLE.' as categories
                                                               LEFT JOIN '.CATEGORIES_TABLE.' as parents ON categories.category_parent=parents.category_id';
             $sql = $selectClause.' ORDER BY category_parent, category_name';
             $statement = $this->dbconnection->prepare($sql);
             $statement->execute();
-            $statement->bind_result($categoryID, $categoryParent, $categoryName);
+            $statement->bind_result($categoryID, $categoryParent, $categoryParentName, $categoryName);
             $statement->store_result();
             $refs = array();
             $categories = array();
             while ($statement->fetch()) {
                 $thisref = &$refs[ $categoryID ];
                 $thisref['id'] = $categoryID;
-                $thisref['parent_id'] = $categoryParent;
+                $thisref['parent'] = $categoryParent;
+                $thisref['parentName'] = $categoryParentName;
                 $thisref['name'] = $categoryName;
                 if ($categoryParent == 0) {
                     $categories[ $categoryID ] = &$thisref;
@@ -258,6 +262,24 @@
             }
             return $categories;
         }
+
+        public function getSubCategories(int $parentCategory): array {
+            $sql = 'SELECT categories.category_id AS category_id, parents.category_name AS category_parent, COALESCE(categories.category_name, "") AS category_name
+                                                      FROM '.CATEGORIES_TABLE.' as categories
+                                                      LEFT JOIN '.CATEGORIES_TABLE.' as parents ON categories.category_parent=parents.category_id
+                                                      WHERE categories.category_parent=?
+                                                      ORDER BY category_name';
+            $statement = $this->dbconnection->prepare($sql);
+            $statement->bind_param('i', $parentCategory);
+            $statement->execute();
+            $statement->bind_result($categoryID, $categoryParent, $categoryName);
+
+            $categories = array();
+            while ($statement->fetch()) {
+                $categories[$categoryID] = array('name'=>$categoryName, 'parent'=>$categoryParent);
+             }
+             return $categories;
+         }
 
         public function getLocationStockCounts(): array {
             $statement = $this->dbconnection->prepare('SELECT location_id, location_name FROM '.LOCATIONS_TABLE);
