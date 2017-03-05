@@ -40,7 +40,10 @@
             exit();
         }
     });
-    $router->set404(function() use ($smarty) {
+    $router->set404(function() use ($smarty, $stock) {
+        $smarty->assign('sites', $stock->getSites());
+        $smarty->assign('locations', $stock->getLocations());
+        $smarty->assign('categories', $stock->getCategories());
         header('HTTP/1.1 404 Not Found');
         $smarty->display('404.tpl');
     });

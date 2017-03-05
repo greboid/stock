@@ -1,15 +1,18 @@
-<!DOCTYPE HTML>
-<html>
-    <head>
-        <title>Stock List</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="/assets/css/403.css">
-    </head>
-    <body>
-        <div id="wrapper">
-            <p>Oops, page not found.</p>
+{include file='header.tpl'}
+{include file='menu.tpl'}
+            <div class="content pure-u-1 pure-u-md-5-6">
+                <div>
+                    <div class="posts">
+                        <h1>Select a site</h1>
+                            <header class="post-header">
+                                <section class="post">
+                            </header>
+                            <div class="post-description">
+                                <p>Oops, page not found.</p>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
         </div>
-    </body>
-</html>
-
+{include file='footer.tpl'}
