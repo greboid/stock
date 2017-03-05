@@ -247,6 +247,7 @@
             $categories = array();
             while ($statement->fetch()) {
                 $thisref = &$refs[ $categoryID ];
+                $thisref['id'] = $categoryID;
                 $thisref['parent_id'] = $categoryParent;
                 $thisref['name'] = $categoryName;
                 if ($categoryParent == 0) {
@@ -360,7 +361,7 @@
 
         }
 
-        public function insertItem(string $name, int $location, int $count = 0): void {
+        public function insertItem(string $name, int $location, int $category, int $count = 0): void {
             $name = strtolower(trim($name));
             if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
@@ -377,8 +378,11 @@
             if (!$this->getLocationName($location)) {
                 throw new Exception('Specified location does not exist.');
             }
-            $statement = $this->dbconnection->prepare('INSERT INTO '.STOCK_TABLE.' (stock_name, stock_location, stock_count) VALUES (?,?,?)');
-            $statement->bind_param('sii', $name, $location, $count);
+            if (!$this->getCategoryName($category)) {
+                throw new Exception('Specified category does not exist.');
+            }
+            $statement = $this->dbconnection->prepare('INSERT INTO '.STOCK_TABLE.' (stock_name, stock_location, stock_count, stock_category) VALUES (?,?,?,?)');
+            $statement->bind_param('siii', $name, $location, $count, $category);
             $statement->execute();
         }
 

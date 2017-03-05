@@ -1,3 +1,14 @@
+{assign var="nbsp" value="&nbsp;&nbsp;&nbsp;"}
+
+{function name=catMenu level=0}
+  {foreach $data as $entry}
+      <option value="{$entry['id']}">{$nbsp|str_repeat:$level}{$entry['name']|escape:'htmlall'|truncate:30}</option>
+      {if isset($entry['subcategories']) && $entry['subcategories']|@count > 0}
+        {catMenu data=$entry['subcategories'] level=$level+1}
+      {/if}
+  {/foreach}
+{/function}
+
 {include file='header.tpl'}
 {include file='menu.tpl'}
 <div class="container-fluid">
@@ -22,6 +33,13 @@
                                 {/foreach}
                                 </optgroup>
                             {/foreach}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select class="form-control" id="category" name="category" required>
+                            <option selected=""></option>
+                            {catMenu data=$categories}
                         </select>
                     </div>
                     <div class="form-group">

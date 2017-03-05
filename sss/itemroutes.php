@@ -27,12 +27,13 @@
                 }
             });
             $router->post('/add/item', function() use ($smarty, $stock) {
-                $name = filter_input(INPUT_POST, "name", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
-                $location = filter_input(INPUT_POST, "location", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
-                $count = filter_input(INPUT_POST, "count", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+                $name = filter_input(INPUT_POST, "name", FILTER_UNSAFE_RAW);
+                $location = filter_input(INPUT_POST, "location", FILTER_VALIDATE_INT);
+                $category = filter_input(INPUT_POST, "category", FILTER_VALIDATE_INT);
+                $count = filter_input(INPUT_POST, "count", FILTER_VALIDATE_INT);
                 try {
-                    if ($name !== false && $location !== false && $count !== false) {
-                        $stock->insertItem($name, $location, $count);
+                    if ($name !== false && $location !== false && $count !== false && $category !== false) {
+                        $stock->insertItem($name, $location, $category, $count);
                         header('Location: /');
                     }
                     $smarty->assign('error', 'Missing required value.');
