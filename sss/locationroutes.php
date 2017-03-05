@@ -15,7 +15,9 @@
     class LocationRoutes {
 
         public function addRoutes(Router $router, Smarty $smarty, Stock $stock): void {
-
+            $router->get('/locations/', function() use ($smarty, $stock) {
+                $smarty->display('locations.tpl');
+            });
             $router->get('/location/(.*)', function($locationName) use ($smarty, $stock) {
                 $locationName = filter_var($locationName, FILTER_UNSAFE_RAW);
                 $locationid = $stock->getLocationID($locationName);

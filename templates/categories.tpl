@@ -21,10 +21,6 @@
         <div class="col-md-4 col-md-offset-4">
             <h1>Categories</h1>
             {catMenu data=$categories}
-            <table>
-                <thead></thead>
-                <tbody></tbody>
-            </table>
         </div>
     </div>
 </div>
