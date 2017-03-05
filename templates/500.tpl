@@ -1,17 +1,10 @@
 {include file='header.tpl'}
-            <div class="content pure-u-1 pure-u-md-5-6">
-                <div>
-                    <div class="posts">
-                        <h1>Select a site</h1>
-                            <header class="post-header">
-                                <section class="post">
-                            </header>
-                            <div class="post-description">
-                                <p>Error loading page: <br>{$error|escape:'htmlall'}</p>
-                            </div>
-                        </section>
-                    </div>
-                </div>
-            </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <h1>Page not found</h1>
+            <p>Error loading page: <br>{$error|escape:'htmlall'}</p>
         </div>
+    </div>
+</div>
 {include file='footer.tpl'}
