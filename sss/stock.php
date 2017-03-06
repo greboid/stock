@@ -610,7 +610,7 @@
                               `verified` INT(11) DEFAULT '0',
                               PRIMARY KEY (`id`)
                             ) ENGINE=INNODB;
-                            INSERT INTO `".ACCOUNTS_TABLE."` (username, password, email, name, active, verified) VALUES ('admin', '$2y$10$IpJ5vhbzjcl.lyjZrl7/4OpjQSWA9yDogO96nP2cq5affaw7z7HLW', '', '', 1, 1);
+                            INSERT INTO `".ACCOUNTS_TABLE."` (username, password, email, name, active, verified) VALUES ('admin', '".password_hash('admin', PASSWORD_DEFAULT)."', '', '', 1, 1);
                             UPDATE `version` SET `version` = '2';
                         ");
 

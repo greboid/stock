@@ -60,12 +60,12 @@
     $storage->store('smarty', $smarty);
 
     $authRoutes->addRoutes($router, $storage);
+    $systemRoutes->addRoutes($router, $smarty, $stock, $storage);
     $router->before('GET', '(.*)', function($route) use ($smarty, $stock, $auth) {
         $smarty->assign('sites', $stock->getSites());
         $smarty->assign('locations', $stock->getLocations());
         $smarty->assign('categories', $stock->getCategories());
     });
-    $systemRoutes->addRoutes($router, $smarty, $stock, $storage);
     $itemRoutes->addRoutes($router, $smarty, $stock, $storage);
     $locationRoutes->addRoutes($router, $smarty, $stock, $storage);
     $categoryRoutes->addRoutes($router, $smarty, $stock, $storage);
