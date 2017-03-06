@@ -20,6 +20,9 @@ if (!defined('STOCK_DB_HOST')) {
 
 #You might want to change these but probably not
 ##Database settings
+if (!defined('ACCOUNTS_TABLE')) {
+    define('ACCOUNTS_TABLE', 'accounts');
+}
 if (!defined('CATEGORIES_TABLE')) {
     define('CATEGORIES_TABLE', 'categories');
 }

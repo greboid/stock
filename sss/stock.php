@@ -17,7 +17,7 @@
     class Stock {
 
         private $dbconnection;
-        private $version = 1;
+        private $version = 2;
 
         public function __construct() {
             if (!$this->dbConnect()) {
@@ -595,5 +595,31 @@
             }
             return true;
 
+        }
+
+        public function upgrade1to2(): bool {
+            try {
+                $this->dbconnection->multi_query("
+                        CREATE TABLE `".ACCOUNTS_TABLE."` (
+                              `id` INT(11) NOT NULL AUTO_INCREMENT,
+                              `username` VARCHAR(255) NOT NULL,
+                              `password` VARCHAR(255) NOT NULL,
+                              `email` VARCHAR(255) NOT NULL,
+                              `name` VARCHAR(255) NOT NULL,
+                              `active` INT(11) DEFAULT '0',
+                              `verified` INT(11) DEFAULT '0',
+                              PRIMARY KEY (`id`)
+                            ) ENGINE=INNODB;
+                            INSERT INTO `".ACCOUNTS_TABLE."` (username, password, email, name, active, verified) VALUES ('admin', '$2y$10$IpJ5vhbzjcl.lyjZrl7/4OpjQSWA9yDogO96nP2cq5affaw7z7HLW', '', '', 1, 1);
+                            UPDATE `version` SET `version` = '2';
+                        ");
+
+                while ($this->dbconnection->next_result()) {
+                    //NOOP just force the code to wait for the query to finish
+                }
+            } catch (Exception $e) {
+                return false;
+            }
+            return true;
         }
     }
