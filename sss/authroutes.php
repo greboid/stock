@@ -21,6 +21,7 @@
             $login_service = $storage->retrieve('loginService');
             $smarty = $storage->retrieve('smarty');
             $stock = $storage->retrieve('stock');
+            $msg = $storage->retrieve('flash');
             $router->before('GET', '(.*)', function($route) use ($smarty, $auth) {
                 if (preg_match('#^(?!auth).*#', $route)) {
                     if ($auth->getStatus() == 'ANON') {
@@ -32,12 +33,13 @@
             $router->get('/auth/login', function() use ($smarty) {
                 $smarty->display('login.tpl');
             });
-            $router->post('/auth/login', function() use ($smarty, $auth, $login_service) {
+            $router->post('/auth/login', function() use ($smarty, $auth, $login_service, $msg) {
                 try {
                     $login_service->login($auth, array(
                         'username' => $_POST['lg_username'],
                         'password' => $_POST['lg_password'],
                     ));
+                    $msg->info('You are now logged in: '.$auth->getUserData()['name']);
                     header('Location: /');
                 } catch (Exception $e) {
                   header('Location: /auth/login');

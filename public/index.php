@@ -15,6 +15,7 @@
     use \Aura\Auth\AuthFactory;
     use \Aura\Auth\Verifier\PasswordVerifier;
     use ICanBoogie\Storage\RunTimeStorage;
+    use \Plasticbrain\FlashMessages\FlashMessages;
 
     $storage = new RunTimeStorage;
     $router = new Router();
@@ -43,6 +44,8 @@
     $logout_service = $auth_factory->newLogoutService($pdo_adapter);
     $resume_service = $auth_factory->newResumeService($pdo_adapter);
     $resume_service->resume($auth);
+    $msg = new FlashMessages();
+    $storage->store('flash', $msg);
 
     try {
         $stock = new Stock();
@@ -61,10 +64,13 @@
 
     $authRoutes->addRoutes($router, $storage);
     $systemRoutes->addRoutes($router, $smarty, $stock, $storage);
-    $router->before('GET', '(.*)', function($route) use ($smarty, $stock, $auth) {
+    $router->before('GET', '(.*)', function($route) use ($smarty, $stock, $auth, $msg) {
         $smarty->assign('sites', $stock->getSites());
         $smarty->assign('locations', $stock->getLocations());
         $smarty->assign('categories', $stock->getCategories());
+        if ($msg->hasMessages()) {
+            $smarty->assign('msg', $msg->display(null, false));
+        }
     });
     $itemRoutes->addRoutes($router, $smarty, $stock, $storage);
     $locationRoutes->addRoutes($router, $smarty, $stock, $storage);

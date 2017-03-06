@@ -11,10 +11,12 @@
     use \greboid\stock\SiteRoutes;
     use \Bramus\Router\Router;
     use \Smarty;
+    use ICanBoogie\Storage\RunTimeStorage;
 
     class SystemRoutes {
 
-        public function addRoutes(Router $router, Smarty $smarty, Stock $stock): void {
+        public function addRoutes(Router $router, Smarty $smarty, Stock $stock, RunTimeStorage $storage): void {
+            $msg = $storage->retrieve('flash');
             //The regex should be matched here, but I can't make the router like it... hack it
             $router->before('GET', '(.*)', function($route) use ($smarty, $stock) {
                 $version = $stock->checkVersion();
