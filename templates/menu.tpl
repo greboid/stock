@@ -34,7 +34,7 @@
             </ul>
         </li>
         <li>
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Delete <span class="caret"></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Delete <span class="caret"></span></a>
             <ul class="dropdown-menu">
                 <li>
                     <a class="pure-menu-link" href="/manage/sites">Manage Sites</a>
@@ -51,7 +51,10 @@
             </ul>
         </li>
         <li>
-            <a class="pure-menu-link" href="/auth/logout">Logout</a>
+            <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                <li><a href="/auth/logout">Logout</a></li>
+            </ul>
         </li>
       </ul>
       <form class="navbar-form navbar-right" method="post" action="/search">
