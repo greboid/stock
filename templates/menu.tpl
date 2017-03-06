@@ -49,8 +49,9 @@
                     <a class="pure-menu-link" href="/manage/categories">Manage Categories</a>
                 </li>
             </ul>
+        </li>
       </ul>
-      <form class="navbar-form navbar-right">
+      <form class="navbar-form navbar-right" method="post" action="/search">
         <input type="text" class="form-control" placeholder="Search...">
       </form>
     </div>
