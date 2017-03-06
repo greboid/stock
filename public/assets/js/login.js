@@ -9,7 +9,7 @@
       'btn-error': '<i class="fa fa-remove"></i>',
       'msg-success': 'All Good! Redirecting...',
       'msg-error': 'Wrong login credentials!',
-      'useAJAX': true,
+      'useAJAX': false,
   };
 
     // Login Form

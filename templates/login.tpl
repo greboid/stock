@@ -13,7 +13,7 @@
     <div class="text-center" style="padding:50px 0">
         <div class="logo">Login</div>
         <div class="login-form-1">
-            <form id="login-form" class="text-left">
+            <form id="login-form" class="text-left" method="POST" action="/auth/login">
                 <div class="login-form-main-message"></div>
                 <div class="main-login-form">
                     <div class="login-group">

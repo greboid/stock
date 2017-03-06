@@ -13,7 +13,10 @@
     use \greboid\stock\AuthRoutes;
     use \Bramus\Router\Router;
     use \Aura\Auth\AuthFactory;
+    use \Aura\Auth\Verifier\PasswordVerifier;
+    use ICanBoogie\Storage\RunTimeStorage;
 
+    $storage = new RunTimeStorage;
     $router = new Router();
     $smarty = new Smarty();
     $itemRoutes = new ItemRoutes();
@@ -28,7 +31,18 @@
     $smarty->setConfigDir(CONFIG_PATH);
     $smarty->assign('max_stock', MAX_STOCK);
     $error = false;
-    $auth = (new AuthFactory($_COOKIE))->newInstance();
+    $auth_factory = new AuthFactory($_COOKIE);
+    $auth = $auth_factory->newInstance();
+    $pdo = new \PDO('mysql:dbname='.STOCK_DB.';host='.STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW);
+    $hash = new PasswordVerifier(PASSWORD_DEFAULT);
+    $cols = array('username', 'password', 'email', 'name', 'id');
+    $from = 'accounts';
+    $where = 'active = 1 AND verified = 1';
+    $pdo_adapter = $auth_factory->newPdoAdapter($pdo, $hash, $cols, $from, $where);
+    $login_service = $auth_factory->newLoginService($pdo_adapter);
+    $logout_service = $auth_factory->newLogoutService($pdo_adapter);
+    $resume_service = $auth_factory->newResumeService($pdo_adapter);
+    $resume_service->resume($auth);
 
     try {
         $stock = new Stock();
@@ -37,16 +51,24 @@
         $smarty->display('500.tpl');
     }
 
-    $authRoutes->addRoutes($router, $smarty, $stock, $auth);
+
+    $storage->store('auth', $auth);
+    $storage->store('loginService', $login_service);
+    $storage->store('logoutService', $logout_service);
+    $storage->store('resumeService', $resume_service);
+    $storage->store('stock', $stock);
+    $storage->store('smarty', $smarty);
+
+    $authRoutes->addRoutes($router, $storage);
     $router->before('GET', '(.*)', function($route) use ($smarty, $stock, $auth) {
         $smarty->assign('sites', $stock->getSites());
         $smarty->assign('locations', $stock->getLocations());
         $smarty->assign('categories', $stock->getCategories());
     });
-    $systemRoutes->addRoutes($router, $smarty, $stock);
-    $itemRoutes->addRoutes($router, $smarty, $stock);
-    $locationRoutes->addRoutes($router, $smarty, $stock);
-    $categoryRoutes->addRoutes($router, $smarty, $stock);
-    $siteRoutes->addRoutes($router, $smarty, $stock);
+    $systemRoutes->addRoutes($router, $smarty, $stock, $storage);
+    $itemRoutes->addRoutes($router, $smarty, $stock, $storage);
+    $locationRoutes->addRoutes($router, $smarty, $stock, $storage);
+    $categoryRoutes->addRoutes($router, $smarty, $stock, $storage);
+    $siteRoutes->addRoutes($router, $smarty, $stock, $storage);
 
     $router->run();

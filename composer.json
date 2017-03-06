@@ -5,7 +5,8 @@
     "require": {
         "smarty/smarty": "^3.1",
         "bramus/router": "~1.0",
-        "aura/auth": "^2.0"
+        "aura/auth": "^2.0",
+        "icanboogie/storage": "^2.1"
     },
     "autoload": {
         "classmap": [

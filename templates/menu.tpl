@@ -50,6 +50,9 @@
                 </li>
             </ul>
         </li>
+        <li>
+            <a class="pure-menu-link" href="/auth/logout">Logout</a>
+        </li>
       </ul>
       <form class="navbar-form navbar-right" method="post" action="/search">
         <input type="text" class="form-control" placeholder="Search...">
