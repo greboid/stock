@@ -9,6 +9,8 @@
     use \greboid\stock\LocationRoutes;
     use \greboid\stock\CategoryRoutes;
     use \greboid\stock\SiteRoutes;
+    use \greboid\stock\SystemRoutes;
+    use \greboid\stock\AuthRoutes;
     use \Bramus\Router\Router;
     use \Aura\Auth\AuthFactory;
 
@@ -18,6 +20,8 @@
     $locationRoutes = new LocationRoutes();
     $categoryRoutes = new CategoryRoutes();
     $siteRoutes = new SiteRoutes();
+    $systemRoutes = new SystemRoutes();
+    $authRoutes = new AuthRoutes();
     $smarty->setTemplateDir(TEMPLATES_PATH);
     $smarty->setCompileDir(TEMPLATES_CACHE_PATH);
     $smarty->setCacheDir(CACHE_PATH);
@@ -33,64 +37,13 @@
         $smarty->display('500.tpl');
     }
 
-    $router->before('GET', '(.*)', function($route) use ($smarty, $auth) {
-        if (preg_match('#^(?!auth).*#', $route)) {
-            if ($auth->getStatus() == 'ANON') {
-                $smarty->display('login.tpl');
-                exit();
-            }
-        }
-    });
-
+    $authRoutes->addRoutes($router, $smarty, $stock, $auth);
     $router->before('GET', '(.*)', function($route) use ($smarty, $stock, $auth) {
         $smarty->assign('sites', $stock->getSites());
         $smarty->assign('locations', $stock->getLocations());
         $smarty->assign('categories', $stock->getCategories());
     });
-
-    //The regex should be matched here, but I can't make the router like it... hack it
-    $router->before('GET', '(.*)', function($route) use ($smarty, $stock) {
-        $version = $stock->checkVersion();
-        if (preg_match('#^(?!setup).*#', $route) && !$version) {
-            $smarty->assign('version', $version);
-            $smarty->display('install.tpl');
-            exit();
-        }
-    });
-    $router->set404(function() use ($smarty) {
-        if (strpos($_SERVER['REQUEST_URI'], '/auth') == 0) {
-            $smarty->display('login.tpl');
-            exit();
-        }
-        header('HTTP/1.1 404 Not Found');
-        $smarty->display('404.tpl');
-    });
-    $router->get('/setup/dropandcreate', function() use ($smarty, $stock) {
-        $stock->dropAndCreate();
-        header('Location: /');
-    });
-    $router->get('/setup/dbupgrade', function() use ($smarty, $stock) {
-        $stock->upgrade();
-        header('Location: /');
-    });
-    $router->get('/auth/login', function() use ($smarty, $stock) {
-        $smarty->display('login.tpl');
-    });
-    $router->get('/auth/register', function() use ($smarty, $stock) {
-        $smarty->display('register.tpl');
-    });
-    $router->get('/auth/reset', function() use ($smarty, $stock) {
-        $smarty->display('passwordreset.tpl');
-    });
-    $router->get('/', function() use($smarty, $stock) {
-        try {
-            $smarty->display('index.tpl');
-        } catch (Exception $e) {
-            $smarty->assign('error', $e->getMessage());
-            $smarty->display('500.tpl');
-        }
-    });
-
+    $systemRoutes->addRoutes($router, $smarty, $stock);
     $itemRoutes->addRoutes($router, $smarty, $stock);
     $locationRoutes->addRoutes($router, $smarty, $stock);
     $categoryRoutes->addRoutes($router, $smarty, $stock);
