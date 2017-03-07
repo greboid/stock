@@ -5,10 +5,6 @@
 
     use \Exception;
     use \greboid\stock\Stock;
-    use \greboid\stock\ItemRoutes;
-    use \greboid\stock\LocationRoutes;
-    use \greboid\stock\CategoryRoutes;
-    use \greboid\stock\SiteRoutes;
     use \Bramus\Router\Router;
     use \Smarty;
 

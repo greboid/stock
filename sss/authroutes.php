@@ -4,15 +4,10 @@
     namespace greboid\stock;
 
     use \Exception;
-    use \greboid\stock\Stock;
-    use \greboid\stock\ItemRoutes;
-    use \greboid\stock\LocationRoutes;
-    use \greboid\stock\CategoryRoutes;
-    use \greboid\stock\SiteRoutes;
     use \Bramus\Router\Router;
     use \Aura\Auth\Auth;
     use \Smarty;
-    use ICanBoogie\Storage\RunTimeStorage;
+    use \ICanBoogie\Storage\RunTimeStorage;
 
     class AuthRoutes {
 

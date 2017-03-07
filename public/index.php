@@ -3,6 +3,7 @@
 
     require './../vendor/autoload.php';
     require_once('../config.php');
+    session_start();
 
     use \greboid\stock\Stock;
     use \greboid\stock\ItemRoutes;
@@ -14,7 +15,7 @@
     use \Bramus\Router\Router;
     use \Aura\Auth\AuthFactory;
     use \Aura\Auth\Verifier\PasswordVerifier;
-    use ICanBoogie\Storage\RunTimeStorage;
+    use \ICanBoogie\Storage\RunTimeStorage;
     use \Plasticbrain\FlashMessages\FlashMessages;
 
     $storage = new RunTimeStorage;
@@ -61,6 +62,7 @@
     $storage->store('resumeService', $resume_service);
     $storage->store('stock', $stock);
     $storage->store('smarty', $smarty);
+    $storage->store('router', $router);
 
     $authRoutes->addRoutes($router, $storage);
     $systemRoutes->addRoutes($router, $smarty, $stock, $storage);
