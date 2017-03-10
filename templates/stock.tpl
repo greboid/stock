@@ -28,7 +28,8 @@
                                         type="submit"
                                         formaction="/edit/item/{$id|escape:'htmlall'}"
                                         name="countdown"
-                                        value="2">
+                                        value="2"
+                                        {if $item.count < 2} disabled{/if}>
                                         --
                                     </button>
                                     <button
@@ -36,7 +37,8 @@
                                         type="submit"
                                         formaction="/edit/item/{$id|escape:'htmlall'}"
                                         name="countdown"
-                                        value="1">
+                                        value="1"
+                                        {if $item.count == 0} disabled{/if}>
                                         -
                                     </button>
                                     <input type="number" name="{$id|escape:'htmlall'}-count" value="{$item.count|escape:'htmlall'}" required min="0" max="{$max_stock}">
@@ -45,7 +47,8 @@
                                         type="submit"
                                         formaction="/edit/item/{$id|escape:'htmlall'}"
                                         name="countup"
-                                        value="1">
+                                        value="1"
+                                        {if $item.count == $max_stock} disabled{/if}>
                                         +
                                     </button>
                                     <button
@@ -53,7 +56,8 @@
                                         type="submit"
                                         formaction="/edit/item/{$id|escape:'htmlall'}"
                                         name="countup"
-                                        value="2">
+                                        value="2"
+                                        {if $item.count > ($max_stock-2)} disabled{/if}>
                                         ++
                                     </button>
                                 </td>
