@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-md-4 col-md-offset-4">
             <h1>Stock: {$site|escape:'htmlall'}</h1>
-            <table class="table table-striped table-hover">
+            <table id="stock" class="table table-striped table-hover tablesorter">
                 <thead>
                     <tr>
                         <th>Item</th>
