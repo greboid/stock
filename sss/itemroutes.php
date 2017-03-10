@@ -41,7 +41,7 @@
             });
             $router->post('/edit/item/(\d+)', function($itemid) use ($smarty, $stock) {
                 $itemid = filter_var($itemid, FILTER_VALIDATE_INT);
-                $count = filter_input(INPUT_POST, "count", FILTER_VALIDATE_INT);
+                $count = filter_input(INPUT_POST, $itemid."-count", FILTER_VALIDATE_INT);
                 $countup = filter_input(INPUT_POST, "countup", FILTER_VALIDATE_INT);
                 $countdown = filter_input(INPUT_POST, "countdown", FILTER_VALIDATE_INT);
                 try {
