@@ -50,7 +50,7 @@
                         $smarty->assign('error', 'Missing required value.');
                         $smarty->display('500.tpl');
                     }
-                    header('Location: /');
+                    header('Location: /manage/sites');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
                     $smarty->display('500.tpl');

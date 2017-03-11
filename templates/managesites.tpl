@@ -26,9 +26,42 @@
                         {/foreach}
                     </tbody>
                 </table>
+                <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#addSiteModal">
+                    Add Site
+                </button>
             </div>
             <div class="col">
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="addSiteModal" tabindex="-1" role="dialog" aria-labelledby="addSiteModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Site</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col align-self-center">
+                    <form method="post" action="/add/site" id="addSiteForm">
+                        <input type="hidden" id="action" name="action" value="addsite">
+                        <fieldset>
+                            <div class="form-group row">
+                                <label class="col-2 col-for-label" for="name">Name</label>
+                                <input class="col form-control" id="name" name="name" type="text" placeholder="name" required>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="addSiteForm" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 {include file='footer.tpl'}
