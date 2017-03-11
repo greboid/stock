@@ -1,65 +1,74 @@
-<nav class="navbar navbar-inverse navbar-fixed-top">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand">Stock</a>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="/">Dashboard</a></li>
-        <li><a href="/locations/">Locations</a></li>
-        <li><a href="/categories/">Categories</a></li>
-      </ul>
-    </div>
-    <div id="navbar" class="navbar-collapse collapse">
-    <ul class="nav navbar-nav navbar-right">
-        <li>
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Add <span class="caret"></span></a>
+<nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+    <button
+            class="navbar-toggler navbar-toggler-right"
+            type="button" data-toggle="collapse"
+            data-target="#mainmenu"
+            aria-controls="mainmenu"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="#">Stock</a>
+
+    <div class="collapse navbar-collapse" id="mainmenu">
+        <ul class="navbar-nav mr-auto mt-2 mt-md-0">
+            <li class="nav-item active">
+                <a class="nav-link" href="/">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/locations">Locations</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/categories">Categories</a>
+            </li>
+        </ul>
+            <ul class="nav navbar-nav navbar-right">
+        <li class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Add <span class="caret"></span></a>
              <ul class="dropdown-menu">
-                <li>
-                    <a class="pure-menu-link" href="/add/item">Add Item</a>
+                <li class="nav-item">
+                    <a class="nav-link" href="/add/item">Add Item</a>
                 </li>
-                <li>
-                    <a class="pure-menu-link" href="/add/location">Add Location</a>
+                <li class="nav-item">
+                    <a class="nav-link" href="/add/location">Add Location</a>
                 </li>
-                <li>
-                    <a class="pure-menu-link" href="/add/site">Add Site</a>
+                <li class="nav-item">
+                    <a class="nav-link" href="/add/site">Add Site</a>
                 </li>
-                <li>
-                    <a class="pure-menu-link" href="/add/category">Add Category</a>
-                </li>
-            </ul>
-        </li>
-        <li>
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Delete <span class="caret"></span></a>
-            <ul class="dropdown-menu">
-                <li>
-                    <a class="pure-menu-link" href="/manage/sites">Manage Sites</a>
-                </li>
-                <li>
-                    <a class="pure-menu-link" href="/manage/locations">Manage Locations</a>
-                </li>
-                <li>
-                    <a class="pure-menu-link" href="/manage/items">Manage Items</a>
-                </li>
-                <li>
-                    <a class="pure-menu-link" href="/manage/categories">Manage Categories</a>
+                <li class="nav-item">
+                    <a class="nav-link" href="/add/category">Add Category</a>
                 </li>
             </ul>
         </li>
-        <li>
-            <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a>
+        <li class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Delete <span class="caret"></span></a>
             <ul class="dropdown-menu">
-                <li><a href="/auth/logout">Logout</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/manage/sites">Manage Sites</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/manage/locations">Manage Locations</a>
+                </li>
+                <li>
+                    <a class="nav-link" href="/manage/items">Manage Items</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/manage/categories">Manage Categories</a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                <li class="nav-item">
+                    <a class="nav-link" href="/auth/logout">Logout</a>
+                </li>
             </ul>
         </li>
       </ul>
-      <form class="navbar-form navbar-right" method="post" action="/search">
-        <input type="text" class="form-control" placeholder="Search...">
-      </form>
+        <form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="text" placeholder="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
     </div>
-  </div>
 </nav>

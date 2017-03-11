@@ -29,8 +29,8 @@
                 $smarty->display('login.tpl');
             });
             $router->post('/auth/login', function() use ($smarty, $auth, $loginService, $msg) {
-                $username = filter_input(INPUT_POST, "lg_username", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
-                $password = filter_input(INPUT_POST, "lg_password", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+                $username = filter_input(INPUT_POST, "username", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+                $password = filter_input(INPUT_POST, "password", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
                 try {
                     $loginService->login($auth, array(
                         'username' => $username,

@@ -1,31 +1,17 @@
-{include file='login-header.tpl'}
-    <div class="text-center" style="padding:50px 0">
-        <div class="logo">Login</div>
-        <div class="login-form-1">
-            <form id="login-form" class="text-left" method="POST" action="/auth/login">
-                <div class="login-form-main-message"></div>
-                <div class="main-login-form">
-                    <div class="login-group">
-                        <div class="form-group">
-                            <label for="lg_username" class="sr-only">Username</label>
-                            <input type="text" class="form-control" id="lg_username" name="lg_username" placeholder="username" autofocus>
-                        </div>
-                        <div class="form-group">
-                            <label for="lg_password" class="sr-only">Password</label>
-                            <input type="password" class="form-control" id="lg_password" name="lg_password" placeholder="password">
-                        </div>
-                        <div class="form-group login-group-checkbox">
-                            <input type="checkbox" id="lg_remember" name="lg_remember">
-                            <label for="lg_remember">remember</label>
-                        </div>
-                    </div>
-                    <button type="submit" class="login-button"><i class="fa fa-chevron-right"></i></button>
-                </div>
-                <div class="etc-login-form">
-                    <p>forgot your password? <a href="/auth/reset">click here</a></p>
-                    <p>new user? <a href="/auth/register">create new account</a></p>
-                </div>
-            </form>
+{include file='header.tpl'}
+<div class="container">
+    <form class="form-signin" action="/auth/login" method="post">
+        <h2 class="form-signin-heading">Please sign in</h2>
+        <label for="username" class="sr-only">Username</label>
+        <input type="text" id="username" name="username" class="form-control" placeholder="Username" required autofocus>
+        <label for="password" class="sr-only">Password</label>
+        <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" value="remember-me"> Remember me
+            </label>
         </div>
-    </div>
-{include file='login-footer.tpl'}
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+</div>
+{include file='footer.tpl'}

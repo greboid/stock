@@ -3,7 +3,7 @@
     <head>
         <title>Stock System: {$title|default:'Home'}</title>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="stylesheet" href="/components/bootstrap/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="/components/select2/dist/css/select2.min.css">
         <link rel="stylesheet" href="/components/font-awesome/css/font-awesome.min.css">
