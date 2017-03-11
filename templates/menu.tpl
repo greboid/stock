@@ -1,4 +1,4 @@
-<nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+<nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse">
     <button
             class="navbar-toggler navbar-toggler-right"
             type="button" data-toggle="collapse"
@@ -24,7 +24,7 @@
             <ul class="nav navbar-nav navbar-right">
         <li class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Add <span class="caret"></span></a>
-             <ul class="dropdown-menu">
+             <ul class="dropdown-menu navbar-inverse bg-inverse">
                 <li class="nav-item">
                     <a class="nav-link" href="/add/item">Add Item</a>
                 </li>
@@ -41,7 +41,7 @@
         </li>
         <li class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Delete <span class="caret"></span></a>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu navbar-inverse bg-inverse">
                 <li class="nav-item">
                     <a class="nav-link" href="/manage/sites">Manage Sites</a>
                 </li>
@@ -56,9 +56,9 @@
                 </li>
             </ul>
         </li>
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown navbar-inverse bg-inverse">
             <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu navbar-inverse bg-inverse">
                 <li class="nav-item">
                     <a class="nav-link" href="/auth/logout">Logout</a>
                 </li>
