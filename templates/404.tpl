@@ -1,4 +1,5 @@
 {include file='header.tpl'}
+{include file='menu.tpl'}
 {$msg|default:""}
     <div class="container-fluid">
         <div class="row">

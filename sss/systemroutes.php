@@ -23,7 +23,7 @@
             });
             $router->set404(function() use ($smarty) {
                 if (strpos($_SERVER['REQUEST_URI'], '/auth') == 0) {
-                    $smarty->display('login.tpl');
+                    $smarty->display('404.tpl');
                     exit();
                 }
                 header('HTTP/1.1 404 Not Found');
