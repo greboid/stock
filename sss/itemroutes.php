@@ -30,7 +30,7 @@
                 try {
                     if ($name !== false && $location !== false && $count !== false && $category !== false) {
                         $stock->insertItem($name, $location, $category, $count);
-                        header('Location: /');
+                        header('Location: /manage/items');
                     }
                     $smarty->assign('error', 'Missing required value.');
                     $smarty->display('500.tpl');

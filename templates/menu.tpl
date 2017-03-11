@@ -21,15 +21,7 @@
                 <a class="nav-link" href="/categories">Categories</a>
             </li>
         </ul>
-            <ul class="nav navbar-nav navbar-right">
-        <li class="nav-item dropdown">
-            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Add <span class="caret"></span></a>
-             <ul class="dropdown-menu navbar-inverse bg-inverse">
-                <li class="nav-item">
-                    <a class="nav-link" href="/add/item">Add Item</a>
-                </li>
-            </ul>
-        </li>
+        <ul class="nav navbar-nav navbar-right">
         <li class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manage <span class="caret"></span></a>
             <ul class="dropdown-menu navbar-inverse bg-inverse">
