@@ -35,7 +35,7 @@
                         {catMenu data=$categories}
                     </tbody>
                 </table>
-                <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#addItemModal">
+                <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#addCategoryModal">
                     Add Item
                 </button>
             </div>
@@ -45,7 +45,7 @@
     </div>
 
 
-<div class="modal fade" id="addItemModal" tabindex="-1" role="dialog" aria-labelledby="addItemModal" aria-hidden="true">
+<div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
