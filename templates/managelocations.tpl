@@ -22,7 +22,7 @@
                                         <td>{$locationid|escape:'htmlall'}</td>
                                         <td>{$locationsstockcount[$locationid]['sitename']|escape:'htmlall'}</td>
                                         <td>{$locationsstockcount[$locationid]['stockcount']|escape:'htmlall'}</td>
-                                        <td><button class="btn btn-default"{if $locationsstockcount[$locationid]['stockcount'] != 0} disabled{/if}>Delete</button></td>
+                                        <td><button class="btn btn-danger"{if $locationsstockcount[$locationid]['stockcount'] != 0} disabled{/if}>Delete</button></td>
                                 </form>
                             </tr>
                         {/foreach}

@@ -20,7 +20,7 @@
                                 <form action="/delete/site/{$siteid}" method="post">
                                     <td>{$site|escape:'htmlall'}</td>
                                     <td>{$locations[$siteid]['locations']|@count}</td>
-                                    <td><button class="btn btn-default"{if $locations[$siteid]['locations']|@count != 0} disabled{/if}>Delete</button></td>
+                                    <td><button class="btn btn-danger"{if $locations[$siteid]['locations']|@count != 0} disabled{/if}>Delete</button></td>
                                 </form>
                             </tr>
                         {/foreach}

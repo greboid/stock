@@ -4,7 +4,7 @@
             <form action="/delete/category/{$entry['id']}" method="post">
                 <td>{$entry['name']|escape:'htmlall'}</td>
                 <td>{$entry['parentName']|escape:'htmlall'}</td>
-                <td><button class="btn btn-default">Delete</button></td>
+                <td><button class="btn btn-danger">Delete</button></td>
             </form>
         </tr>
       {if isset($entry['subcategories']) && $entry['subcategories']|@count > 0}

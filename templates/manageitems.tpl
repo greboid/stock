@@ -24,7 +24,7 @@
                                         <td>{$item['location']|escape:'htmlall'}</td>
                                         <td>{$item['site']|escape:'htmlall'}</td>
                                         <td>{$item['count']|escape:'htmlall'}</td>
-                                        <td><button class="btn btn-default" >Delete</button></td>
+                                        <td><button class="btn btn-danger" >Delete</button></td>
                                 </form>
                             </tr>
                         {/foreach}
