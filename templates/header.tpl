@@ -5,6 +5,8 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="stylesheet" href="/components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/components/tether/dist/css/tether.min.css">
+        <link rel="stylesheet" href="/components/jquery.tablesorter/dist/css/theme.bootstrap_4.min.css">
         <link rel="stylesheet" href="/components/select2/dist/css/select2.min.css">
         <link rel="stylesheet" href="/components/font-awesome/css/font-awesome.min.css">
         <link rel='stylesheet' href='//fonts.googleapis.com/css?family=Varela+Round'>

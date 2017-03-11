@@ -23,6 +23,7 @@ $.tablesorter.addParser({
     type: 'numeric'
 });
 $("#stock").tablesorter({
+    theme : "bootstrap",
     textExtraction: "complex",
     headers: {
         3: {
