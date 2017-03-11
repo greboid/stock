@@ -28,9 +28,6 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/add/item">Add Item</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/add/location">Add Location</a>
-                </li>
             </ul>
         </li>
         <li class="nav-item dropdown">
