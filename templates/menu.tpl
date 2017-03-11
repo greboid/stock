@@ -34,13 +34,10 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/add/site">Add Site</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/add/category">Add Category</a>
-                </li>
             </ul>
         </li>
         <li class="nav-item dropdown">
-            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Delete <span class="caret"></span></a>
+            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manage <span class="caret"></span></a>
             <ul class="dropdown-menu navbar-inverse bg-inverse">
                 <li class="nav-item">
                     <a class="nav-link" href="/manage/sites">Manage Sites</a>

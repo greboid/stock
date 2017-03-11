@@ -49,10 +49,10 @@
                 try {
                     if ($name !== false && $parent !== false) {
                         $stock->insertCategory($name, $parent);
-                        header('Location: /');
+                        header('Location: /manage/categories');
                     } else if ($name !== false) {
                         $stock->insertLocation($name);
-                        header('Location: /');
+                        header('Location: /manage/categories');
                     }
                     $smarty->assign('error', 'Missing required value.');
                     $smarty->display('500.tpl');
