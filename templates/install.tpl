@@ -5,6 +5,7 @@
 {/if}
 
 {include file='header.tpl'}
+{$msg|default:""}
     <div class="container-fluid">
         <div class="row">
             <div class="col">
