@@ -496,9 +496,16 @@
             if (count($this->getSubCategories($categoryID)) != 0) {
                 throw new Exception('Unable to delete category, it still has sub-categories.');
             }
+            if (count($this->getCategoryStock($categoryID)) != 0) {
+                throw new Exception('Unable to delete category, it still has items allocated.');
+            }
             $statement = $this->dbconnection->prepare('DELETE FROM '.CATEGORIES_TABLE.' WHERE category_id=?');
             $statement->bind_param('i', $categoryID);
-            $statement->execute();
+            try {
+                $statement->execute();
+            } catch (Exception $e) {
+                throw new Exception('Unable to delete category: '.$e->getMessage());
+            }
         }
 
         public function deleteItem(int $itemID): void {

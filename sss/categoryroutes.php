@@ -3,6 +3,7 @@
 
     namespace greboid\stock;
 
+    use \Exception;
     use \greboid\stock\Stock;
     use \Bramus\Router\Router;
     use \Smarty;
