@@ -13,7 +13,7 @@
 
         public function addRoutes(Router $router, RunTimeStorage $storage): void {
             $auth = $storage->retrieve('auth');
-            $login_service = $storage->retrieve('loginService');
+            $loginService = $storage->retrieve('loginService');
             $smarty = $storage->retrieve('smarty');
             $stock = $storage->retrieve('stock');
             $msg = $storage->retrieve('flash');
@@ -28,16 +28,40 @@
             $router->get('/auth/login', function() use ($smarty) {
                 $smarty->display('login.tpl');
             });
-            $router->post('/auth/login', function() use ($smarty, $auth, $login_service, $msg) {
+            $router->post('/auth/login', function() use ($smarty, $auth, $loginService, $msg) {
+                $username = filter_input(INPUT_POST, "lg_username", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+                $password = filter_input(INPUT_POST, "lg_password", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
                 try {
-                    $login_service->login($auth, array(
-                        'username' => $_POST['lg_username'],
-                        'password' => $_POST['lg_password'],
+                    $loginService->login($auth, array(
+                        'username' => $username,
+                        'password' => $password,
                     ));
                     $msg->info('You are now logged in: '.$auth->getUserData()['name']);
                     header('Location: /');
-                } catch (Exception $e) {
-                  header('Location: /auth/login');
+                } catch (\Aura\Auth\Exception\UsernameMissing $e) {
+                    $msg->error('You must specify a username.');
+                    header('Location: /auth/login');
+                } catch (\Aura\Auth\Exception\PasswordMissing $e) {
+                    $msg->error('You must specify a password.');
+                    header('Location: /auth/login');
+                } catch (\Aura\Auth\Exception\MultipleMatches $e) {
+                    $msg->error('Unable to login, multiple user matches.');
+                    header('Location: /auth/login');
+                } catch (\Aura\Auth\Exception\UsernameNotFound $e) {
+                    $msg->error('Incorrect login details.');
+                    header('Location: /auth/login');
+                } catch (\Aura\Auth\Exception\PasswordIncorrect $e) {
+                    $msg->error('Incorrect login details.');
+                    header('Location: /auth/login');
+                } catch (\Aura\Auth\Exception\ConnectionFailed $e) {
+                    $msg->error('Unable to connect to authentication source.');
+                    header('Location: /auth/login');
+                } catch (\Aura\Auth\Exception\BindFailed $e) {
+                    $msg->error('Unable to connect to authentication source.');
+                    header('Location: /auth/login');
+                } catch (InvalidLoginException $e) {
+                    $msg->error('Incorrect login details.');
+                    header('Location: /auth/login');
                 }
             });
             $router->get('/auth/register', function() use ($smarty) {

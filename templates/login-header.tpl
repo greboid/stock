@@ -10,3 +10,4 @@
         <link rel="stylesheet" href="/assets/css/login.css">
     </head>
     <body>
+{$msg|default:""}
