@@ -16,12 +16,16 @@
 
 {include file='header.tpl'}
 {include file='menu.tpl'}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-4 col-md-offset-4">
-            <h1>Categories</h1>
-            {catMenu data=$categories}
-        </div>
-    </div>
-</div>
+  <div class="container-fluid">
+      <div class="row">
+          <div class="col">
+          </div>
+          <div class="col align-self-center">
+              <h1>Categories</h1>
+              {catMenu data=$categories}
+          </div>
+          <div class="col">
+          </div>
+      </div>
+  </div>
 {include file='footer.tpl'}

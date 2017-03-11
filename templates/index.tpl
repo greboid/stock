@@ -2,11 +2,13 @@
 {include file='menu.tpl'}
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-4 col-md-offset-4">
+        <div class="col">
+        </div>
+        <div class="col align-self-center">
             <h1>Select a site</h1>
-            <div class="post-description">
-                <p>Select a site.</p>
-            </div>
+            <p>Select a site.</p>
+        </div>
+        <div class="col">
         </div>
     </div>
 </div>

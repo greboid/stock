@@ -9,10 +9,9 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <a class="navbar-brand" href="#">Stock</a>
-
     <div class="collapse navbar-collapse" id="mainmenu">
         <ul class="navbar-nav mr-auto mt-2 mt-md-0">
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="/">Dashboard</a>
             </li>
             <li class="nav-item">
