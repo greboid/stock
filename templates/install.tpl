@@ -12,15 +12,12 @@
             </div>
             <div class="col align-self-center">
                 <h1>Install or Upgrade</h1>
-                <p>
-                    There's something wrong with your database structure, if you
-                    just upgraded this is normal just run the upgrade, if you've
-                    not upgraded however this is probably pretty bad.  You've
-                    got two options;fuck it all, lets burn it all to the ground
-                    and <a href="/setup/dropandcreate">go from scratch</a> or
-                    try running the nice <a href="/setup/dbupgrade">database
-                    upgrade</a>.
-                </p>
+                <p>There's something wrong with your database structure.  An
+                attempt to repair this has already been made and failed.  You
+                can try to <a href="/setup/dbupgrade">run this again</a> or you
+                can <a href="/setup/dropandcreate">delete all the data and
+                start again.</a>.  Alternative you can attempt some kind of
+                manual database repair.</p>
             </div>
             <div class="col">
             </div>

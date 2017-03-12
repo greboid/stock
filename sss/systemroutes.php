@@ -16,6 +16,8 @@
             $router->before('GET', '(.*)', function($route) use ($smarty, $stock) {
                 $version = $stock->checkVersion();
                 if (preg_match('#^(?!setup).*#', $route) && !$version) {
+                    $stock->upgrade();
+                    header('Location: /');
                     $smarty->assign('version', $version);
                     $smarty->display('install.tpl');
                     exit();
