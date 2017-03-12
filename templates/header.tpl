@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="/components/tether/dist/css/tether.min.css">
         <link rel="stylesheet" href="/components/jquery.tablesorter/dist/css/theme.bootstrap_4.min.css">
         <link rel="stylesheet" href="/components/select2/dist/css/select2.min.css">
+        <link rel="stylesheet" href="/components/select2-bootstrap-theme/dist/select2-bootstrap.min.css">
         <link rel="stylesheet" href="/components/font-awesome/css/font-awesome.min.css">
         <link rel='stylesheet' href='//fonts.googleapis.com/css?family=Varela+Round'>
         <link rel='stylesheet' href="/assets/css/main.css">

@@ -1,3 +1,4 @@
+$.fn.select2.defaults.set( "theme", "bootstrap" );
 $("#location").select2({
     placeholder: "Location",
     allowClear: true

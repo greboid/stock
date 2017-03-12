@@ -357,7 +357,7 @@
             }
             $statement->close();
             foreach ($stock as $key=>$value) {
-                $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT stock_count FROM stock WHERE stock_category=?), 0)');
+                $statement = $this->dbconnection->prepare('SELECT stock_count FROM stock WHERE stock_category=?');
                 $statement->bind_param('i', $key);
                 $statement->bind_result($stockCount);
                 $statement->execute();
