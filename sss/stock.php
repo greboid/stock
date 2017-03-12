@@ -50,14 +50,11 @@
             if ($siteID == 0) {
                 return "All Sites";
             }
-            $statement = $this->dbconnection->prepare('SELECT site_name FROM '.SITES_TABLE.' WHERE site_id=?');
+            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT site_name FROM '.SITES_TABLE.' WHERE site_id=?), "")');
             $statement->bind_param('i', $siteID);
             $statement->execute();
             $statement->bind_result($siteName);
             $statement->fetch();
-            if ($siteName == null) {
-                return "";
-            }
             return $siteName;
         }
 
@@ -66,14 +63,11 @@
             if ($siteName == 'all') {
                 return 0;
             }
-            $statement = $this->dbconnection->prepare('SELECT site_id FROM '.SITES_TABLE.' WHERE site_name=?');
+            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT site_id FROM '.SITES_TABLE.' WHERE site_name=?), -1)');
             $statement->bind_param('s', $siteName);
             $statement->execute();
             $statement->bind_result($siteID);
             $statement->fetch();
-            if ($siteID == null) {
-                return -1;
-            }
             return $siteID;
         }
 
@@ -81,14 +75,11 @@
             if ($locationID == 0) {
                 return "All Locations";
             }
-            $statement = $this->dbconnection->prepare('SELECT location_name FROM '.LOCATIONS_TABLE.' WHERE location_id=?');
+            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT location_name FROM '.LOCATIONS_TABLE.' WHERE location_id=?), "")');
             $statement->bind_param('i', $locationID);
             $statement->execute();
             $statement->bind_result($locationName);
             $statement->fetch();
-            if ($locationName == null) {
-                return "";
-            }
             return $locationName;
         }
 
@@ -97,75 +88,58 @@
             if ($locationName == 'all') {
                 return 0;
             }
-            $statement = $this->dbconnection->prepare('SELECT location_id FROM '.LOCATIONS_TABLE.' WHERE location_name=?');
+            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT location_id FROM '.LOCATIONS_TABLE.' WHERE location_name=?), -1)');
             $statement->bind_param('s', $locationName);
             $statement->execute();
             $statement->bind_result($locationID);
             $statement->fetch();
-            if ($locationID == null) {
-                return -1;
-            }
             return $locationID;
         }
 
         public function getItemName(int $itemID): string {
-            $statement = $this->dbconnection->prepare('SELECT stock_name FROM '.STOCK_TABLE.' WHERE stock_id=?');
+            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT stock_name FROM '.STOCK_TABLE.' WHERE stock_id=?), "")');
             $statement->bind_param('i', $itemID);
             $statement->execute();
             $statement->bind_result($itemName);
             $statement->fetch();
-            if ($itemName == null) {
-                return "";
-            }
             return $itemName;
         }
 
         public function getSiteForLocation(int $locationID): string {
-            $statement = $this->dbconnection->prepare('SELECT site_name
+            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT site_name
                                                 FROM '.LOCATIONS_TABLE.'
                                                 LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id
-                                                WHERE location_id=?');
+                                                WHERE location_id=?), "")');
             $statement->bind_param('i', $locationID);
             $statement->execute();
             $statement->bind_result($siteName);
             $statement->fetch();
-            if ($siteName == null) {
-                return "";
-            }
             return $siteName;
         }
 
         public function getSiteIDForItemID(int $itemID): string {
-            $statement = $this->dbconnection->prepare('
-                SELECT site_id
+            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT site_id
                 FROM '.STOCK_TABLE.'
                 LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
                 LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id
-                WHERE location_id=?');
+                WHERE location_id=?), -1)');
             $statement->bind_param('i', $itemID);
             $statement->execute();
             $statement->bind_result($siteID);
             $statement->fetch();
-            if ($siteID == null) {
-                return -1;
-            }
             return $siteID;
         }
 
         public function getSiteNameForItemID(int $itemID): string {
-            $statement = $this->dbconnection->prepare('
-                SELECT site_name
+            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT site_name
                 FROM '.STOCK_TABLE.'
                 LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
                 LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id
-                WHERE stock_id=?');
+                WHERE stock_id=?), "")');
             $statement->bind_param('i', $itemID);
             $statement->execute();
             $statement->bind_result($siteName);
             $statement->fetch();
-            if ($siteName == null) {
-                return "";
-            }
             return $siteName;
         }
 
@@ -205,26 +179,22 @@
         }
 
         public function getCategoryName(int $categoryID): string {
-            $statement = $this->dbconnection->prepare('SELECT category_name FROM '.CATEGORIES_TABLE.' where category_id=?');
+            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT category_name
+                                                      FROM '.CATEGORIES_TABLE.' where category_id=?), "")');
             $statement->bind_param('i', $categoryID);
             $statement->execute();
             $statement->bind_result($categoryName);
             $statement->fetch();
-            if ($categoryName == null) {
-                return "";
-            }
             return $categoryName;
         }
 
         public function getCategoryID(string $categoryName): int {
-            $statement = $this->dbconnection->prepare('SELECT category_id FROM '.CATEGORIES_TABLE.' where category_name=?');
+            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT category_id
+                                                      FROM '.CATEGORIES_TABLE.' where category_name=?), -1)');
             $statement->bind_param('s', $categoryName);
             $statement->execute();
             $statement->bind_result($categoryID);
             $statement->fetch();
-            if ($categoryID == null) {
-                return -1;
-            }
             return $categoryID;
         }
 
@@ -567,8 +537,11 @@
                   `stock_name` varchar(255) NOT null,
                   `stock_count` int(11) NOT null,
                   `stock_location` int(11) NOT null,
+                  `stock_category` INT(11) DEFAULT NULL,
                   PRIMARY KEY (`stock_id`),
                   KEY `stock_location` (`stock_location`),
+                  KEY `stock-category` (`stock_category`),
+                  CONSTRAINT `stock-category` FOREIGN KEY (`stock_category`) REFERENCES `'.CATEGORIES_TABLE.'` (`category_id`),
                   CONSTRAINT `stock-locations` FOREIGN KEY (`stock_location`) REFERENCES `'.LOCATIONS_TABLE.'` (`location_id`)
                 );
                 create table `'.CATEGORIES_TABLE.'` (
