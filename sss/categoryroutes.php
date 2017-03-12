@@ -63,6 +63,7 @@
             });
             $router->get('/manage/categories', function() use ($smarty, $stock) {
                 try {
+                    $smarty->assign('allCategoryStock', $stock->getAllCategoryStock());
                     $smarty->display('managecategories.tpl');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());

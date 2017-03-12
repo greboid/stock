@@ -374,7 +374,28 @@
                 $stock[$id] = array('name'=>$name, 'count'=>$count, 'site'=>$site, 'location'=>$location, 'category'=>$category);
             }
             return $stock;
+        }
 
+        public function getAllCategoryStock(): array {
+            $statement = $this->dbconnection->prepare('SELECT category_id from '.CATEGORIES_TABLE.';');
+            $statement->execute();
+            $statement->store_result();
+            $statement->bind_result($categoryID);
+            $stock = array();
+            while ($statement->fetch()) {
+                $stock[$categoryID] = NULL;
+            }
+            $statement->close();
+            foreach ($stock as $key=>$value) {
+                $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT stock_count FROM stock WHERE stock_category=?), 0)');
+                $statement->bind_param('i', $key);
+                $statement->bind_result($stockCount);
+                $statement->execute();
+                $statement->fetch();
+                $stock[$key] = $stockCount;
+                $statement->close();
+            }
+            return $stock;
         }
 
         public function insertItem(string $name, int $location, int $category, int $count = 0): void {
