@@ -539,11 +539,14 @@
         }
 
         public function dropAndCreate(): void {
+            $passwordHash = password_hash('admin', PASSWORD_DEFAULT);
             $this->dbconnection->multi_query('
                 SET FOREIGN_KEY_CHECKS=0;
                 DROP TABLE IF EXISTS `'.SITES_TABLE.'`;
-                DROP TABLE IF EXISTS `'.STOCK_TABLE.'`;
                 DROP TABLE IF EXISTS `'.LOCATIONS_TABLE.'`;
+                DROP TABLE IF EXISTS `'.STOCK_TABLE.'`;
+                DROP TABLE IF EXISTS `'.CATEGORIES_TABLE.'`;
+                DROP TABLE IF EXISTS `'.ACCOUNTS_TABLE.'`;
                 DROP TABLE IF EXISTS `'.VERSION_TABLE.'`;
                 CREATE TABLE `'.SITES_TABLE.'` (
                   `site_id` int(11) NOT null AUTO_INCREMENT,
@@ -574,10 +577,22 @@
                     `category_name` varchar (765),
                       PRIMARY KEY (`category_id`)
                 );
+                CREATE TABLE `'.ACCOUNTS_TABLE.'` (
+                    `id` INT(11) NOT NULL AUTO_INCREMENT,
+                    `username` VARCHAR(255) NOT NULL,
+                    `password` VARCHAR(255) NOT NULL,
+                    `email` VARCHAR(255) NOT NULL,
+                    `name` VARCHAR(255) NOT NULL,
+                    `active` INT(11) DEFAULT \'0\',
+                    `verified` INT(11) DEFAULT \'0\',
+                    PRIMARY KEY (`id`)
+                );
+                INSERT INTO `'.ACCOUNTS_TABLE.'` (username, password, email, name, active, verified)
+                        VALUES ("admin", "'.$passwordHash.'", "", "Administrator", 1, 1);
                 CREATE TABLE `'.VERSION_TABLE.'` (
                   `version` int(11) NOT null
                 );
-                INSERT INTO `'.VERSION_TABLE.'`(`version`) values (1);
+                INSERT INTO `'.VERSION_TABLE.'`(`version`) values (2);
                 SET FOREIGN_KEY_CHECKS=1;
                 ');
             while ($this->dbconnection->next_result()) {
