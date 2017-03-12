@@ -16,8 +16,8 @@
                 attempt to repair this has already been made and failed.  You
                 can try to <a href="/setup/dbupgrade">run this again</a> or you
                 can <a href="/setup/dropandcreate">delete all the data and
-                start again.</a>.  Alternative you can attempt some kind of
-                manual database repair.</p>
+                start again.</a>.  Alternatively you can attempt to repair
+                this manually.</p>
             </div>
             <div class="col">
             </div>
