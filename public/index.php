@@ -12,6 +12,7 @@
     use \greboid\stock\SiteRoutes;
     use \greboid\stock\SystemRoutes;
     use \greboid\stock\AuthRoutes;
+    use \greboid\stock\UserRoutes;
     use \Bramus\Router\Router;
     use \Aura\Auth\AuthFactory;
     use \Aura\Auth\Verifier\PasswordVerifier;
@@ -27,6 +28,7 @@
     $siteRoutes = new SiteRoutes();
     $systemRoutes = new SystemRoutes();
     $authRoutes = new AuthRoutes();
+    $userRoutes = new UserRoutes();
     $smarty->setTemplateDir(TEMPLATES_PATH);
     $smarty->setCompileDir(TEMPLATES_CACHE_PATH);
     $smarty->setCacheDir(CACHE_PATH);
@@ -79,5 +81,6 @@
     $locationRoutes->addRoutes($router, $smarty, $stock, $storage);
     $categoryRoutes->addRoutes($router, $smarty, $stock, $storage);
     $siteRoutes->addRoutes($router, $smarty, $stock, $storage);
+    $userRoutes->addRoutes($storage);
 
     $router->run();

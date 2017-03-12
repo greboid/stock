@@ -39,3 +39,24 @@ $("#stock").tablesorter({
         }
     }
 });
+$("#changePasswordForm").validate({
+    highlight: function(element) {
+        $(element).closest('.form-group').addClass('has-danger');
+    },
+    unhighlight: function(element) {
+        $(element).closest('.form-group').removeClass('has-danger');
+    },
+    errorClass: 'offset-4 form-control-feedback',
+    errorPlacement: function(error, element) {
+        error.insertAfter(element);
+    },
+    rules: {
+        newpassword: {
+            required: true,
+            minlength: 6,
+        },
+        confirmpassword: {
+            equalTo: "#newpassword",
+       }
+    },
+});

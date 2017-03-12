@@ -21,7 +21,8 @@
     "jquery.quicksearch": "quicksearch#^2.3.1",
     "select2": "^4.0.3",
     "jquery.tablesorter": "*",
-    "select2-bootstrap-theme": "^0.1.0-beta.9"
+    "select2-bootstrap-theme": "^0.1.0-beta.9",
+    "jquery-validation": "^1.16.0"
   },
   "resolutions": {
     "bootstrap": "4.0.0-alpha.6"
