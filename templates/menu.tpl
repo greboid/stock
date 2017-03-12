@@ -24,7 +24,7 @@
         <ul class="nav navbar-nav navbar-right">
         <li class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manage <span class="caret"></span></a>
-            <ul class="dropdown-menu navbar-inverse bg-inverse">
+            <ul class="dropdown-menu navbar-inverse bg-inverse dropdown-menu-right">
                 <li class="nav-item">
                     <a class="nav-link" href="/manage/sites">Manage Sites</a>
                 </li>
@@ -41,7 +41,7 @@
         </li>
         <li class="nav-item dropdown navbar-inverse bg-inverse">
             <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a>
-            <ul class="dropdown-menu navbar-inverse bg-inverse">
+            <ul class="dropdown-menu navbar-inverse bg-inverse dropdown-menu-right">
                 <li class="nav-item">
                     <a class="nav-link" href="/auth/logout">Logout</a>
                 </li>
