@@ -65,6 +65,7 @@
     $storage->store('stock', $stock);
     $storage->store('smarty', $smarty);
     $storage->store('router', $router);
+    $storage->store('pdo', $pdo);
 
     $authRoutes->addRoutes($router, $storage);
     $systemRoutes->addRoutes($router, $smarty, $stock, $storage);

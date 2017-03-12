@@ -34,7 +34,7 @@
                         <input class="col form-control" id="newpassword" type="password" name="newpassword" placeholder="New Password" required>
                     </div>
                     <div class="form-group row">
-                        <label class="col-4 col-for-label" for="confirmpassword">Confirm New Password</label>
+                        <label class="col-4 col-form-label" for="confirmpassword">Confirm New Password</label>
                         <input class="col form-control" id="confirmpassword" type="password" name="confirmpassword" placeholder="Confirm New Password" required>
                     </div>
                     <div class="offset-4 form-group row">

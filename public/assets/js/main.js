@@ -39,6 +39,36 @@ $("#stock").tablesorter({
         }
     }
 });
+
+$("#profileDetailsForm").validate({
+    highlight: function(element) {
+        $(element).closest('.form-group').addClass('has-danger');
+    },
+    unhighlight: function(element) {
+        $(element).closest('.form-group').removeClass('has-danger');
+    },
+    errorClass: 'offset-4 form-control-feedback',
+    errorPlacement: function(error, element) {
+        error.insertAfter(element);
+    },
+    rules: {
+        name: {
+            required: true,
+        },
+        email: {
+            required: true,
+            email: true,
+            remote: {
+                url: "/user/checkemail",
+                data: {
+                    username: function() {
+                        return $( "#username" ).val();
+                    }
+                }
+            }
+        }
+    },
+});
 $("#changePasswordForm").validate({
     highlight: function(element) {
         $(element).closest('.form-group').addClass('has-danger');
