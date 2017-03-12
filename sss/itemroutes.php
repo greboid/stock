@@ -39,7 +39,7 @@
                     $smarty->display('500.tpl');
                 }
             });
-            $router->post('/edit/item/(\d+)', function($itemid) use ($smarty, $stock) {
+            $router->post('/edit/item/(\d+)(.*)?', function($itemid, $route = null) use ($smarty, $stock) {
                 $itemid = filter_var($itemid, FILTER_VALIDATE_INT);
                 $count = filter_input(INPUT_POST, $itemid."-count", FILTER_VALIDATE_INT);
                 $countup = filter_input(INPUT_POST, "countup", FILTER_VALIDATE_INT);
@@ -47,13 +47,13 @@
                 try {
                     if ($itemid !== null && $countdown !== null) {
                         $stock->editItem($itemid, $count-$countdown);
-                        header('Location: /site/'.$stock->getSiteNameForItemID($itemid));
+                        header('Location: /'.$route);
                     } else if ($itemid !== null && $countup !== null) {
                         $stock->editItem($itemid, $count+$countup);
-                        header('Location: /site/'.$stock->getSiteNameForItemID($itemid));
+                        header('Location: /'.$route);
                     } else if ($itemid !== null && $count !== false) {
                         $stock->editItem($itemid, $count);
-                        header('Location: /site/'.$stock->getSiteNameForItemID($itemid));
+                        header('Location: /'.$route);
                     }
                     $smarty->assign('error', 'Missing required value.');
                     $smarty->display('500.tpl');

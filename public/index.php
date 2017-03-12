@@ -70,6 +70,7 @@
         $smarty->assign('sites', $stock->getSites());
         $smarty->assign('locations', $stock->getLocations());
         $smarty->assign('categories', $stock->getCategories());
+        $smarty->assign('route', '/'.$route);
         if ($msg->hasMessages()) {
             $smarty->assign('msg', $msg->display(null, false));
         }

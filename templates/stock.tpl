@@ -28,7 +28,7 @@
                                             <button
                                                 class="btn btn-sm btn-info"
                                                 type="submit"
-                                                formaction="/edit/item/{$id|escape:'htmlall'}"
+                                                formaction="/edit/item/{$id|escape:'htmlall'}{$route}"
                                                 name="countdown"
                                                 value="2"
                                                 {if $item.count < 2} disabled{/if}>
@@ -37,7 +37,7 @@
                                             <button
                                                 class="btn btn-sm btn-info"
                                                 type="submit"
-                                                formaction="/edit/item/{$id|escape:'htmlall'}"
+                                                formaction="/edit/item/{$id|escape:'htmlall'}{$route}"
                                                 name="countdown"
                                                 value="1"
                                                 {if $item.count == 0} disabled{/if}>
@@ -47,7 +47,7 @@
                                             <button
                                                 class="btn btn-sm btn-info"
                                                 type="submit"
-                                                formaction="/edit/item/{$id|escape:'htmlall'}"
+                                                formaction="/edit/item/{$id|escape:'htmlall'}{$route}"
                                                 name="countup"
                                                 value="1"
                                                 {if $item.count == $max_stock} disabled{/if}>
@@ -56,7 +56,7 @@
                                             <button
                                                 class="btn btn-sm btn-info"
                                                 type="submit"
-                                                formaction="/edit/item/{$id|escape:'htmlall'}"
+                                                formaction="/edit/item/{$id|escape:'htmlall'}{$route}"
                                                 name="countup"
                                                 value="2"
                                                 {if $item.count > ($max_stock-2)} disabled{/if}>
