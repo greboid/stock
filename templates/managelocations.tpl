@@ -56,7 +56,7 @@
                                     <input class="col form-control" id="name" name="name" type="text" placeholder="name" required>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-2 col-for-label" for="site">Location</label>
+                                    <label class="col-2 col-for-label" for="site">Site</label>
                                     <select class="col form-control" id="site" name="site" required>
                                         <option selected=""></option>
                                         {foreach from=$sites key=siteID item=site}

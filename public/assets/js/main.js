@@ -7,7 +7,11 @@ $("#site").select2({
     allowClear: true
 });
 $("#category").select2({
-    placeholder: "Site",
+    placeholder: "Category",
+    allowClear: true
+});
+$("#parent").select2({
+    placeholder: "Parent",
     allowClear: true
 });
 $.tablesorter.addParser({
