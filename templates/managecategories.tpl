@@ -59,7 +59,6 @@
             <div class="modal-body">
                     <div class="col align-self-center">
                     <form method="post" action="/add/category" id="addCategoryForm">
-                        <h1 class="col offset-2 col-header">Add a category</h1>
                         <input type="hidden" id="action" name="action" value="addlocation">
                         <fieldset>
                             <div class="form-group row">
