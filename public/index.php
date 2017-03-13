@@ -38,6 +38,7 @@
     $auth_factory = new AuthFactory($_COOKIE);
     $auth = $auth_factory->newInstance();
     $pdo = new \PDO('mysql:dbname='.STOCK_DB.';host='.STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $hash = new PasswordVerifier(PASSWORD_DEFAULT);
     $cols = array('username', 'password', 'email', 'name', 'id');
     $from = 'accounts';

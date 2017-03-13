@@ -43,10 +43,10 @@
             <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a>
             <ul class="dropdown-menu navbar-inverse bg-inverse dropdown-menu-right">
                 <li class="nav-item">
-                    <a class="nav-link" href="/user/profile">Profile</a>
+                    <a class="nav-link" href="/user/profile"><i class="fa fa-inverse fa-user" aria-hidden="true"></i> Profile</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/auth/logout">Logout</a>
+                    <a class="nav-link" href="/auth/logout"><i class="fa fa-inverse fa-sign-out" aria-hidden="true"></i> Logout</a>
                 </li>
             </ul>
         </li>

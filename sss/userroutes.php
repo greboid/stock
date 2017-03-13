@@ -18,10 +18,14 @@
             $auth = $storage->retrieve('auth');
             $pdo = $storage->retrieve('pdo');
 
-            $router->get('/user/profile', function() use($smarty, $stock, $auth) {
+            $router->get('/user/profile', function() use($smarty, $stock, $auth, $pdo) {
                 try {
+                    $stmt = $pdo->prepare('SELECT email, name FROM '.ACCOUNTS_TABLE.' WHERE username=:username');
+                    $stmt->bindValue(':username', $auth->getUserName());
+                    $stmt->execute();
+                    $userData = $stmt->fetch(\PDO::FETCH_ASSOC);
                     $smarty->assign('username', $auth->getUserName());
-                    $smarty->assign('userdata', $auth->getUserData());
+                    $smarty->assign('userdata', $userData);
                     $smarty->display('profile.tpl');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
@@ -50,6 +54,38 @@
                     $smarty->assign('output', "Email address is in use.");
                 }
                 $smarty->display('outputjson.tpl');
+            });
+            $router->post('/user/profile', function() use ($smarty, $pdo, $msg) {
+                $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
+                $name = filter_input(INPUT_POST, "name", FILTER_SANITIZE_STRING);
+                $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
+                try {
+                    $stmt = $pdo->prepare('UPDATE '.ACCOUNTS_TABLE.' SET email=:email, name=:name WHERE username=:username');
+                    $stmt->bindValue(':email', $email);
+                    $stmt->bindValue(':name', $name);
+                    $stmt->bindValue(':username', $username);
+                    $stmt->execute();
+                    $msg->info('Your details have been updated');
+                } catch (Exception $e) {
+                    $msg->error('Unable to update details: '.$e->getMessage());
+                }
+                header('Location: /user/profile');
+            });
+            $router->post('/user/password', function() use ($smarty, $pdo, $msg) {
+                $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
+                $password = filter_input(INPUT_POST, "newpassword", FILTER_UNSAFE_RAW);
+                $password = password_hash($password, PASSWORD_DEFAULT);
+                try {
+                    $stmt = $pdo->prepare('UPDATE '.ACCOUNTS_TABLE.' SET password=:password WHERE username=:username');
+                    $stmt->bindValue(':password', $password);
+                    $stmt->bindValue(':username', $username);
+                    $val = $stmt->execute();
+
+                    $msg->info('Your details have been updated.');
+                } catch (Exception $e) {
+                    $msg->error('Unable to update details: '.$e->getMessage());
+                }
+                header('Location: /user/profile');
             });
         }
     }

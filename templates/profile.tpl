@@ -7,11 +7,12 @@
         <div class="col align-self-center">
             <h1>Profile</h1>
             <h2>User Details</h2>
-            <form method="post" action="" id="profileDetailsForm">
+            <form method="post" action="/user/profile" id="profileDetailsForm">
                 <fieldset>
+                    <input id="username" name="username" type="hidden" value="{$username|escape:'htmlall'}">
                     <div class="form-group row">
                         <label class="col-4 col-form-label" for="username">Username</label>
-                        <input class="col form-control" id="username" name="username" type="text" placeholder="name" disabled value="{$username|escape:'htmlall'}">
+                        <input class="col form-control" type="text" placeholder="name" disabled value="{$username|escape:'htmlall'}">
                     </div>
                     <div class="form-group row">
                         <label class="col-4 col-form-label" for="name">Name</label>
@@ -27,7 +28,8 @@
                 </fieldset>
             </form>
             <h2>Password</h2>
-            <form method="post" action="" id="changePasswordForm">
+            <form method="post" action="/user/password" id="changePasswordForm">
+                <input id="username" name="username" type="hidden" value="{$username|escape:'htmlall'}">
                 <fieldset>
                     <div class="form-group row">
                         <label class="col-4 col-form-label" for="newpassword">New Password</label>
