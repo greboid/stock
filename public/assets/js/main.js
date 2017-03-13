@@ -1,4 +1,17 @@
+$.clearInput = function (area) {
+    $(area).find('input[type=text], input[type=password], input[type=number], input[type=email], textarea').val('');
+};
 $.fn.select2.defaults.set( "theme", "bootstrap" );
+jQuery.validator.setDefaults({
+  highlight: function(element) {
+        $(element).closest('.form-group').addClass('has-danger');
+    },
+    unhighlight: function(element) {
+        $(element).closest('.form-group').removeClass('has-danger');
+    },
+    errorClass: 'offset-4 form-control-feedback',
+});
+
 $("#location").select2({
     placeholder: "Location",
     allowClear: true
@@ -41,16 +54,6 @@ $("#stock").tablesorter({
 });
 
 $("#profileDetailsForm").validate({
-    highlight: function(element) {
-        $(element).closest('.form-group').addClass('has-danger');
-    },
-    unhighlight: function(element) {
-        $(element).closest('.form-group').removeClass('has-danger');
-    },
-    errorClass: 'offset-4 form-control-feedback',
-    errorPlacement: function(error, element) {
-        error.insertAfter(element);
-    },
     rules: {
         name: {
             required: true,
@@ -70,13 +73,6 @@ $("#profileDetailsForm").validate({
     },
 });
 $("#changePasswordForm").validate({
-    highlight: function(element) {
-        $(element).closest('.form-group').addClass('has-danger');
-    },
-    unhighlight: function(element) {
-        $(element).closest('.form-group').removeClass('has-danger');
-    },
-    errorClass: 'offset-4 form-control-feedback',
     rules: {
         newpassword: {
             required: true,
@@ -88,12 +84,6 @@ $("#changePasswordForm").validate({
     },
 });
 $("#addUserForm").validate({
-    highlight: function(element) {
-        $(element).closest('.form-group').addClass('has-danger');
-    },
-    unhighlight: function(element) {
-        $(element).closest('.form-group').removeClass('has-danger');
-    },
     errorClass: 'offset-3 form-control-feedback',
     rules: {
         username: {
@@ -118,4 +108,7 @@ $("#addUserForm").validate({
             }
         },
     }
+});
+$('#addUserModal').on('hidden.bs.modal', function () {
+    $.clearInput(this);
 });
