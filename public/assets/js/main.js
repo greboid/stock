@@ -77,9 +77,6 @@ $("#changePasswordForm").validate({
         $(element).closest('.form-group').removeClass('has-danger');
     },
     errorClass: 'offset-4 form-control-feedback',
-    errorPlacement: function(error, element) {
-        error.insertAfter(element);
-    },
     rules: {
         newpassword: {
             required: true,
