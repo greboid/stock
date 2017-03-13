@@ -623,7 +623,6 @@
                             INSERT INTO `".ACCOUNTS_TABLE."` (username, password, email, name, active, verified) VALUES ('admin', '".password_hash('admin', PASSWORD_DEFAULT)."', '', '', 1, 1);
                             UPDATE `version` SET `version` = '2';
                         ");
-
                 while ($this->dbconnection->next_result()) {
                     //NOOP just force the code to wait for the query to finish
                 }

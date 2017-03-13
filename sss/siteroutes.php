@@ -33,6 +33,23 @@
                     $smarty->display('500.tpl');
                 }
             });
+            $router->get('/json/site/(.*)', function($siteName) use ($smarty, $stock) {
+                $siteName = filter_var($siteName, FILTER_UNSAFE_RAW);
+                $siteid = $stock->getSiteID($siteName);
+                if ($siteid === false) {
+                    header('HTTP/1.1 404 Not Found');
+                }
+                try {
+                    if ($stock->getSiteName($siteid) !== false) {
+                        $smarty->assign('output', $stock->getSiteStock($siteid));
+                        $smarty->display('outputjson.tpl');
+                    } else {
+                        header('HTTP/1.1 404 Not Found');
+                    }
+                } catch (Exception $e) {
+                    header('HTTP/1.1 500 Oops');
+                }
+            });
             $router->get('/add/site', function() use ($smarty, $stock) {
                 try {
                     $smarty->display('addsite.tpl');
