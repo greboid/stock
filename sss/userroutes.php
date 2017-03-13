@@ -41,7 +41,6 @@
                 if ($username == null) {
                     $username = filter_input(INPUT_GET, "username", FILTER_UNSAFE_RAW);
                 }
-                $smarty->assign('output', $username.' - '.$email);
                 $sql = 'SELECT COUNT(*) as count FROM '.ACCOUNTS_TABLE.' WHERE email=:email AND username != :username';
                 $stmt = $pdo->prepare($sql);
                 $stmt->bindParam(':username', $username);
@@ -52,6 +51,23 @@
                     $smarty->assign('output', "true");
                 } else {
                     $smarty->assign('output', "Email address is in use.");
+                }
+                $smarty->display('outputjson.tpl');
+            });
+            $router->get('/user/checkusername', function() use($smarty, $stock, $auth, $pdo) {
+                $username = filter_input(INPUT_POST, "username", FILTER_UNSAFE_RAW);
+                if ($username == null) {
+                    $username = filter_input(INPUT_GET, "username", FILTER_UNSAFE_RAW);
+                }
+                $sql = 'SELECT COUNT(*) as count FROM '.ACCOUNTS_TABLE.' WHERE username=:username';
+                $stmt = $pdo->prepare($sql);
+                $stmt->bindParam(':username', $username);
+                $stmt->execute();
+                $row = $stmt->fetchObject();
+                if ($row->count == 0) {
+                    $smarty->assign('output', "true");
+                } else {
+                    $smarty->assign('output', "Username is in use.");
                 }
                 $smarty->display('outputjson.tpl');
             });
@@ -86,6 +102,10 @@
                     $msg->error('Unable to update details: '.$e->getMessage());
                 }
                 header('Location: /user/profile');
+            });
+            $router->get('/manage/users', function() use ($smarty, $pdo, $msg){
+                $smarty->assign('users', array());
+                $smarty->display('manageusers.tpl');
             });
         }
     }

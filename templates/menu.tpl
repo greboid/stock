@@ -37,6 +37,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/manage/categories">Manage Categories</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/manage/users">Manage Users</a>
+                </li>
             </ul>
         </li>
         <li class="nav-item dropdown navbar-inverse bg-inverse">

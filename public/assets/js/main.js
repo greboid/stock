@@ -87,3 +87,35 @@ $("#changePasswordForm").validate({
        }
     },
 });
+$("#addUserForm").validate({
+    highlight: function(element) {
+        $(element).closest('.form-group').addClass('has-danger');
+    },
+    unhighlight: function(element) {
+        $(element).closest('.form-group').removeClass('has-danger');
+    },
+    errorClass: 'offset-3 form-control-feedback',
+    rules: {
+        username: {
+            required: true,
+            remote: {
+                url: "/user/checkusername",
+            }
+        },
+        name: {
+            required: true,
+        },
+        email: {
+            required: true,
+            email: true,
+            remote: {
+                url: "/user/checkemail",
+                data: {
+                    username: function() {
+                        return $( "#username" ).val();
+                    }
+                }
+            }
+        },
+    }
+});
