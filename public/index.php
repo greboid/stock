@@ -38,7 +38,7 @@
     $auth_factory = new AuthFactory($_COOKIE);
     $auth = $auth_factory->newInstance();
     $pdo = new \PDO('mysql:dbname='.STOCK_DB.';host='.STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     $hash = new PasswordVerifier(PASSWORD_DEFAULT);
     $cols = array('username', 'password', 'email', 'name', 'id');
     $from = 'accounts';
@@ -71,6 +71,7 @@
     $authRoutes->addRoutes($router, $storage);
     $systemRoutes->addRoutes($router, $smarty, $stock, $storage);
     $router->before('GET', '(.*)', function($route) use ($smarty, $stock, $auth, $msg) {
+        $smarty->assign('username', $auth->getUsername());
         $smarty->assign('sites', $stock->getSites());
         $smarty->assign('locations', $stock->getLocations());
         $smarty->assign('categories', $stock->getCategories());

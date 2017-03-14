@@ -7,6 +7,7 @@
     use \Bramus\Router\Router;
     use \Smarty;
     use \ICanBoogie\Storage\RunTimeStorage;
+    use \PDO;
 
     class UserRoutes {
 
@@ -23,7 +24,7 @@
                     $stmt = $pdo->prepare('SELECT email, name FROM '.ACCOUNTS_TABLE.' WHERE username=:username');
                     $stmt->bindValue(':username', $auth->getUserName());
                     $stmt->execute();
-                    $userData = $stmt->fetch(\PDO::FETCH_ASSOC);
+                    $userData = $stmt->fetch(PDO::FETCH_ASSOC);
                     $smarty->assign('username', $auth->getUserName());
                     $smarty->assign('userdata', $userData);
                     $smarty->display('profile.tpl');
@@ -103,9 +104,43 @@
                 }
                 header('Location: /user/profile');
             });
-            $router->get('/manage/users', function() use ($smarty, $pdo, $msg){
-                $smarty->assign('users', array());
+            $router->get('/manage/users', function() use ($smarty, $pdo, $msg) {
+                $stmt = $pdo->prepare('SELECT id, username, name, email, active from '.ACCOUNTS_TABLE);
+                $stmt->execute();
+                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $smarty->assign('users', $results);
                 $smarty->display('manageusers.tpl');
+            });
+            $router->post('/add/user', function() use ($smarty, $pdo, $msg) {
+                $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
+                $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
+                $name = filter_input(INPUT_POST, "name", FILTER_SANITIZE_STRING);
+                $active = filter_input(INPUT_POST, "active", FILTER_SANITIZE_NUMBER_INT);
+
+                try {
+                    $stmt = $pdo->prepare('INSERT INTO '.ACCOUNTS_TABLE.' (username, name, email, active, verified, password) VALUES (:username, :name, :email, :active, :verified, :password);');
+                    $stmt->bindValue(':username', $username);
+                    $stmt->bindValue(':name', $name);
+                    $stmt->bindValue(':email', $email);
+                    $stmt->bindValue(':active', $active);
+                    $stmt->bindValue(':password', '');
+                    $stmt->bindValue(':verified', 0);
+                    $stmt->execute();
+                } catch (Exception $e) {
+                    $msg->error('Unable to add user: '.$e->getMessage());
+                }
+                header('Location: /manage/users');
+            });
+            $router->post('/delete/user', function() use ($smarty, $pdo, $msg) {
+                $userid = filter_input(INPUT_POST, "userid", FILTER_SANITIZE_NUMBER_INT);
+                try {
+                    $stmt = $pdo->prepare('DELETE FROM '.ACCOUNTS_TABLE.' where id=:id;');
+                    $stmt->bindValue(':id', $userid);
+                    $stmt->execute();
+                } catch (Exception $e) {
+                    $msg->error('Unable to delete user: '.$e->getMessage());
+                }
+                header('Location: /manage/users');
             });
         }
     }
