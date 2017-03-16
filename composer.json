@@ -7,7 +7,9 @@
         "bramus/router": "~1.0",
         "aura/auth": "^2.0",
         "icanboogie/storage": "^2.1",
-        "plasticbrain/php-flash-messages": "^1.0"
+        "plasticbrain/php-flash-messages": "^1.0",
+        "sweelix/guid": "^1.0",
+        "phpmailer/phpmailer": "^5.2"
     },
     "autoload": {
         "classmap": [

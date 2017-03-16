@@ -11,7 +11,7 @@
     class Stock {
 
         private $dbconnection;
-        private $version = 2;
+        private $version = 3;
 
         public function __construct() {
             if (!$this->dbConnect()) {
@@ -623,6 +623,22 @@
                             INSERT INTO `".ACCOUNTS_TABLE."` (username, password, email, name, active, verified) VALUES ('admin', '".password_hash('admin', PASSWORD_DEFAULT)."', '', '', 1, 1);
                             UPDATE `version` SET `version` = '2';
                         ");
+                while ($this->dbconnection->next_result()) {
+                    //NOOP just force the code to wait for the query to finish
+                }
+            } catch (Exception $e) {
+                return false;
+            }
+            return true;
+        }
+
+        public function upgrade2to3(): bool {
+            try {
+                $this->dbconnection->multi_query("
+                ALTER TABLE `".ACCOUNTS_TABLE."`
+                    ALTER TABLE `stock`.`accounts` ADD COLUMN `verify_token` VARCHAR(255) NOT NULL AFTER `verified`, ADD UNIQUE INDEX (`verify_token`);
+                    UPDATE `version` SET `version` = '3';
+                ");
                 while ($this->dbconnection->next_result()) {
                     //NOOP just force the code to wait for the query to finish
                 }

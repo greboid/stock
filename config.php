@@ -17,6 +17,21 @@ if (!defined('STOCK_DB_PW')) {
 if (!defined('STOCK_DB_HOST')) {
     define('STOCK_DB_HOST', '127.0.0.1');
 }
+if (!defined('SMTP_SERVER')) {
+    define('SMTP_SERVER', '127.0.0.1');
+}
+if (!defined('SMTP_PORT')) {
+    define('SMTP_PORT', '25');
+}
+if (!defined('SMTP_AUTH')) {
+    define('SMTP_AUTH', false);
+}
+if (!defined('SMTP_USERNAME')) {
+    define('SMTP_USERNAME', '');
+}
+if (!defined('SMTP_PASSWORD')) {
+    define('SMTP_PASSWORD', '');
+}
 
 #You might want to change these but probably not
 ##Database settings

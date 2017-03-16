@@ -8,6 +8,8 @@
     use \Smarty;
     use \ICanBoogie\Storage\RunTimeStorage;
     use \PDO;
+    use \sweelix\guid\Guid;
+    use \PHPMailer;
 
     class UserRoutes {
 
@@ -118,16 +120,23 @@
                 $active = filter_input(INPUT_POST, "active", FILTER_SANITIZE_NUMBER_INT);
 
                 try {
-                    $stmt = $pdo->prepare('INSERT INTO '.ACCOUNTS_TABLE.' (username, name, email, active, verified, password) VALUES (:username, :name, :email, :active, :verified, :password);');
+                    $token = Guid::v4();
+                    $stmt = $pdo->prepare('INSERT INTO '.ACCOUNTS_TABLE.'
+                                          (username, name, email, active, verified, password, verify_token)
+                                          VALUES (:username, :name, :email, :active, :verified, :password, :verifytoken);');
                     $stmt->bindValue(':username', $username);
                     $stmt->bindValue(':name', $name);
                     $stmt->bindValue(':email', $email);
                     $stmt->bindValue(':active', $active);
                     $stmt->bindValue(':password', '');
                     $stmt->bindValue(':verified', 0);
+                    $stmt->bindValue(':verifytoken', $token);
                     $stmt->execute();
                 } catch (Exception $e) {
                     $msg->error('Unable to add user: '.$e->getMessage());
+                }
+                if ($this->sendNewUserMail($username, $name, $email, $token) != '') {
+                    $msg->error('New user email failed to send.');
                 }
                 header('Location: /manage/users');
             });
@@ -142,5 +151,49 @@
                 }
                 header('Location: /manage/users');
             });
+        }
+
+        private function sendNewUserMail($username, $name, $email, $code): string {
+            $mail = new PHPMailer;
+            $mail->isSMTP();
+            $mail->Host = SMTP_SERVER;
+            $mail->SMTPAuth = true;
+            $mail->Username = SMTP_USERNAME;
+            $mail->Password = SMTP_PASSWORD;
+            $mail->Port = SMTP_PORT;
+
+            $mail->setFrom('noreply@'.$_SERVER['HTTP_HOST'], 'Stock System');
+            $mail->addAddress($email, $name);
+
+            $mail->isHTML(true);
+
+            $mail->Subject = 'Welcome to the Stock System';
+            $mail->Body    = 'Welcome to the stock system '.$name.'.  You username is '.$username.', but to continue you need to <a href="'.$this->getEmailLink($code).'">verify your account</a>.';
+            $mail->AltBody = 'Welcome to the stock system '.$name.'.  You username is '.$username.', to continue you need to verify your account, by visiting '.$this->getEmailLink($code);
+
+            if(!$mail->send()) {
+                return $mail->ErrorInfo;
+            } else {
+                return '';
+            }
+        }
+
+        private function getEmailLink($token) {
+            return $this->getBaseURL().'/auth/verifyemail/'.$token;
+        }
+
+        private function getBaseURL() {
+            $fulluri = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+            $total = strlen($fulluri);
+            $path = strlen($this->getCurrentPath());
+            return substr($fulluri, 0, $total-$path);
+        }
+
+        private function getCurrentPath() {
+            $uri = substr($_SERVER['REQUEST_URI'], strlen((implode('/', array_slice(explode('/', $_SERVER['SCRIPT_NAME']), 0, -1)) . '/')));
+            if (strstr($uri, '?')) {
+                $uri = substr($uri, 0, strpos($uri, '?'));
+            }
+            return '/' . trim($uri, '/');
         }
     }
