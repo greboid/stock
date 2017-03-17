@@ -25,10 +25,15 @@
                               <td>{$user['email']|escape:'htmlall'}</td>
                               <td>{$user['active']|escape:'htmlall'}</td>
                               <td>
-                                <button type="submit" name="userid" id="userid" value={$user['id']}
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                  <button type="submit" name="userid" id="userid" value={$user['id']}
+                                    formaction="/user/sendverification"
+                                    class="btn btn-secondary">Send Verification</button>
+                                  <button type="submit" name="userid" id="userid" value={$user['id']}
                                     formaction="/delete/user"
                                     class="btn btn-danger"
                                     {if $username == $user['username']}disabled{/if}>Delete</button>
+                                </div>
                               </td>
                             </tr>
                         {/foreach}

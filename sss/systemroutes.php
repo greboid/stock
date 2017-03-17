@@ -12,17 +12,6 @@
 
         public function addRoutes(Router $router, Smarty $smarty, Stock $stock, RunTimeStorage $storage): void {
             $msg = $storage->retrieve('flash');
-            //The regex should be matched here, but I can't make the router like it... hack it
-            $router->before('GET', '(.*)', function($route) use ($smarty, $stock) {
-                $version = $stock->checkVersion();
-                if (preg_match('#^(?!setup).*#', $route) && !$version) {
-                    $stock->upgrade();
-                    header('Location: /');
-                    $smarty->assign('version', $version);
-                    $smarty->display('install.tpl');
-                    exit();
-                }
-            });
             $router->set404(function() use ($smarty) {
                 if (strpos($_SERVER['REQUEST_URI'], '/auth') == 0) {
                     $smarty->display('404.tpl');

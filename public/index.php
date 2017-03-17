@@ -35,10 +35,19 @@
     $smarty->setConfigDir(CONFIG_PATH);
     $smarty->assign('max_stock', MAX_STOCK);
     $error = false;
+    $pdo = null;
+
+    try {
+        $stock = new Stock();
+        $pdo = new \PDO('mysql:dbname='.STOCK_DB.';host='.STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW);
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+    } catch (Exception $e) {
+        $smarty->assign('error', 'The database connection settings are wrong, please check the config');
+        $smarty->display('500.tpl');
+        exit();
+    }
     $auth_factory = new AuthFactory($_COOKIE);
     $auth = $auth_factory->newInstance();
-    $pdo = new \PDO('mysql:dbname='.STOCK_DB.';host='.STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW);
-    $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     $hash = new PasswordVerifier(PASSWORD_DEFAULT);
     $cols = array('username', 'password', 'email', 'name', 'id');
     $from = 'accounts';
@@ -50,13 +59,6 @@
     $resume_service->resume($auth);
     $msg = new FlashMessages();
     $storage->store('flash', $msg);
-
-    try {
-        $stock = new Stock();
-    } catch (Exception $e) {
-        $smarty->assign('error', 'The database connection settings are wrong, please check the config');
-        $smarty->display('500.tpl');
-    }
 
 
     $storage->store('auth', $auth);
