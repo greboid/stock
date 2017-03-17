@@ -1,7 +1,6 @@
 nav {
   margin-bottom: 0.5em;
 }
-
 .form-signin {
   max-width: 330px;
   padding: 15px;
@@ -31,11 +30,17 @@ nav {
   border-bottom-left-radius: 0;
 }
 .form-signin input[type="password"] {
+  margin-bottom: -1px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-signin .btn {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
-
 .col-header {
   padding-left: 0;
 }
