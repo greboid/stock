@@ -6,10 +6,12 @@
     use \Exception;
     use \mysqli;
     use \mysqli_driver;
+    use \PDO;
 
     class Database {
 
         private $dbconnection;
+        private $pdo;
         private $version = 4;
 
         public function __construct() {
@@ -26,7 +28,10 @@
             $driver->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
             try {
                 $this->dbconnection = new mysqli(STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW, STOCK_DB);
+                $this->pdo = new PDO('mysql:dbname='.STOCK_DB.';host='.STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW);
+                $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             } catch (Exception $e) {
+                var_dump($e);
                 return false;
             }
             return true;
@@ -34,6 +39,10 @@
 
         public function getConnection(): mysqli {
             return $this->dbconnection;
+        }
+
+        public function getPDO(): PDO {
+            return $this->pdo;
         }
 
         public function getVersion(): int {

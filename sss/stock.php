@@ -8,6 +8,7 @@
     use \mysqli_driver;
     use \Smarty;
     use \greboid\stock\Database;
+    use \PDO;
 
     class Stock {
 
@@ -27,12 +28,13 @@
             if ($siteID == 0) {
                 return "All Sites";
             }
-            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT site_name FROM '.SITES_TABLE.' WHERE site_id=?), "")');
-            $statement->bind_param('i', $siteID);
+            $statement = $this->database->getPDO()->prepare('
+                SELECT COALESCE((SELECT site_name
+                FROM '.SITES_TABLE.' WHERE site_id=:siteID), "") as siteID
+            ');
+            $statement->bindValue(':siteID', $siteID, PDO::PARAM_INT);
             $statement->execute();
-            $statement->bind_result($siteName);
-            $statement->fetch();
-            return $siteName;
+            return $statement->fetchObject()->siteID;
         }
 
         public function getSiteID(string $siteName): int {
@@ -40,24 +42,26 @@
             if ($siteName == 'all') {
                 return 0;
             }
-            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT site_id FROM '.SITES_TABLE.' WHERE site_name=?), -1)');
-            $statement->bind_param('s', $siteName);
+            $statement = $this->database->getPDO()->prepare('
+                SELECT COALESCE((SELECT site_id
+                FROM '.SITES_TABLE.' WHERE site_name=:siteName), -1) as siteName
+            ');
+            $statement->bindValue(':siteName', $siteName, PDO::PARAM_STR);
             $statement->execute();
-            $statement->bind_result($siteID);
-            $statement->fetch();
-            return $siteID;
+            return intval($statement->fetchObject()->siteName);
         }
 
         public function getLocationName(int $locationID): string {
             if ($locationID == 0) {
                 return "All Locations";
             }
-            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT location_name FROM '.LOCATIONS_TABLE.' WHERE location_id=?), "")');
-            $statement->bind_param('i', $locationID);
+            $statement = $this->database->getPDO()->prepare('
+                SELECT COALESCE((SELECT location_name
+                FROM '.LOCATIONS_TABLE.' WHERE location_id=:locationID), "") as locationName
+            ');
+            $statement->bindValue(':locationID', $locationID, PDO::PARAM_INT);
             $statement->execute();
-            $statement->bind_result($locationName);
-            $statement->fetch();
-            return $locationName;
+            return $statement->fetchObject()->locationName;
         }
 
         public function getLocationID(string $locationName): int {
@@ -65,114 +69,93 @@
             if ($locationName == 'all') {
                 return 0;
             }
-            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT location_id FROM '.LOCATIONS_TABLE.' WHERE location_name=?), -1)');
-            $statement->bind_param('s', $locationName);
+            $statement = $this->database->getPDO()->prepare('
+                SELECT COALESCE((SELECT location_id
+                FROM '.LOCATIONS_TABLE.' WHERE location_name=:locationName), -1) as locationID
+            ');
+            $statement->bindValue(':locationName', $locationName, PDO::PARAM_STR);
             $statement->execute();
-            $statement->bind_result($locationID);
-            $statement->fetch();
-            return $locationID;
+            return intval($statement->fetchObject()->locationID);
         }
 
         public function getItemName(int $itemID): string {
-            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT stock_name FROM '.STOCK_TABLE.' WHERE stock_id=?), "")');
-            $statement->bind_param('i', $itemID);
+            $statement = $this->database->getPDO()->prepare('
+                SELECT COALESCE((SELECT stock_name
+                FROM '.STOCK_TABLE.' WHERE stock_id=:stockID), "") as itemName
+            ');
+            $statement->bindValue(':stockID', $itemID, PDO::PARAM_INT);
             $statement->execute();
-            $statement->bind_result($itemName);
-            $statement->fetch();
-            return $itemName;
+            return $statement->fetchObject()->itemName;
         }
 
         public function getSiteForLocation(int $locationID): string {
-            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT site_name
-                                                FROM '.LOCATIONS_TABLE.'
-                                                LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id
-                                                WHERE location_id=?), "")');
-            $statement->bind_param('i', $locationID);
-            $statement->execute();
-            $statement->bind_result($siteName);
-            $statement->fetch();
-            return $siteName;
-        }
-
-        public function getSiteIDForItemID(int $itemID): string {
-            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT site_id
-                FROM '.STOCK_TABLE.'
-                LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
+            $statement = $this->database->getPDO()->prepare('
+                SELECT COALESCE((SELECT site_name
+                FROM '.LOCATIONS_TABLE.'
                 LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id
-                WHERE location_id=?), -1)');
-            $statement->bind_param('i', $itemID);
+                WHERE location_id=:locationID), "") as siteName
+            ');
+            $statement->bindValue(':locationID', $locationID, PDO::PARAM_INT);
             $statement->execute();
-            $statement->bind_result($siteID);
-            $statement->fetch();
-            return $siteID;
-        }
-
-        public function getSiteNameForItemID(int $itemID): string {
-            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT site_name
-                FROM '.STOCK_TABLE.'
-                LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
-                LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id
-                WHERE stock_id=?), "")');
-            $statement->bind_param('i', $itemID);
-            $statement->execute();
-            $statement->bind_result($siteName);
-            $statement->fetch();
-            return $siteName;
+            return $statement->fetchObject()->siteName;
         }
 
         public function getSites(): array {
-            $statement = $this->dbconnection->prepare('SELECT site_id, site_name FROM '.SITES_TABLE.' ORDER BY site_name');
+            $statement = $this->database->getPDO()->prepare('
+                SELECT site_id, site_name FROM '.SITES_TABLE.' ORDER BY site_name
+            ');
             $statement->execute();
-            $statement->bind_result($siteID, $siteName);
-
+            $results = $statement->fetchAll(PDO::FETCH_CLASS);
             $sites = array();
-            while ($statement->fetch()) {
-                $sites[$siteID] = $siteName;
+            foreach ($results as $site) {
+                $sites[$site->site_id] = $site->site_name;
             }
             return $sites;
         }
 
         public function getLocations(): array {
-            $statement = $this->dbconnection->prepare('SELECT site_id, site_name FROM '.SITES_TABLE);
+            $statement = $this->database->getPDO()->prepare('
+                SELECT site_id, site_name FROM '.SITES_TABLE
+            );
             $statement->execute();
-            $statement->bind_result($id, $name);
+            $results = $statement->fetchAll(PDO::FETCH_CLASS);
             $locations = array();
-            while ($statement->fetch()) {
-                $locations[$id] = array('name'=>$name, 'locations'=>array());
+            foreach ($results as $result) {
+                $locations[$result->site_id] = array('name'=>$result->site_name, 'locations'=>array());
             }
-            $statement->close();
             foreach (array_keys($locations) as $siteid) {
-                $statement = $this->dbconnection->prepare('SELECT location_id, location_name
-                                           FROM '.LOCATIONS_TABLE.' where location_site=?');
-                $statement->bind_param('i', $siteid);
+                $statement = $this->database->getPDO()->prepare('
+                    SELECT location_id, location_name
+                    FROM '.LOCATIONS_TABLE.' where location_site=:siteID
+                ');
+                $statement->bindValue(':siteID', $siteid);
                 $statement->execute();
-                $statement->bind_result($locationID, $name);
+                $results = $statement->fetchAll(PDO::FETCH_CLASS);
                 $locations[$siteid]['locations'] = array();
-                while ($statement->fetch()) {
-                    $locations[$siteid]['locations'][$locationID] = $name;
+                foreach ($results as $result) {
+                    $locations[$siteid]['locations'][$result->location_id] = $result->location_name;
                 }
             }
             return $locations;
         }
 
         public function getCategoryName(int $categoryID): string {
-            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT category_name
-                                                      FROM '.CATEGORIES_TABLE.' where category_id=?), "")');
-            $statement->bind_param('i', $categoryID);
+            $statement = $this->database->getPDO()->prepare('
+                SELECT COALESCE((SELECT category_name
+                FROM '.CATEGORIES_TABLE.' where category_id=:categoryID), "") as categoryName
+            ');
+            $statement->bindValue(':categoryID', $categoryID);
             $statement->execute();
-            $statement->bind_result($categoryName);
-            $statement->fetch();
-            return $categoryName;
+            return $statement->fetchObject()->categoryName;
         }
 
         public function getCategoryID(string $categoryName): int {
-            $statement = $this->dbconnection->prepare('SELECT COALESCE((SELECT category_id
-                                                      FROM '.CATEGORIES_TABLE.' where category_name=?), -1)');
-            $statement->bind_param('s', $categoryName);
+            $statement = $this->database->getPDO()->prepare('
+                SELECT COALESCE((SELECT category_id
+                FROM '.CATEGORIES_TABLE.' where category_name=:categoryName), -1) as categoryID');
+            $statement->bindValue(':categoryName', $categoryName);
             $statement->execute();
-            $statement->bind_result($categoryID);
-            $statement->fetch();
-            return $categoryID;
+            return intval($statement->fetchObject()->categoryID);
         }
 
         public function getCategories(): array {
