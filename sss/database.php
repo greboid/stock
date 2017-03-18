@@ -9,7 +9,7 @@
     class Database {
 
         private $pdo;
-        private $version = 5;
+        private $version = 6;
 
         public function __construct(PDO $pdo = null) {
             if ($pdo == null) {
@@ -57,7 +57,7 @@
 
         public function dropAndCreate(): void {
             $passwordHash = password_hash('admin', PASSWORD_DEFAULT);
-            $statement = $this->dbconnection->multi_query('
+            $statement = $this->pdo->exec('
                 SET FOREIGN_KEY_CHECKS=0;
                 DROP TABLE IF EXISTS `'.SITES_TABLE.'`;
                 DROP TABLE IF EXISTS `'.STOCK_TABLE.'`;
@@ -67,9 +67,6 @@
                 DROP TABLE IF EXISTS `'.CATEGORIES_TABLE.'`;
                 SET FOREIGN_KEY_CHECKS=1;
             ');
-            while ($this->dbconnection->next_result()) {
-                //NOOP just force the code to wait for the query to finish
-            }
             $this->upgrade();
         }
 
@@ -87,7 +84,7 @@
 
         public function upgrade0to1(): bool {
             try {
-                $this->dbconnection->multi_query('
+                $this->pdo->exec('
                     SET FOREIGN_KEY_CHECKS=0;
                     CREATE TABLE IF NOT EXISTS `'.SITES_TABLE.'` (
                         `site_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -118,9 +115,6 @@
                     INSERT INTO `'.VERSION_TABLE.'`(`version`) values (1);
                     SET FOREIGN_KEY_CHECKS=1;
                 ');
-                while ($this->dbconnection->next_result()) {
-                    //NOOP just force the code to wait for the query to finish
-                }
             } catch (Exception $e) {
                 return false;
             }
@@ -129,7 +123,7 @@
 
         public function upgrade1to2(): bool {
             try {
-                $this->dbconnection->multi_query('
+                $this->pdo->exec('
                     create table IF NOT EXISTS `'.CATEGORIES_TABLE.'` (
                         `category_id` int (11) NOT null AUTO_INCREMENT,
                         `category_parent` int (11),
@@ -141,9 +135,6 @@
                     ADD CONSTRAINT `stock-category` FOREIGN KEY (`stock_category`) REFERENCES `'.CATEGORIES_TABLE.'`(`category_id`);
                     UPDATE `version` SET `version` = 2;
                 ');
-                while ($this->dbconnection->next_result()) {
-                    //NOOP just force the code to wait for the query to finish
-                }
             } catch (Exception $e) {
                 return false;
             }
@@ -152,7 +143,7 @@
 
         public function upgrade2to3(): bool {
             try {
-                $this->dbconnection->multi_query('
+                $this->pdo->exec('
                     CREATE TABLE IF NOT EXISTS `'.ACCOUNTS_TABLE.'` (
                         `id` INT(11) NOT NULL AUTO_INCREMENT,
                         `username` VARCHAR(255) NOT NULL,
@@ -167,9 +158,6 @@
                         VALUES (\'admin\', \''.password_hash('admin', PASSWORD_DEFAULT).'\', \'admin@localhost\', \'Administrator\', 1, 1);
                     UPDATE `version` SET `version` = 3;
                 ');
-                while ($this->dbconnection->next_result()) {
-                    //NOOP just force the code to wait for the query to finish
-                }
             } catch (Exception $e) {
                 return false;
             }
@@ -178,13 +166,10 @@
 
         public function upgrade3to4(): bool {
             try {
-                $this->dbconnection->multi_query('
+                $this->pdo->exec('
                     ALTER TABLE `'.ACCOUNTS_TABLE.'` ADD COLUMN `verify_token` VARCHAR(255) NOT NULL AFTER `verified`, ADD UNIQUE INDEX (`verify_token`);
                     UPDATE `version` SET `version` = 4;
                 ');
-                while ($this->dbconnection->next_result()) {
-                    //NOOP just force the code to wait for the query to finish
-                }
             } catch (Exception $e) {
                 return false;
             }
@@ -193,13 +178,22 @@
 
         public function upgrade4to5(): bool {
             try {
-                $this->dbconnection->multi_query('
+                $this->pdo->exec('
                     ALTER TABLE `'.ACCOUNTS_TABLE.'` ADD UNIQUE INDEX (`email`);
                     UPDATE `version` SET `version` = 5;
                 ');
-                while ($this->dbconnection->next_result()) {
-                    //NOOP just force the code to wait for the query to finish
-                }
+            } catch (Exception $e) {
+                return false;
+            }
+            return true;
+        }
+
+        public function upgrade5to6(): bool {
+            try {
+                $this->pdo->exec('
+                    ALTER TABLE `'.ACCOUNTS_TABLE.'` ADD UNIQUE INDEX `token` (`verify_token`);
+                    UPDATE `version` SET `version` = 6;
+                ');
             } catch (Exception $e) {
                 return false;
             }

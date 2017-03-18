@@ -78,5 +78,8 @@
                 }
                 header('Location: /');
             });
+            $router->get('/auth/verifyemail/(.*)', function($token) use ($smarty, $storage) {
+                die($token);
+            });
         }
     }

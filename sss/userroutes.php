@@ -151,6 +151,42 @@
                 }
                 header('Location: /manage/users');
             });
+            $router->post('/user/sendverification', function() use ($smarty, $pdo, $msg) {
+                $userid = filter_input(INPUT_POST, "userid", FILTER_SANITIZE_NUMBER_INT);
+                try {
+                    $stmt = $pdo->prepare('
+                        SELECT username, name, email, verify_token
+                        FROM '.ACCOUNTS_TABLE.'
+                        WHERE id=:userID
+                    ');
+                    $stmt->bindValue(':userID', $userid, PDO::PARAM_INT);
+                    $stmt->execute();
+                    $result = $stmt->fetchObject();
+                    if (empty($result->verify_token)) {
+                        $token = Guid::v4();
+                        $stmt = $pdo->prepare('
+                            UPDATE '.ACCOUNTS_TABLE.'
+                            SET verify_token=:token
+                            WHERE id=:userID
+                        ');
+                        $stmt->bindValue(':token', $token);
+                        $stmt->bindValue(':userID', $userid);
+                        $stmt->execute();
+                    } else {
+                        $token = $result->verify_token;
+                    }
+                    var_dump($result->verify_token);
+                    if ($this->sendNewUserMail($result->username,
+                                               $result->name,
+                                               $result->email,
+                                               $token) != '') {
+                        $msg->error('New user email failed to send.');
+                    }
+                    header('Location: /manage/users');
+                } catch (Exception $e) {
+                    $msg->error('Unable to delete user: '.$e->getMessage());
+                }
+            });
         }
 
         private function sendNewUserMail($username, $name, $email, $code): string {
