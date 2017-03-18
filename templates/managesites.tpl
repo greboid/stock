@@ -5,7 +5,7 @@
             <div class="col">
             </div>
             <div class="col align-self-center">
-                <h1>Manage Sites</h1>
+                <h1 class="text-center">Manage Sites</h1>
                 <table id="sites" class="table table-hover">
                     <thead class="thead-default">
                         <tr>

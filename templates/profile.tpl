@@ -5,7 +5,7 @@
         <div class="col">
         </div>
         <div class="col align-self-center">
-            <h1>Profile</h1>
+            <h1 class="text-center">Profile</h1>
             <h2>User Details</h2>
             <form method="post" action="/user/profile" id="profileDetailsForm">
                 <fieldset>

@@ -35,7 +35,7 @@
             <div class="col">
             </div>
             <div class="col align-self-center">
-                <h1>Manage Categories</h1>
+                <h1 class="text-center">Manage Categories</h1>
                 <table id="categories" class="table table-hover">
                     <thead class="thead-default">
                         <tr>

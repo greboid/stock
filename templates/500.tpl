@@ -5,8 +5,8 @@
             <div class="col">
             </div>
             <div class="col align-self-center">
-                <h1>Error</h1>
-                <p>{$error|escape:'htmlall'}</p>
+                <h1 class="text-center">Error</h1>
+                <p class="text-center">{$error|escape:'htmlall'}</p>
             </div>
             <div class="col">
             </div>

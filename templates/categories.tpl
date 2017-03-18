@@ -21,7 +21,7 @@
           <div class="col">
           </div>
           <div class="col align-self-center">
-              <h1>Categories</h1>
+              <h1 class="text-center">Categories</h1>
               {catMenu data=$categories}
           </div>
           <div class="col">

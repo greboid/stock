@@ -5,8 +5,8 @@
             <div class="col">
             </div>
             <div class="col align-self-center">
-                <h1>Page not found</h1>
-                <p>Oops, page not found.</p>
+                <h1 class="text-center">Page not found</h1>
+                <p class="text-center">Oops, page not found.</p>
             </div>
             <div class="col">
             </div>

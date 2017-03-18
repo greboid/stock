@@ -8,7 +8,7 @@
     </head>
     <body>
         <div id="wrapper">
-            <p>You cannot pass!</p>
+            <p class="text-center">You cannot pass!</p>
         </div>
     </body>
 </html>

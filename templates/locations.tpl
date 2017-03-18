@@ -5,7 +5,7 @@
           <div class="col">
           </div>
           <div class="col align-self-center">
-              <h1>Locations</h1>
+              <h1 class="text-center">Locations</h1>
               <ul>
               <li>
                   <a class="pure-menu-link" href="/site/all">All</a>

@@ -5,7 +5,7 @@
           <div class="col">
           </div>
           <div class="col align-self-center">
-              <h1>Users</h1>
+              <h1 class="text-center">Users</h1>
               <form method="post">
                   <table id="users" class="table table-hover">
                     <thead class="thead-default">

@@ -5,8 +5,8 @@
         <div class="col">
         </div>
         <div class="col align-self-center">
-            <h1>Select a site</h1>
-            <p>Select a site.</p>
+            <h1 class="text-center">Select a site</h1>
+            <p class="text-center">Select a site.</p>
         </div>
         <div class="col">
         </div>
