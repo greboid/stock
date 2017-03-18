@@ -128,7 +128,7 @@
                     SELECT location_id, location_name
                     FROM '.LOCATIONS_TABLE.' where location_site=:siteID
                 ');
-                $statement->bindValue(':siteID', $siteid);
+                $statement->bindValue(':siteID', $siteid, PDO::PARAM_INT);
                 $statement->execute();
                 $results = $statement->fetchAll(PDO::FETCH_CLASS);
                 $locations[$siteid]['locations'] = array();
@@ -144,7 +144,7 @@
                 SELECT COALESCE((SELECT category_name
                 FROM '.CATEGORIES_TABLE.' where category_id=:categoryID), "") as categoryName
             ');
-            $statement->bindValue(':categoryID', $categoryID);
+            $statement->bindValue(':categoryID', $categoryID, PDO::PARAM_INT);
             $statement->execute();
             return $statement->fetchObject()->categoryName;
         }
@@ -153,79 +153,64 @@
             $statement = $this->database->getPDO()->prepare('
                 SELECT COALESCE((SELECT category_id
                 FROM '.CATEGORIES_TABLE.' where category_name=:categoryName), -1) as categoryID');
-            $statement->bindValue(':categoryName', $categoryName);
+            $statement->bindValue(':categoryName', $categoryName, PDO::PARAM_STR);
             $statement->execute();
             return intval($statement->fetchObject()->categoryID);
         }
 
         public function getCategories(): array {
-            $selectClause = 'SELECT categories.category_id AS category_id,
-                    COALESCE(parents.category_id, 0) AS category_parent,
-                    parents.category_name as category_parent_name,
-                    COALESCE(categories.category_name, "") AS category_name
-                                                              FROM '.CATEGORIES_TABLE.' as categories
-                                                              LEFT JOIN '.CATEGORIES_TABLE.' as parents ON categories.category_parent=parents.category_id';
-            $sql = $selectClause.' ORDER BY category_parent, category_name';
-            $statement = $this->dbconnection->prepare($sql);
+            $statement = $this->database->getPDO()->prepare('
+                SELECT categories.category_id AS categoryID,
+                COALESCE(parents.category_id, 0) AS categoryParent,
+                parents.category_name as categoryParentName,
+                COALESCE(categories.category_name, "") AS categoryName
+                FROM '.CATEGORIES_TABLE.' as categories
+                LEFT JOIN '.CATEGORIES_TABLE.' as parents ON categories.category_parent=parents.category_id
+                ORDER BY categoryParent, categoryName
+            ');
             $statement->execute();
-            $statement->bind_result($categoryID, $categoryParent, $categoryParentName, $categoryName);
-            $statement->store_result();
+            $results = $statement->fetchAll(PDO::FETCH_CLASS);
             $refs = array();
             $categories = array();
-            while ($statement->fetch()) {
-                $thisref = &$refs[ $categoryID ];
-                $thisref['id'] = $categoryID;
-                $thisref['parent'] = $categoryParent;
-                $thisref['parentName'] = $categoryParentName;
-                $thisref['name'] = $categoryName;
-                if ($categoryParent == 0) {
-                    $categories[ $categoryID ] = &$thisref;
+            foreach ($results as $result) {
+                $thisref = &$refs[ $result->categoryID ];
+                $thisref['id'] = intval($result->categoryID);
+                $thisref['parent'] = intval($result->categoryParent);
+                $thisref['parentName'] = $result->categoryParentName;
+                $thisref['name'] = $result->categoryName;
+                if ($result->categoryParent == 0) {
+                    $categories[intval($result->categoryID)] = &$thisref;
                 } else {
-                    $refs[ $categoryParent ]['subcategories'][ $categoryID ] = &$thisref;
+                    $refs[intval($result->categoryParent)]['subcategories'][intval($result->categoryID)] = &$thisref;
                 }
             }
             return $categories;
         }
 
-        public function getSubCategories(int $parentCategory): array {
-            $sql = 'SELECT categories.category_id AS category_id, parents.category_name AS category_parent, COALESCE(categories.category_name, "") AS category_name
-                                                      FROM '.CATEGORIES_TABLE.' as categories
-                                                      LEFT JOIN '.CATEGORIES_TABLE.' as parents ON categories.category_parent=parents.category_id
-                                                      WHERE categories.category_parent=?
-                                                      ORDER BY category_name';
-            $statement = $this->dbconnection->prepare($sql);
-            $statement->bind_param('i', $parentCategory);
-            $statement->execute();
-            $statement->bind_result($categoryID, $categoryParent, $categoryName);
-
-            $categories = array();
-            while ($statement->fetch()) {
-                $categories[$categoryID] = array('name'=>$categoryName, 'parent'=>$categoryParent);
-             }
-             return $categories;
-         }
-
         public function getLocationStockCounts(): array {
-            $statement = $this->dbconnection->prepare('SELECT location_id, location_name FROM '.LOCATIONS_TABLE);
+            $statement = $this->database->getPDO()->prepare('
+                SELECT location_id as id, location_name as name
+                FROM '.LOCATIONS_TABLE
+            );
             $statement->execute();
-            $statement->bind_result($id, $name);
+            $results = $statement->fetchAll(PDO::FETCH_CLASS);
             $locations = array();
-            while ($statement->fetch()) {
-                $locations[$name] = array('name'=>$name, 'id'=>$id, 'stockcount'=>0);
+            foreach ($results as $result) {
+                $locations[$result->name] = array('name'=>$result->name, 'id'=>intval($result->id), 'stockcount'=>0);
             }
-            $statement->close();
             foreach ($locations as &$location) {
-                $statement = $this->dbconnection->prepare('SELECT COUNT(*)
-                                                    FROM '.STOCK_TABLE.' WHERE stock_location=?');
-                $statement->bind_param('i', $location['id']);
+                $statement = $this->database->getPDO()->prepare('
+                    SELECT COUNT(*) as stockcount
+                    FROM '.STOCK_TABLE.'
+                    WHERE stock_location=:stockLocation
+                ');
+                $statement->bindValue(':stockLocation', $location['id'], PDO::PARAM_INT);
                 $statement->execute();
-                $statement->bind_result($stockcount);
-                $statement->store_result();
-                while ($statement->fetch()) {
-                    $location['stockcount'] = $stockcount;
+                $results = $statement->fetchAll(PDO::FETCH_CLASS);
+                foreach ($results as $result) {
+                    $location['stockcount'] = intval($result->stockcount);
                     $location['sitename'] = $this->getSiteForLocation($location['id']);
                 }
-                $statement->close();
             }
             return $locations;
         }
@@ -234,23 +219,29 @@
             if (!$this->getSiteName($site)) {
                 throw new Exception('Specified site does not exist.');
             }
-            $sql = 'SELECT stock_id, site_name, location_name, stock_name, stock_count
-                                  FROM '.STOCK_TABLE.'
-                                  LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
-                                  LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id';
+            $sql = 'SELECT stock_id as id, site_name as site, location_name as location, stock_name as name, stock_count as count
+                    FROM '.STOCK_TABLE.'
+                    LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
+                    LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id';
             if ($site != 0) {
-                $sql .= " WHERE site_id=?";
+                $sql .= " WHERE site_id=:site";
             }
             $sql .= " ORDER BY stock_name, location_name, site_name ASC";
-            $statement = $this->dbconnection->prepare($sql);
+            $statement = $this->database->getPDO()->prepare($sql);
             if ($site != 0) {
-                $statement->bind_param('i', $site);
+                $statement->bindValue(':site', $site, PDO::PARAM_INT);
             }
             $statement->execute();
-            $statement->bind_result($id, $site, $location, $name, $count);
+            $results = $statement->fetchAll(PDO::FETCH_CLASS);
             $stock = array();
-            while ($statement->fetch()) {
-                $stock[$id] = array('name'=>$name, 'count'=>$count, 'site'=>$site, 'location'=>$location);
+            foreach ($results as $result) {
+                $stock[intval($result->id)] =
+                    array(
+                        'name'=>$result->name,
+                        'count'=>intval($result->count),
+                        'site'=>$result->site,
+                        'location'=>$result->location
+                        );
             }
             return $stock;
         }
@@ -259,23 +250,23 @@
             if (!$this->getLocationName($location)) {
                 throw new Exception('Specified location does not exist.');
             }
-            $sql = 'SELECT stock_id, site_name, location_name, stock_name, stock_count
+            $sql = 'SELECT stock_id as id, site_name as site, location_name as location, stock_name as name, stock_count as count
                                   FROM '.STOCK_TABLE.'
                                   LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
                                   LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id';
             if ($location != 0) {
-                $sql .= " WHERE location_id=?";
+                $sql .= " WHERE location_id=:locationID";
             }
             $sql .= " ORDER BY stock_name, location_name, site_name ASC";
-            $statement = $this->dbconnection->prepare($sql);
+            $statement = $this->database->getPDO()->prepare($sql);
             if ($location != 0) {
-                $statement->bind_param('i', $location);
+                $statement->bindValue(':locationID', $location, PDO::PARAM_INT);
             }
             $statement->execute();
-            $statement->bind_result($id, $site, $location, $name, $count);
+            $results = $statement->fetchAll(PDO::FETCH_CLASS);
             $stock = array();
-            while ($statement->fetch()) {
-                $stock[$id] = array('name'=>$name, 'count'=>$count, 'site'=>$site, 'location'=>$location);
+            foreach ($results as $result) {
+                $stock[intval($result->id)] = array('name'=>$result->name, 'count'=>intval($result->count), 'site'=>$result->site, 'location'=>$result->location);
             }
             return $stock;
         }
@@ -284,46 +275,54 @@
             if ($categoryID != 0 && !$this->getCategoryName($categoryID)) {
                 throw new Exception('Specified category does not exist.');
             }
-            $sql = 'SELECT stock_id, site_name, location_name, stock_name, stock_count, COALESCE(category_name, "") AS category_name
+            $sql = 'SELECT stock_id as id, site_name as site, location_name as location, stock_name as name, stock_count as count, COALESCE(category_name, "") AS category
                         FROM '.STOCK_TABLE.'
                         LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
                         LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id
                         LEFT JOIN '.CATEGORIES_TABLE.' ON '.STOCK_TABLE.'.stock_category='.CATEGORIES_TABLE.'.category_id';
             if ($categoryID != 0) {
-                $sql .= ' WHERE stock_category=?';
+                $sql .= ' WHERE stock_category=:categoryID';
             }
-            $statement = $this->dbconnection->prepare($sql);
+            $statement = $this->database->getPDO()->prepare($sql);
             if ($categoryID != 0) {
-                $statement->bind_param('i', $categoryID);
+                $statement->bindValue(':categoryID', $categoryID, PDO::PARAM_INT);
             }
             $statement->execute();
-            $statement->store_result();
-            $statement->bind_result($id, $site, $location, $name, $count, $category);
+            $results = $statement->fetchAll(PDO::FETCH_CLASS);
             $stock = array();
-            while ($statement->fetch()) {
-                $stock[$id] = array('name'=>$name, 'count'=>$count, 'site'=>$site, 'location'=>$location, 'category'=>$category);
+            foreach ($results as $result) {
+                $stock[intval($result->id)] =
+                    array(
+                          'name'=>$result->name,
+                          'count'=>intval($result->count),
+                          'site'=>$result->site,
+                          'location'=>$result->location,
+                          'category'=>$result->category
+                          );
             }
             return $stock;
         }
 
         public function getAllCategoryStock(): array {
-            $statement = $this->dbconnection->prepare('SELECT category_id from '.CATEGORIES_TABLE.';');
+            $statement = $this->database->getPDO()->prepare('
+                SELECT category_id as categoryID
+                FROM '.CATEGORIES_TABLE.';
+            ');
             $statement->execute();
-            $statement->store_result();
-            $statement->bind_result($categoryID);
+            $results = $statement->fetchAll(PDO::FETCH_CLASS);
             $stock = array();
-            while ($statement->fetch()) {
-                $stock[$categoryID] = NULL;
+            foreach ($results as $result) {
+                $stock[intval($result->categoryID)] = NULL;
             }
-            $statement->close();
             foreach ($stock as $key=>$value) {
-                $statement = $this->dbconnection->prepare('SELECT stock_count FROM stock WHERE stock_category=?');
-                $statement->bind_param('i', $key);
-                $statement->bind_result($stockCount);
+                $statement = $this->database->getPDO()->prepare('
+                    SELECT COALESCE((SELECT stock_count
+                    FROM stock
+                    WHERE stock_category=:categoryID),0) as stockCount
+                ');
+                $statement->bindValue(':categoryID', $key, PDO::PARAM_INT);
                 $statement->execute();
-                $statement->fetch();
-                $stock[$key] = $stockCount;
-                $statement->close();
+                $stock[$key] = intval($statement->fetchObject()->stockCount);
             }
             return $stock;
         }
