@@ -28,7 +28,8 @@
                                 <div class="btn-group" role="group" aria-label="Basic example">
                                   <button type="submit" name="userid" id="userid" value={$user['id']}
                                     formaction="/user/sendverification"
-                                    class="btn btn-secondary">Send Verification</button>
+                                    class="btn btn-secondary"
+                                    {if $username == $user['username']}disabled{/if}>Send Verification</button>
                                   <button type="submit" name="userid" id="userid" value={$user['id']}
                                     formaction="/delete/user"
                                     class="btn btn-danger"
