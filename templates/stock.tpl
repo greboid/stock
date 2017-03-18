@@ -20,63 +20,61 @@
                         <tbody>
                             {foreach from=$stock key=id item=item}
                                 <tr>
-
-                                        <td class="align-middle">{$item.name|escape:'htmlall'}</td>
-                                        <td class="align-middle">{$item.site|escape:'htmlall'}</td>
-                                        <td class="align-middle">{$item.location|escape:'htmlall'}</td>
-                                        <td class="align-middle">
-                                            <div class="input-group">
-                                                <span class="input-group-btn">
-                                                    <button
-                                                        class="btn btn-sm btn-secondary"
-                                                        type="submit"
-                                                        formaction="/edit/item/{$id|escape:'htmlall'}{$route}"
-                                                        name="countdown"
-                                                        value="2"
-                                                        {if $item.count < 2} disabled{/if}>
-                                                        --
-                                                    </button>
-                                                </span>
-                                                <span class="input-group-btn">
-                                                    <button
-                                                        class="btn btn-sm btn-secondary"
-                                                        type="submit"
-                                                        formaction="/edit/item/{$id|escape:'htmlall'}{$route}"
-                                                        name="countdown"
-                                                        value="1"
-                                                        {if $item.count == 0} disabled{/if}>
-                                                        -
-                                                    </button>
-                                                </span>
-                                                <input class="form-control" type="number" name="{$id|escape:'htmlall'}-count" value="{$item.count|escape:'htmlall'}" required min="0" max="{$max_stock}">
-                                                <span class="input-group-btn">
-                                                    <button
-                                                        class="btn btn-sm btn-secondary"
-                                                        type="submit"
-                                                        formaction="/edit/item/{$id|escape:'htmlall'}{$route}"
-                                                        name="countup"
-                                                        value="1"
-                                                        {if $item.count == $max_stock} disabled{/if}>
-                                                        +
-                                                    </button>
-                                                </span>
-                                                <span class="input-group-btn">
-                                                    <button
-                                                        class="btn btn-sm btn-secondary"
-                                                        type="submit"
-                                                        formaction="/edit/item/{$id|escape:'htmlall'}{$route}"
-                                                        name="countup"
-                                                        value="2"
-                                                        {if $item.count > ($max_stock-2)} disabled{/if}>
-                                                        ++
-                                                    </button>
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <button type="submit" formaction="/edit/item/{$id|escape:'htmlall'}{$route}" class="btn btn-default btn-primary">Edit</button>
-                                        </td>
-
+                                    <td class="align-middle">{$item.name|escape:'htmlall'}</td>
+                                    <td class="align-middle">{$item.site|escape:'htmlall'}</td>
+                                    <td class="align-middle">{$item.location|escape:'htmlall'}</td>
+                                    <td class="align-middle">
+                                        <div class="input-group">
+                                            <span class="input-group-btn">
+                                                <button
+                                                    class="btn btn-sm btn-secondary"
+                                                    type="submit"
+                                                    formaction="/edit/item/{$id|escape:'htmlall'}{$route}"
+                                                    name="countdown"
+                                                    value="2"
+                                                    {if $item.count < 2} disabled{/if}>
+                                                    --
+                                                </button>
+                                            </span>
+                                            <span class="input-group-btn">
+                                                <button
+                                                    class="btn btn-sm btn-secondary"
+                                                    type="submit"
+                                                    formaction="/edit/item/{$id|escape:'htmlall'}{$route}"
+                                                    name="countdown"
+                                                    value="1"
+                                                    {if $item.count == 0} disabled{/if}>
+                                                    -
+                                                </button>
+                                            </span>
+                                            <input class="form-control" type="number" name="{$id|escape:'htmlall'}-count" value="{$item.count|escape:'htmlall'}" required min="0" max="{$max_stock}">
+                                            <span class="input-group-btn">
+                                                <button
+                                                    class="btn btn-sm btn-secondary"
+                                                    type="submit"
+                                                    formaction="/edit/item/{$id|escape:'htmlall'}{$route}"
+                                                    name="countup"
+                                                    value="1"
+                                                    {if $item.count == $max_stock} disabled{/if}>
+                                                    +
+                                                </button>
+                                            </span>
+                                            <span class="input-group-btn">
+                                                <button
+                                                    class="btn btn-sm btn-secondary"
+                                                    type="submit"
+                                                    formaction="/edit/item/{$id|escape:'htmlall'}{$route}"
+                                                    name="countup"
+                                                    value="2"
+                                                    {if $item.count > ($max_stock-2)} disabled{/if}>
+                                                    ++
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button type="submit" formaction="/edit/item/{$id|escape:'htmlall'}{$route}" class="btn btn-default btn-primary">Edit</button>
+                                    </td>
                                 </tr>
                             {/foreach}
                         </tbody>
