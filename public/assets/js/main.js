@@ -113,6 +113,17 @@ $("#addUserForm").validate({
         },
     }
 });
+$("#verifyEmailForm").validate({
+    rules: {
+        newpassword: {
+            required: true,
+            minlength: 6,
+        },
+        confirmpassword: {
+            equalTo: "#newpassword",
+       }
+    },
+});
 $('#addUserModal').on('hidden.bs.modal', function () {
     $.clearInput(this);
 });
