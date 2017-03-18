@@ -316,19 +316,30 @@
             }
             foreach ($stock as $key=>$value) {
                 $statement = $this->database->getPDO()->prepare('
-                    SELECT COALESCE((SELECT stock_count
+                    SELECT COALESCE((SELECT SUM(stock_count)
                     FROM stock
                     WHERE stock_category=:categoryID),0) as stockCount
                 ');
                 $statement->bindValue(':categoryID', $key, PDO::PARAM_INT);
                 $statement->execute();
-                $stock[$key] = $statement->fetchObject()->stockCount;
+                $result = $statement->fetchObject()->stockCount;
+                $stock[$key] =  $result ;
             }
             return $stock;
         }
 
+        public function hasCategorySubCategories(int $parent): bool {
+            $statement = $this->database->getPDO()->prepare('
+                SELECT COUNT(*) as count FROM categories
+                WHERE category_parent=:categoryParent;
+            ');
+            $statement->bindValue(':categoryParent', $parent, PDO::PARAM_INT);
+            $statement->execute();
+            return ($statement->fetchObject()->count > 0);
+        }
+
         public function insertItem(string $name, int $location, int $category, int $count = 0): void {
-            $name = strtolower(trim($name));
+            $name = trim($name);
             if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
             }
@@ -347,13 +358,20 @@
             if (!$this->getCategoryName($category)) {
                 throw new Exception('Specified category does not exist.');
             }
-            $statement = $this->dbconnection->prepare('INSERT INTO '.STOCK_TABLE.' (stock_name, stock_location, stock_count, stock_category) VALUES (?,?,?,?)');
-            $statement->bind_param('siii', $name, $location, $count, $category);
+            $statement = $this->database->getPDO()->prepare('
+                INSERT INTO '.STOCK_TABLE.'
+                (stock_name, stock_location, stock_count, stock_category)
+                VALUES (:name,:locationID,:count,:categoryID)
+                ');
+            $statement->bindValue(':name', $name, PDO::PARAM_STR);
+            $statement->bindValue(':locationID', $location, PDO::PARAM_INT);
+            $statement->bindValue(':count', $count, PDO::PARAM_INT);
+            $statement->bindValue(':categoryID', $category, PDO::PARAM_INT);
             $statement->execute();
         }
 
         public function insertLocation(string $name, int $site): void {
-            $name = strtolower(trim($name));
+            $name = trim($name);
             if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
             }
@@ -367,13 +385,18 @@
                 throw new Exception('Specified site does not exist.');
             }
 
-            $statement = $this->dbconnection->prepare('INSERT INTO '.LOCATIONS_TABLE.' (location_name, location_site) VALUES (?,?)');
-            $statement->bind_param('si', $name, $site);
+            $statement = $this->database->getPDO()->prepare('
+                INSERT INTO '.LOCATIONS_TABLE.'
+                (location_name, location_site)
+                VALUES (:location,:siteID)
+            ');
+            $statement->bindValue(':location', $name, PDO::PARAM_STR);
+            $statement->bindValue(':siteID', $site, PDO::PARAM_INT);
             $statement->execute();
         }
 
         public function insertSite(string $name): void {
-            $name = strtolower(trim($name));
+            $name = trim($name);
             if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
             }
@@ -384,13 +407,17 @@
                 throw new Exception('The name cannot contain ., .. ,/ or \\');
             }
 
-            $statement = $this->dbconnection->prepare('INSERT INTO '.SITES_TABLE.' (site_name) VALUES (?)');
-            $statement->bind_param('s', $name);
+            $statement = $this->database->getPDO()->prepare('
+                INSERT INTO '.SITES_TABLE.'
+                (site_name)
+                VALUES (:siteName)
+            ');
+            $statement->bindValue(':siteName', $name);
             $statement->execute();
         }
 
         public function insertCategory(string $name, int $parent = 0): void {
-            $name = strtolower(trim($name));
+            $name = trim($name);
             if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
             }
@@ -398,20 +425,30 @@
                 throw new Exception('The name cannot contain ., .. ,/ or \\');
             }
 
-            $statement = $this->dbconnection->prepare('INSERT INTO '.CATEGORIES_TABLE.' (category_parent, category_name) VALUES (?,?)');
-            $statement->bind_param('is', $parent, $name);
+            $statement = $this->database->getPDO()->prepare('
+                INSERT INTO '.CATEGORIES_TABLE.'
+                (category_parent, category_name)
+                VALUES (:parentID,:category)
+            ');
+            $statement->bindValue(':parentID', $parent, PDO::PARAM_INT);
+            $statement->bindValue(':category', $name, PDO::PARAM_STR);
             $statement->execute();
         }
 
-        public function editItem(int $itemID, int $count): void {
+        public function editItemCount(int $itemID, int $count): void {
             if ($count > MAX_STOCK) {
                 throw new Exception('Stock count cannot be greater than '.MAX_STOCK);
             }
             if ($count < 0) {
                 throw new Exception('Stock count cannot be less than zero.');
             }
-            $statement = $this->dbconnection->prepare('UPDATE '.STOCK_TABLE.' SET stock_count=? where stock_id=?');
-            $statement->bind_param('ii', $count, $itemID);
+            $statement = $this->database->getPDO()->prepare('
+                UPDATE '.STOCK_TABLE.'
+                SET stock_count=:stockCount
+                WHERE stock_id=:stockID
+            ');
+            $statement->bindValue(':stockCount', $count, PDO::PARAM_INT);
+            $statement->bindValue(':stockID', $itemID, PDO::PARAM_INT);
             $statement->execute();
         }
 
@@ -420,10 +457,12 @@
                 throw new Exception('Specified site does not exist.');
             }
             if (count($this->getSiteStock($siteID)) != 0) {
-                throw new Exception('Unable to delete site, it still conains stock.');
+                throw new Exception('Unable to delete site, it still contains stock.');
             }
-            $statement = $this->dbconnection->prepare('DELETE FROM '.SITES_TABLE.' WHERE site_id=?');
-            $statement->bind_param('i', $siteID);
+            $statement = $this->database->getPDO()->prepare('
+                DELETE FROM '.SITES_TABLE.' WHERE site_id=:siteID
+            ');
+            $statement->bindValue(':siteID', $siteID, PDO::PARAM_INT);
             $statement->execute();
         }
 
@@ -434,8 +473,10 @@
             if (count($this->getLocationStock($locationID)) != 0) {
                 throw new Exception('Unable to delete location, it still conains stock.');
             }
-            $statement = $this->dbconnection->prepare('DELETE FROM '.LOCATIONS_TABLE.' WHERE location_id=?');
-            $statement->bind_param('i', $locationID);
+            $statement = $this->database->getPDO()->prepare('
+                DELETE FROM '.LOCATIONS_TABLE.' WHERE location_id=:locationID
+            ');
+            $statement->bindValue(':locationID', $locationID, PDO::PARAM_INT);
             $statement->execute();
         }
 
@@ -443,14 +484,16 @@
             if (!$this->getCategoryName($categoryID)) {
                 throw new Exception('Specified category does not exist.');
             }
-            if (count($this->getSubCategories($categoryID)) != 0) {
+            if ($this->hasCategorySubCategories($categoryID)) {
                 throw new Exception('Unable to delete category, it still has sub-categories.');
             }
             if (count($this->getCategoryStock($categoryID)) != 0) {
                 throw new Exception('Unable to delete category, it still has items allocated.');
             }
-            $statement = $this->dbconnection->prepare('DELETE FROM '.CATEGORIES_TABLE.' WHERE category_id=?');
-            $statement->bind_param('i', $categoryID);
+            $statement = $this->database->getPDO()->prepare('
+                DELETE FROM '.CATEGORIES_TABLE.' WHERE category_id=:categoryID
+            ');
+            $statement->bindValue(':categoryID', $categoryID, PDO::PARAM_INT);
             try {
                 $statement->execute();
             } catch (Exception $e) {
@@ -462,8 +505,10 @@
             if (!$this->getItemName($itemID)) {
                 throw new Exception('Specified item does not exist.');
             }
-            $statement = $this->dbconnection->prepare('DELETE FROM '.STOCK_TABLE.' WHERE stock_id=?');
-            $statement->bind_param('i', $itemID);
+            $statement = $this->database->getPDO()->prepare('
+                DELETE FROM '.STOCK_TABLE.' WHERE stock_id=:stockID
+            ');
+            $statement->bindValue(':stockID', $itemID, PDO::PARAM_INT);
             $statement->execute();
         }
     }

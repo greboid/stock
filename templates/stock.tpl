@@ -64,7 +64,7 @@
                                             </button>
                                         </td>
                                         <td>
-                                            <button type="submit" class="btn btn-default btn-info">Edit</button>
+                                            <button type="submit" formaction="/edit/item/{$id|escape:'htmlall'}{$route}" class="btn btn-default btn-info">Edit</button>
                                         </td>
                                 </tr>
                             {/foreach}

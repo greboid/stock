@@ -46,13 +46,13 @@
                 $countdown = filter_input(INPUT_POST, "countdown", FILTER_VALIDATE_INT);
                 try {
                     if ($itemid !== null && $countdown !== null) {
-                        $stock->editItem($itemid, $count-$countdown);
+                        $stock->editItemCount($itemid, $count-$countdown);
                         header('Location: /'.$route);
                     } else if ($itemid !== null && $countup !== null) {
-                        $stock->editItem($itemid, $count+$countup);
+                        $stock->editItemCount($itemid, $count+$countup);
                         header('Location: /'.$route);
                     } else if ($itemid !== null && $count !== false) {
-                        $stock->editItem($itemid, $count);
+                        $stock->editItemCount($itemid, $count);
                         header('Location: /'.$route);
                     }
                     $smarty->assign('error', 'Missing required value.');
