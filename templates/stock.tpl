@@ -7,8 +7,8 @@
             <div class="col align-self-center col-auto">
                 <h1>Stock: {$site|escape:'htmlall'}</h1>
                 <form class="form-horizontal" method="post">
-                    <table id="stock" class="table table-striped table-hover tablesorter">
-                        <thead>
+                    <table id="stock" class="table table-hover">
+                        <thead class="thead-default">
                             <tr>
                                 <th class="text-center">Item</th>
                                 <th class="text-center">Site</th>

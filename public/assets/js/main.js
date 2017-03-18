@@ -56,6 +56,51 @@ $("#stock").tablesorter({
         }
     }
 });
+$("#categories").tablesorter({
+    theme : "bootstrap",
+    textExtraction: "complex",
+    headers: {
+        2: {
+            sorter: false
+        }
+    }
+});
+$("#items").tablesorter({
+    theme : "bootstrap",
+    textExtraction: "complex",
+    headers: {
+        4: {
+            sorter: false
+        }
+    }
+});
+$("#locations").tablesorter({
+    theme : "bootstrap",
+    textExtraction: "complex",
+    headers: {
+        3: {
+            sorter: false
+        }
+    }
+});
+$("#sites").tablesorter({
+    theme : "bootstrap",
+    textExtraction: "complex",
+    headers: {
+        2: {
+            sorter: false
+        }
+    }
+});
+$("#users").tablesorter({
+    theme : "bootstrap",
+    textExtraction: "complex",
+    headers: {
+        4: {
+            sorter: false
+        }
+    }
+});
 
 $("#profileDetailsForm").validate({
     rules: {

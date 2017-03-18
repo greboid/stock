@@ -6,8 +6,8 @@
             </div>
             <div class="col align-self-center">
                 <h1>Manage Locations</h1>
-                <table class="table table-striped table-hover">
-                    <thead>
+                <table id="locations" class="table table-hover">
+                    <thead class="thead-default">
                         <tr>
                             <th>Location Name</th>
                             <th>Site</th>

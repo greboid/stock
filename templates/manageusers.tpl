@@ -7,8 +7,8 @@
           <div class="col align-self-center">
               <h1>Users</h1>
               <form method="post">
-                  <table class="table table-striped table-hover">
-                    <thead>
+                  <table id="users" class="table table-hover">
+                    <thead class="thead-default">
                         <tr>
                             <th>Username</th>
                             <th>Name</th>

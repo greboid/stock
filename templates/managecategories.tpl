@@ -36,8 +36,8 @@
             </div>
             <div class="col align-self-center">
                 <h1>Manage Categories</h1>
-                <table class="table table-striped table-hover">
-                    <thead>
+                <table id="categories" class="table table-hover">
+                    <thead class="thead-default">
                         <tr>
                             <th>Category Name</th>
                             <th>Parent</th>
