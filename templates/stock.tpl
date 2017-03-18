@@ -21,9 +21,9 @@
                             {foreach from=$stock key=id item=item}
                                 <tr>
 
-                                        <td>{$item.name|escape:'htmlall'}</td>
-                                        <td>{$item.site|escape:'htmlall'}</td>
-                                        <td>{$item.location|escape:'htmlall'}</td>
+                                        <td class="align-middle">{$item.name|escape:'htmlall'}</td>
+                                        <td class="align-middle">{$item.site|escape:'htmlall'}</td>
+                                        <td class="align-middle">{$item.location|escape:'htmlall'}</td>
                                         <td>
                                             <div class="input-group">
                                                 <span class="input-group-btn">
