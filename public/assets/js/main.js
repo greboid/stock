@@ -14,19 +14,23 @@ jQuery.validator.setDefaults({
 
 $("#location").select2({
     placeholder: "Location",
-    allowClear: true
+    allowClear: true,
+    dropdownAutoWidth : true
 });
 $("#site").select2({
     placeholder: "Site",
-    allowClear: true
+    allowClear: true,
+    dropdownAutoWidth : true
 });
 $("#category").select2({
     placeholder: "Category",
-    allowClear: true
+    allowClear: true,
+    dropdownAutoWidth : true
 });
 $("#parent").select2({
     placeholder: "Parent",
-    allowClear: true
+    allowClear: true,
+    dropdownAutoWidth : true
 });
 $.tablesorter.addParser({
     id: 'inputcount',

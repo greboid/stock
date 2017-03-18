@@ -16,6 +16,17 @@
   </ul>
 {/function}
 
+{assign var="nbsp" value="&nbsp;&nbsp;&nbsp;"}
+
+{function name=pickCatMenu level=0}
+  {foreach $data as $entry}
+      <option value="{$entry['id']}">{$nbsp|str_repeat:$level}{$entry['name']|escape:'htmlall'|truncate:30}</option>
+      {if isset($entry['subcategories']) && $entry['subcategories']|@count > 0}
+        {pickCatMenu data=$entry['subcategories'] level=$level+1}
+      {/if}
+  {/foreach}
+{/function}
+
 
 {include file='header.tpl'}
 {include file='menu.tpl'}
@@ -70,9 +81,7 @@
                                 <label for="site" class="col-2 col-form-label">Parent</label>
                                 <select class="col form-control" id="parent" name="parent">
                                     <option selected=""></option>
-                                    {foreach from=$categories key=categoryID item=category}
-                                        <option value="{$categoryID|escape:'htmlall'}">{$category['name']|escape:'htmlall'}</option>
-                                    {/foreach}
+                                    {pickCatMenu data=$categories}
                                 </select>
                             </div>
                             {/if}
