@@ -24,7 +24,7 @@
                                         <td class="align-middle">{$item.name|escape:'htmlall'}</td>
                                         <td class="align-middle">{$item.site|escape:'htmlall'}</td>
                                         <td class="align-middle">{$item.location|escape:'htmlall'}</td>
-                                        <td>
+                                        <td class="align-middle">
                                             <div class="input-group">
                                                 <span class="input-group-btn">
                                                     <button

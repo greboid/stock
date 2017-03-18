@@ -10,21 +10,21 @@
                   <table id="users" class="table table-hover">
                     <thead class="thead-default">
                         <tr>
-                            <th>Username</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Active</th>
-                            <th>Actions</th>
+                            <th class="text-center">Username</th>
+                            <th class="text-center">Name</th>
+                            <th class="text-center">Email</th>
+                            <th class="text-center">Active</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {foreach from=$users key=id item=user}
                             <tr>
-                              <td>{$user['username']|escape:'htmlall'}</td>
-                              <td>{$user['name']|escape:'htmlall'}</td>
-                              <td>{$user['email']|escape:'htmlall'}</td>
-                              <td>{$user['active']|escape:'htmlall'}</td>
-                              <td>
+                              <td class="align-middle">{$user['username']|escape:'htmlall'}</td>
+                              <td class="align-middle">{$user['name']|escape:'htmlall'}</td>
+                              <td class="align-middle">{$user['email']|escape:'htmlall'}</td>
+                              <td class="align-middle">{$user['active']|escape:'htmlall'}</td>
+                              <td class="align-middle">
                                 <div class="btn-group" role="group" aria-label="Basic example">
                                   <button type="submit" name="userid" id="userid" value={$user['id']}
                                     formaction="/user/sendverification"

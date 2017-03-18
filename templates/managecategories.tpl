@@ -2,9 +2,9 @@
   {foreach $data as $entry}
         <tr>
             <form action="/delete/category/{$entry['id']}" method="post">
-                <td>{$entry['name']|escape:'htmlall'}</td>
-                <td>{$entry['parentName']|escape:'htmlall'}</td>
-                <td>
+                <td class="align-middle">{$entry['name']|escape:'htmlall'}</td>
+                <td class="align-middle">{$entry['parentName']|escape:'htmlall'}</td>
+                <td class="align-middle">
                     <button class="btn btn-danger" {if (isset($entry['subcategories'])) || ($allCategoryStock[$entry['id']] > 0)}disabled{/if}>Delete</button>
                 </td>
             </form>
@@ -39,9 +39,9 @@
                 <table id="categories" class="table table-hover">
                     <thead class="thead-default">
                         <tr>
-                            <th>Category Name</th>
-                            <th>Parent</th>
-                            <th>Actions</th>
+                            <th class="text-center">Category Name</th>
+                            <th class="text-center">Parent</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>

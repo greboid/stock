@@ -20,22 +20,22 @@
                 <table id="items" class="table table-hover">
                     <thead class="thead-default">
                         <tr>
-                            <th>Item Name</th>
-                            <th>Location Name</th>
-                            <th>Site</th>
-                            <th># Stock</th>
-                            <th>Actions</th>
+                            <th class="text-center">Item Name</th>
+                            <th class="text-center">Location Name</th>
+                            <th class="text-center">Site</th>
+                            <th class="text-center"># Stock</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {foreach from=$stock key=id item=item}
                             <tr>
                                 <form action="/delete/item/{$id}" method="post">
-                                        <td>{$item['name']|escape:'htmlall'}</td>
-                                        <td>{$item['location']|escape:'htmlall'}</td>
-                                        <td>{$item['site']|escape:'htmlall'}</td>
-                                        <td>{$item['count']|escape:'htmlall'}</td>
-                                        <td><button class="btn btn-danger" >Delete</button></td>
+                                        <td class="align-middle">{$item['name']|escape:'htmlall'}</td>
+                                        <td class="align-middle">{$item['location']|escape:'htmlall'}</td>
+                                        <td class="align-middle">{$item['site']|escape:'htmlall'}</td>
+                                        <td class="align-middle">{$item['count']|escape:'htmlall'}</td>
+                                        <td class="align-middle"><button class="btn btn-danger" >Delete</button></td>
                                 </form>
                             </tr>
                         {/foreach}

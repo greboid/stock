@@ -9,18 +9,18 @@
                 <table id="sites" class="table table-hover">
                     <thead class="thead-default">
                         <tr>
-                            <th>Site Name</th>
-                            <th># Locations</th>
-                            <th>Actions</th>
+                            <th class="text-center">Site Name</th>
+                            <th class="text-center"># Locations</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {foreach from=$sites key=siteid item=site}
                             <tr>
                                 <form action="/delete/site/{$siteid}" method="post">
-                                    <td>{$site|escape:'htmlall'}</td>
-                                    <td>{$locations[$siteid]['locations']|@count}</td>
-                                    <td><button class="btn btn-danger"{if $locations[$siteid]['locations']|@count != 0} disabled{/if}>Delete</button></td>
+                                    <td class="align-middle">{$site|escape:'htmlall'}</td>
+                                    <td class="align-middle">{$locations[$siteid]['locations']|@count}</td>
+                                    <td class="align-middle"><button class="btn btn-danger"{if $locations[$siteid]['locations']|@count != 0} disabled{/if}>Delete</button></td>
                                 </form>
                             </tr>
                         {/foreach}
