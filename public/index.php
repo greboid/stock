@@ -42,8 +42,13 @@
         $pdo = new \PDO('mysql:dbname='.STOCK_DB.';host='.STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW);
         $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     } catch (Exception $e) {
-        $smarty->assign('error', 'The database connection settings are wrong, please check the config');
-        $smarty->display('500.tpl');
+        if ($e->getMessage() == 'Unable to connect to the database.') {
+            $smarty->assign('error', 'The database connection settings are wrong, please check the config');
+            $smarty->display('500.tpl');
+        } else {
+            $smarty->assign('version', false);
+            $smarty->display('install.tpl');
+        }
         exit();
     }
     $auth_factory = new AuthFactory($_COOKIE);

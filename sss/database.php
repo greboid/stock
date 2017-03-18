@@ -12,7 +12,7 @@
 
         private $dbconnection;
         private $pdo;
-        private $version = 4;
+        private $version = 5;
 
         public function __construct() {
             if (!$this->dbConnect()) {
@@ -79,14 +79,16 @@
             $this->upgrade();
         }
 
-        public function upgrade(): array {
+        public function upgrade(): void {
             $outputs = array();
             $version = $this->getVersion();
             while ($version < $this->version) {
                 $funcname = 'upgrade'.$version.'to'.++$version;
-                $outputs[] = $this->$funcname();
+                $success = $this->$funcname();
+                if (!$this->$funcname()) {
+                    throw new Exception('Unable to upgrade from '.$version.'to'.++$version);
+                }
             }
-            return $outputs;
         }
 
         public function upgrade0to1(): bool {
@@ -185,6 +187,21 @@
                 $this->dbconnection->multi_query('
                     ALTER TABLE `'.ACCOUNTS_TABLE.'` ADD COLUMN `verify_token` VARCHAR(255) NOT NULL AFTER `verified`, ADD UNIQUE INDEX (`verify_token`);
                     UPDATE `version` SET `version` = 4;
+                ');
+                while ($this->dbconnection->next_result()) {
+                    //NOOP just force the code to wait for the query to finish
+                }
+            } catch (Exception $e) {
+                return false;
+            }
+            return true;
+        }
+
+        public function upgrade4to5(): bool {
+            try {
+                $this->dbconnection->multi_query('
+                    ALTER TABLE `stock`.`accounts` ADD UNIQUE INDEX (`email`);
+                    UPDATE `version` SET `version` = 5;
                 ');
                 while ($this->dbconnection->next_result()) {
                     //NOOP just force the code to wait for the query to finish
