@@ -48,7 +48,7 @@
             ');
             $statement->bindValue(':siteName', $siteName, PDO::PARAM_STR);
             $statement->execute();
-            return intval($statement->fetchObject()->siteName);
+            return $statement->fetchObject()->siteName;
         }
 
         public function getLocationName(int $locationID): string {
@@ -75,7 +75,7 @@
             ');
             $statement->bindValue(':locationName', $locationName, PDO::PARAM_STR);
             $statement->execute();
-            return intval($statement->fetchObject()->locationID);
+            return $statement->fetchObject()->locationID;
         }
 
         public function getItemName(int $itemID): string {
@@ -155,7 +155,7 @@
                 FROM '.CATEGORIES_TABLE.' where category_name=:categoryName), -1) as categoryID');
             $statement->bindValue(':categoryName', $categoryName, PDO::PARAM_STR);
             $statement->execute();
-            return intval($statement->fetchObject()->categoryID);
+            return $statement->fetchObject()->categoryID;
         }
 
         public function getCategories(): array {
@@ -174,14 +174,14 @@
             $categories = array();
             foreach ($results as $result) {
                 $thisref = &$refs[ $result->categoryID ];
-                $thisref['id'] = intval($result->categoryID);
-                $thisref['parent'] = intval($result->categoryParent);
+                $thisref['id'] = $result->categoryID;
+                $thisref['parent'] = $result->categoryParent;
                 $thisref['parentName'] = $result->categoryParentName;
                 $thisref['name'] = $result->categoryName;
                 if ($result->categoryParent == 0) {
-                    $categories[intval($result->categoryID)] = &$thisref;
+                    $categories[$result->categoryID] = &$thisref;
                 } else {
-                    $refs[intval($result->categoryParent)]['subcategories'][intval($result->categoryID)] = &$thisref;
+                    $refs[$result->categoryParent]['subcategories'][$result->categoryID] = &$thisref;
                 }
             }
             return $categories;
@@ -196,7 +196,7 @@
             $results = $statement->fetchAll(PDO::FETCH_CLASS);
             $locations = array();
             foreach ($results as $result) {
-                $locations[$result->name] = array('name'=>$result->name, 'id'=>intval($result->id), 'stockcount'=>0);
+                $locations[$result->name] = array('name'=>$result->name, 'id'=>$result->id, 'stockcount'=>0);
             }
             foreach ($locations as &$location) {
                 $statement = $this->database->getPDO()->prepare('
@@ -208,7 +208,7 @@
                 $statement->execute();
                 $results = $statement->fetchAll(PDO::FETCH_CLASS);
                 foreach ($results as $result) {
-                    $location['stockcount'] = intval($result->stockcount);
+                    $location['stockcount'] = $result->stockcount;
                     $location['sitename'] = $this->getSiteForLocation($location['id']);
                 }
             }
@@ -235,10 +235,10 @@
             $results = $statement->fetchAll(PDO::FETCH_CLASS);
             $stock = array();
             foreach ($results as $result) {
-                $stock[intval($result->id)] =
+                $stock[$result->id] =
                     array(
                         'name'=>$result->name,
-                        'count'=>intval($result->count),
+                        'count'=>$result->count,
                         'site'=>$result->site,
                         'location'=>$result->location
                         );
@@ -266,7 +266,7 @@
             $results = $statement->fetchAll(PDO::FETCH_CLASS);
             $stock = array();
             foreach ($results as $result) {
-                $stock[intval($result->id)] = array('name'=>$result->name, 'count'=>intval($result->count), 'site'=>$result->site, 'location'=>$result->location);
+                $stock[$result->id] = array('name'=>$result->name, 'count'=>$result->count, 'site'=>$result->site, 'location'=>$result->location);
             }
             return $stock;
         }
@@ -291,10 +291,10 @@
             $results = $statement->fetchAll(PDO::FETCH_CLASS);
             $stock = array();
             foreach ($results as $result) {
-                $stock[intval($result->id)] =
+                $stock[$result->id] =
                     array(
                           'name'=>$result->name,
-                          'count'=>intval($result->count),
+                          'count'=>$result->count,
                           'site'=>$result->site,
                           'location'=>$result->location,
                           'category'=>$result->category
@@ -312,7 +312,7 @@
             $results = $statement->fetchAll(PDO::FETCH_CLASS);
             $stock = array();
             foreach ($results as $result) {
-                $stock[intval($result->categoryID)] = NULL;
+                $stock[$result->categoryID] = NULL;
             }
             foreach ($stock as $key=>$value) {
                 $statement = $this->database->getPDO()->prepare('
@@ -322,7 +322,7 @@
                 ');
                 $statement->bindValue(':categoryID', $key, PDO::PARAM_INT);
                 $statement->execute();
-                $stock[$key] = intval($statement->fetchObject()->stockCount);
+                $stock[$key] = $statement->fetchObject()->stockCount;
             }
             return $stock;
         }

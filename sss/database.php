@@ -29,7 +29,8 @@
             try {
                 $this->dbconnection = new mysqli(STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW, STOCK_DB);
                 $this->pdo = new PDO('mysql:dbname='.STOCK_DB.';host='.STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW);
-                $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+                $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             } catch (Exception $e) {
                 var_dump($e);
                 return false;
@@ -200,7 +201,7 @@
         public function upgrade4to5(): bool {
             try {
                 $this->dbconnection->multi_query('
-                    ALTER TABLE `stock`.`accounts` ADD UNIQUE INDEX (`email`);
+                    ALTER TABLE `'.ACCOUNTS_TABLE.'` ADD UNIQUE INDEX (`email`);
                     UPDATE `version` SET `version` = 5;
                 ');
                 while ($this->dbconnection->next_result()) {
