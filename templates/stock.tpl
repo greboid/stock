@@ -10,11 +10,11 @@
                     <table id="stock" class="table table-striped table-hover tablesorter">
                         <thead>
                             <tr>
-                                <th>Item</th>
-                                <th>Site</th>
-                                <th>Location</th>
-                                <th>Count</th>
-                                <th>Actions</th>
+                                <th class="text-center">Item</th>
+                                <th class="text-center">Site</th>
+                                <th class="text-center">Location</th>
+                                <th class="text-center">Count</th>
+                                <th class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
