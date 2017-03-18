@@ -60,8 +60,6 @@
     $pdo_adapter = $auth_factory->newPdoAdapter($database->getPDO(), $hash, $cols, $from, $where);
     $login_service = $auth_factory->newLoginService($pdo_adapter);
     $logout_service = $auth_factory->newLogoutService($pdo_adapter);
-    $resume_service = $auth_factory->newResumeService($pdo_adapter);
-    $resume_service->resume($auth);
     $msg = new FlashMessages();
     $storage->store('flash', $msg);
 
@@ -69,7 +67,6 @@
     $storage->store('auth', $auth);
     $storage->store('loginService', $login_service);
     $storage->store('logoutService', $logout_service);
-    $storage->store('resumeService', $resume_service);
     $storage->store('stock', $stock);
     $storage->store('smarty', $smarty);
     $storage->store('router', $router);
