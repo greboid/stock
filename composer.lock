@@ -8,23 +8,24 @@
     "packages": [
         {
             "name": "aura/auth",
-            "version": "2.0.0",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/auraphp/Aura.Auth.git",
-                "reference": "5a6e737501b05504fd30c4acc22f3d79d514d112"
+                "reference": "85a17b1d6cb48b00255ece9f9b0d99fc1dbc503e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/auraphp/Aura.Auth/zipball/5a6e737501b05504fd30c4acc22f3d79d514d112",
-                "reference": "5a6e737501b05504fd30c4acc22f3d79d514d112",
+                "url": "https://api.github.com/repos/auraphp/Aura.Auth/zipball/85a17b1d6cb48b00255ece9f9b0d99fc1dbc503e",
+                "reference": "85a17b1d6cb48b00255ece9f9b0d99fc1dbc503e",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
             "require-dev": {
-                "aura/di": "~2.0"
+                "aura/di": "~2.0",
+                "phpunit/phpunit": "~5.7 || ~4.8"
             },
             "suggest": {
                 "ext/imap": "For IMAP/POP/NNTP integration.",
@@ -63,7 +64,7 @@
                 "auth",
                 "authenticate"
             ],
-            "time": "2015-10-12T16:26:55+00:00"
+            "time": "2017-03-18T07:37:15+00:00"
         },
         {
             "name": "bramus/router",
