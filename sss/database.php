@@ -4,19 +4,20 @@
     namespace greboid\stock;
 
     use \Exception;
-    use \mysqli;
-    use \mysqli_driver;
     use \PDO;
 
     class Database {
 
-        private $dbconnection;
         private $pdo;
         private $version = 5;
 
-        public function __construct() {
-            if (!$this->dbConnect()) {
-                throw new Exception('Unable to connect to the database.');
+        public function __construct(PDO $pdo = null) {
+            if ($pdo == null) {
+                if (!$this->dbConnect()) {
+                    throw new Exception('Unable to connect to the database.');
+                }
+            } else {
+                $this->pdo = $pdo;
             }
             if (!$this->checkVersion()) {
                 $this->upgrade();
@@ -24,22 +25,14 @@
         }
 
         public function dbConnect(): bool {
-            $driver = new mysqli_driver();
-            $driver->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
             try {
-                $this->dbconnection = new mysqli(STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW, STOCK_DB);
                 $this->pdo = new PDO('mysql:dbname='.STOCK_DB.';host='.STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW);
                 $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             } catch (Exception $e) {
-                var_dump($e);
                 return false;
             }
             return true;
-        }
-
-        public function getConnection(): mysqli {
-            return $this->dbconnection;
         }
 
         public function getPDO(): PDO {
@@ -48,14 +41,14 @@
 
         public function getVersion(): int {
             try {
-                $statement = $this->dbconnection->prepare('SELECT version from '.VERSION_TABLE);
+                $statement = $this->pdo->prepare('
+                    SELECT version from '.VERSION_TABLE
+                );
                 $statement->execute();
-                $statement->bind_result($version);
-                $statement->fetch();
+                return $version = $statement->fetchObject()->version;
             } catch (Exception $e) {
                 return 0;
             }
-            return $version;
         }
 
         public function checkVersion(): bool {

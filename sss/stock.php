@@ -4,8 +4,6 @@
     namespace greboid\stock;
 
     use \Exception;
-    use \mysqli;
-    use \mysqli_driver;
     use \Smarty;
     use \greboid\stock\Database;
     use \PDO;
@@ -13,7 +11,6 @@
     class Stock {
 
         private $database;
-        private $dbconnection;
 
         public function __construct(Database $database = null) {
             if ($database == null) {
@@ -21,7 +18,6 @@
             } else {
                 $this->database = $database;
             }
-            $this->dbconnection = $this->database->getConnection();
         }
 
         public function getSiteName(int $siteID): string {

@@ -5,6 +5,7 @@
     require_once('../config.php');
     session_start();
 
+    use \greboid\stock\Database;
     use \greboid\stock\Stock;
     use \greboid\stock\ItemRoutes;
     use \greboid\stock\LocationRoutes;
@@ -35,12 +36,10 @@
     $smarty->setConfigDir(CONFIG_PATH);
     $smarty->assign('max_stock', MAX_STOCK);
     $error = false;
-    $pdo = null;
+    $database = null;
 
     try {
-        $stock = new Stock();
-        $pdo = new \PDO('mysql:dbname='.STOCK_DB.';host='.STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW);
-        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $database = new Database();
     } catch (Exception $e) {
         if ($e->getMessage() == 'Unable to connect to the database.') {
             $smarty->assign('error', 'The database connection settings are wrong, please check the config');
@@ -51,13 +50,14 @@
         }
         exit();
     }
+    $stock = new Stock($database);
     $auth_factory = new AuthFactory($_COOKIE);
     $auth = $auth_factory->newInstance();
     $hash = new PasswordVerifier(PASSWORD_DEFAULT);
     $cols = array('username', 'password', 'email', 'name', 'id');
     $from = 'accounts';
     $where = 'active = 1 AND verified = 1';
-    $pdo_adapter = $auth_factory->newPdoAdapter($pdo, $hash, $cols, $from, $where);
+    $pdo_adapter = $auth_factory->newPdoAdapter($database->getPDO(), $hash, $cols, $from, $where);
     $login_service = $auth_factory->newLoginService($pdo_adapter);
     $logout_service = $auth_factory->newLogoutService($pdo_adapter);
     $resume_service = $auth_factory->newResumeService($pdo_adapter);
@@ -73,7 +73,8 @@
     $storage->store('stock', $stock);
     $storage->store('smarty', $smarty);
     $storage->store('router', $router);
-    $storage->store('pdo', $pdo);
+    $storage->store('pdo', $database->getPDO());
+    $storage->store('database', $database);
 
     $authRoutes->addRoutes($router, $storage);
     $systemRoutes->addRoutes($router, $smarty, $stock, $storage);
