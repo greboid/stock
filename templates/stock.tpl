@@ -26,7 +26,7 @@
                                         <td>{$item.location|escape:'htmlall'}</td>
                                         <td>
                                             <button
-                                                class="btn btn-sm btn-info"
+                                                class="btn btn-sm btn-outline-primary"
                                                 type="submit"
                                                 formaction="/edit/item/{$id|escape:'htmlall'}{$route}"
                                                 name="countdown"
@@ -35,7 +35,7 @@
                                                 --
                                             </button>
                                             <button
-                                                class="btn btn-sm btn-info"
+                                                class="btn btn-sm btn-outline-primary"
                                                 type="submit"
                                                 formaction="/edit/item/{$id|escape:'htmlall'}{$route}"
                                                 name="countdown"
@@ -45,7 +45,7 @@
                                             </button>
                                             <input type="number" name="{$id|escape:'htmlall'}-count" value="{$item.count|escape:'htmlall'}" required min="0" max="{$max_stock}">
                                             <button
-                                                class="btn btn-sm btn-info"
+                                                class="btn btn-sm btn-outline-primary"
                                                 type="submit"
                                                 formaction="/edit/item/{$id|escape:'htmlall'}{$route}"
                                                 name="countup"
@@ -54,7 +54,7 @@
                                                 +
                                             </button>
                                             <button
-                                                class="btn btn-sm btn-info"
+                                                class="btn btn-sm btn-outline-primary"
                                                 type="submit"
                                                 formaction="/edit/item/{$id|escape:'htmlall'}{$route}"
                                                 name="countup"
@@ -64,7 +64,7 @@
                                             </button>
                                         </td>
                                         <td>
-                                            <button type="submit" formaction="/edit/item/{$id|escape:'htmlall'}{$route}" class="btn btn-default btn-info">Edit</button>
+                                            <button type="submit" formaction="/edit/item/{$id|escape:'htmlall'}{$route}" class="btn btn-default btn-primary">Edit</button>
                                         </td>
                                 </tr>
                             {/foreach}
