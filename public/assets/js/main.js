@@ -192,3 +192,18 @@ $('#editLocationModal').on('show.bs.modal', function (event) {
   modal.find('#editID').val(locationid)
   $("#editSite").find("option:contains('"+sitename+"')").attr("selected", "selected")
 });
+
+$('#editCategoryModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget)
+  var categoryid = button.data('categoryid')
+  var categoryname = button.data('categoryname')
+  var categoryparent = button.data('categoryparent')
+  var modal = $(this)
+  modal.find('#editName').val(categoryname)
+  modal.find('#editID').val(categoryid)
+  if (categoryparent == "") {
+    $("#editParent").find("option:contains('"+categoryparent+"')").prop("selected", false)
+  } else {
+    $("#editParent").find("option:contains('"+categoryparent+"')").attr("selected", "selected")
+  }
+});

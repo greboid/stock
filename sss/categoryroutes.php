@@ -61,6 +61,26 @@
                     $smarty->display('500.tpl');
                 }
             });
+            $router->post('/edit/category', function() use ($smarty, $stock) {
+                try {
+                    $categoryID = filter_input(INPUT_POST, "editID", FILTER_VALIDATE_INT);
+                    $categoryName = filter_input(INPUT_POST, "editName", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+                    $categoryParent = filter_input(INPUT_POST, "editParent", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+                    if ($categoryParent == null) {
+                        $categoryParent = 0;
+                    }
+                    if ($categoryName !== false) {
+                        $stock->editCategory($categoryID, $categoryName, $categoryParent);
+                    } else {
+                        $smarty->assign('error', 'Missing required value.');
+                        $smarty->display('500.tpl');
+                    }
+                    header('Location: /manage/categories');
+                } catch (Exception $e) {
+                    $smarty->assign('error', $e->getMessage());
+                    $smarty->display('500.tpl');
+                }
+            });
             $router->get('/manage/categories', function() use ($smarty, $stock) {
                 try {
                     $smarty->assign('allCategoryStock', $stock->getAllCategoryStock());

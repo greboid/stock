@@ -457,6 +457,29 @@
             $statement->execute();
         }
 
+        public function editCategory(int $categoryID, string $categoryName, int $categoryParent): void {
+            $categoryName = trim($categoryName);
+            if (empty($categoryName)) {
+                throw new Exception('The name cannot be blank.');
+            }
+            if ($categoryName == 'all') {
+                throw new Exception('You cannot use all as a name.');
+            }
+            if (preg_match('#\.|\.\.|\\\\|/#', $categoryName)) {
+                throw new Exception('The name cannot contain ., .. ,/ or \\');
+            }
+
+            $statement = $this->database->getPDO()->prepare('
+                UPDATE '.CATEGORIES_TABLE.'
+                set category_name=:categoryName, category_parent=:categoryParent
+                WHERE category_id=:categoryID
+            ');
+            $statement->bindValue(':categoryID', $categoryID);
+            $statement->bindValue(':categoryName', $categoryName);
+            $statement->bindValue(':categoryParent', $categoryParent);
+            $statement->execute();
+        }
+
         public function insertCategory(string $name, int $parent = 0): void {
             $name = trim($name);
             if (empty($name)) {
