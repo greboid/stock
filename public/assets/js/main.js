@@ -38,8 +38,6 @@ $.tablesorter.addParser({
         return false;
     },
     format: function(s, table, cell, cellIndex) {
-        var regex = new RegExp('(.*?)value=\"(.*?)\"(.*?)');
-        var results = regex.exec(s.toLowerCase());
         return cell.getElementsByTagName('input')[0].value;
     },
     type: 'numeric'
