@@ -7,12 +7,12 @@
             <div class="col align-self-center">
                 <h1 class="text-center">Manage Sites</h1>
                 <form method="post">
-                    <table id="sites" class="table table-hover">
+                    <table id="sites" class="table table-hover table-bordered">
                         <thead class="thead-default">
                             <tr>
                                 <th class="text-center">Site Name</th>
                                 <th class="text-center"># Locations</th>
-                                <th class="text-center">Actions</th>
+                                <th class="table-actions text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>

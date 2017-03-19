@@ -17,14 +17,14 @@
             </div>
             <div class="col align-self-center">
                 <h1 class="text-center">Manage Items</h1>
-                <table id="items" class="table table-hover">
+                <table id="items" class="table table-hover table-bordered">
                     <thead class="thead-default">
                         <tr>
                             <th class="text-center">Item Name</th>
                             <th class="text-center">Location Name</th>
                             <th class="text-center">Site</th>
                             <th class="text-center"># Stock</th>
-                            <th class="text-center">Actions</th>
+                            <th class="table-actions text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>

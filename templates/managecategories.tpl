@@ -36,12 +36,12 @@
             </div>
             <div class="col align-self-center">
                 <h1 class="text-center">Manage Categories</h1>
-                <table id="categories" class="table table-hover">
+                <table id="categories" class="table table-hover table-bordered">
                     <thead class="thead-default">
                         <tr>
                             <th class="text-center">Category Name</th>
                             <th class="text-center">Parent</th>
-                            <th class="text-center">Actions</th>
+                            <th class="table-actions text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>

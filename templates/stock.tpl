@@ -7,14 +7,14 @@
             <div class="col align-self-center col-auto">
                 <h1>Stock: {$site|escape:'htmlall'}</h1>
                 <form class="form-horizontal" method="post">
-                    <table id="stock" class="table table-hover">
+                    <table id="stock" class="table table-hover table-bordered">
                         <thead class="thead-default">
                             <tr>
                                 <th class="text-center">Item</th>
                                 <th class="text-center">Site</th>
                                 <th class="text-center">Location</th>
                                 <th class="text-center">Count</th>
-                                <th class="text-center">Actions</th>
+                                <th class="table-actions text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
