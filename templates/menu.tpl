@@ -31,11 +31,11 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/manage/locations">Manage Locations</a>
                 </li>
-                <li>
-                    <a class="nav-link" href="/manage/items">Manage Items</a>
-                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/manage/categories">Manage Categories</a>
+                </li>
+                <li>
+                    <a class="nav-link" href="/manage/items">Manage Items</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/manage/users">Manage Users</a>
