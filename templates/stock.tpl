@@ -33,7 +33,7 @@
                                                     name="countdown"
                                                     value="2"
                                                     {if $item.count < 2} disabled{/if}>
-                                                    --
+                                                    &laquo;
                                                 </button>
                                             </span>
                                             <span class="input-group-btn">
@@ -44,7 +44,7 @@
                                                     name="countdown"
                                                     value="1"
                                                     {if $item.count == 0} disabled{/if}>
-                                                    -
+                                                    &lsaquo;
                                                 </button>
                                             </span>
                                             <input class="form-control" type="number" name="{$id|escape:'htmlall'}-count" value="{$item.count|escape:'htmlall'}" required min="0" max="{$max_stock}">
@@ -56,7 +56,7 @@
                                                     name="countup"
                                                     value="1"
                                                     {if $item.count == $max_stock} disabled{/if}>
-                                                    +
+                                                    &rsaquo;
                                                 </button>
                                             </span>
                                             <span class="input-group-btn">
@@ -67,7 +67,7 @@
                                                     name="countup"
                                                     value="2"
                                                     {if $item.count > ($max_stock-2)} disabled{/if}>
-                                                    ++
+                                                    &raquo;
                                                 </button>
                                             </span>
                                         </div>

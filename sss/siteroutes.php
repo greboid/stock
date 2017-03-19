@@ -58,9 +58,25 @@
                     $smarty->display('500.tpl');
                 }
             });
+            $router->post('/edit/site', function() use ($smarty, $stock) {
+                try {
+                    $siteID = filter_input(INPUT_POST, "editID", FILTER_VALIDATE_INT);
+                    $name = filter_input(INPUT_POST, "editName", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+                    if ($name !== false) {
+                        $stock->editSite($siteID, $name);
+                    } else {
+                        $smarty->assign('error', 'Missing required value.');
+                        $smarty->display('500.tpl');
+                    }
+                    header('Location: /manage/sites');
+                } catch (Exception $e) {
+                    $smarty->assign('error', $e->getMessage());
+                    $smarty->display('500.tpl');
+                }
+            });
             $router->post('/add/site', function() use ($smarty, $stock) {
                 try {
-                    $name = filter_input(INPUT_POST, "name", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+                    $name = filter_input(INPUT_POST, "addName", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
                     if ($name !== false) {
                         $stock->insertSite($name);
                     } else {

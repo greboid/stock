@@ -412,6 +412,28 @@
             $statement->execute();
         }
 
+        public function editSite(int $siteID, string $name): void {
+            $name = trim($name);
+            if (empty($name)) {
+                throw new Exception('The name cannot be blank.');
+            }
+            if ($name == 'all') {
+                throw new Exception('You cannot use all as a name.');
+            }
+            if (preg_match('#\.|\.\.|\\\\|/#', $name)) {
+                throw new Exception('The name cannot contain ., .. ,/ or \\');
+            }
+
+            $statement = $this->database->getPDO()->prepare('
+                UPDATE '.SITES_TABLE.'
+                set site_name=:siteName
+                WHERE site_id=:siteID
+            ');
+            $statement->bindValue(':siteName', $name);
+            $statement->bindValue(':siteID', $siteID);
+            $statement->execute();
+        }
+
         public function insertCategory(string $name, int $parent = 0): void {
             $name = trim($name);
             if (empty($name)) {

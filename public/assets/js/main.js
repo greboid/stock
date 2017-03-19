@@ -172,3 +172,12 @@ $("#verifyEmailForm").validate({
 $('#addUserModal').on('hidden.bs.modal', function () {
     $.clearInput(this);
 });
+
+$('#editSiteModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget)
+  var siteName = button.data('sitename')
+  var siteID = button.data('siteid')
+  var modal = $(this)
+  modal.find('#editID').val(siteID)
+  modal.find('#editName').val(siteName)
+})
