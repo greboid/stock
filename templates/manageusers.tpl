@@ -4,7 +4,7 @@
       <div class="row">
           <div class="col">
           </div>
-          <div class="col align-self-center">
+          <div class="col-8 align-self-center">
               <h1 class="text-center">Users</h1>
               <form method="post">
                   <table id="users" class="table table-hover table-bordered">
@@ -51,7 +51,7 @@
   </div>
 
   <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModal" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Add User</h5>

@@ -434,6 +434,29 @@
             $statement->execute();
         }
 
+        public function editLocation(int $locationID, string $locationName, int $siteID): void {
+            $locationName = trim($locationName);
+            if (empty($locationName)) {
+                throw new Exception('The name cannot be blank.');
+            }
+            if ($locationName == 'all') {
+                throw new Exception('You cannot use all as a name.');
+            }
+            if (preg_match('#\.|\.\.|\\\\|/#', $locationName)) {
+                throw new Exception('The name cannot contain ., .. ,/ or \\');
+            }
+
+            $statement = $this->database->getPDO()->prepare('
+                UPDATE '.LOCATIONS_TABLE.'
+                set location_name=:locationName, location_site=:siteID
+                WHERE location_id=:locationID
+            ');
+            $statement->bindValue(':locationID', $locationID);
+            $statement->bindValue(':locationName', $locationName);
+            $statement->bindValue(':siteID', $siteID);
+            $statement->execute();
+        }
+
         public function insertCategory(string $name, int $parent = 0): void {
             $name = trim($name);
             if (empty($name)) {

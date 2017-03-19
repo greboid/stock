@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col">
             </div>
-            <div class="col align-self-center">
+            <div class="col-8 align-self-center">
                 <h1 class="text-center">Manage Sites</h1>
                 <form method="post">
                     <table id="sites" class="table table-hover table-bordered">
@@ -51,7 +51,7 @@
     </div>
 
     <div class="modal fade" id="addSiteModal" tabindex="-1" role="dialog" aria-labelledby="addSiteModal" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Add Site</h5>
@@ -81,7 +81,7 @@
     </div>
 
     <div class="modal fade" id="editSiteModal" tabindex="-1" role="dialog" aria-labelledby="editSiteModal" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Site</h5>

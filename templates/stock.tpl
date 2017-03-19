@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col">
             </div>
-            <div class="col align-self-center col-auto">
+            <div class="col-8 align-self-center col-auto">
                 <h1>Stock: {$site|escape:'htmlall'}</h1>
                 <form class="form-horizontal" method="post">
                     <table id="stock" class="table table-hover table-bordered">

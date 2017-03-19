@@ -180,4 +180,15 @@ $('#editSiteModal').on('show.bs.modal', function (event) {
   var modal = $(this)
   modal.find('#editID').val(siteID)
   modal.find('#editName').val(siteName)
-})
+});
+
+$('#editLocationModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget)
+  var locationid = button.data('locationid')
+  var locationname = button.data('locationname')
+  var sitename = button.data('sitename')
+  var modal = $(this)
+  modal.find('#editName').val(locationname)
+  modal.find('#editID').val(locationid)
+  $("#editSite").find("option:contains('"+sitename+"')").attr("selected", "selected")
+});

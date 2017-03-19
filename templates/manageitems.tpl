@@ -15,7 +15,7 @@
         <div class="row">
             <div class="col">
             </div>
-            <div class="col align-self-center">
+            <div class="col-8 align-self-center">
                 <h1 class="text-center">Manage Items</h1>
                 <table id="items" class="table table-hover table-bordered">
                     <thead class="thead-default">
