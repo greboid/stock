@@ -34,7 +34,8 @@
                                       data-username="{$user['username']|escape:'htmlall'}"
                                       data-name="{$user['name']|escape:'htmlall'}"
                                       data-email="{$user['email']|escape:'htmlall'}"
-                                      data-active="{$user['active']|escape:'htmlall'}">
+                                      data-active="{$user['active']|escape:'htmlall'}"
+                                      {if $username == $user['username']}disabled{/if}>
                                     Edit
                                   </button>
                                   <button type="submit" name="userid" id="userid" value={$user['id']}

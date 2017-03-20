@@ -38,7 +38,7 @@
                         'username' => $username,
                         'password' => $password,
                     ));
-                    $msg->info('You are now logged in: '.$auth->getUserData()['name']);
+                    $msg->info('You are now logged in: '.htmlspecialchars($auth->getUserData()['name']));
                     header('Location: /');
                 } catch (\Aura\Auth\Exception\UsernameMissing $e) {
                     $msg->error('You must specify a username.');
