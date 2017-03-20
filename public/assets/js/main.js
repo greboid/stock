@@ -42,64 +42,6 @@ $.tablesorter.addParser({
     },
     type: 'numeric'
 });
-$("#stock").tablesorter({
-    theme : "bootstrap",
-    textExtraction: "complex",
-    headers: {
-        3: {
-            sorter:'inputcount'
-        },
-        4: {
-            sorter: false
-        }
-    }
-});
-$("#categories").tablesorter({
-    theme : "bootstrap",
-    textExtraction: "complex",
-    headers: {
-        2: {
-            sorter: false
-        }
-    }
-});
-$("#items").tablesorter({
-    theme : "bootstrap",
-    textExtraction: "complex",
-    headers: {
-        4: {
-            sorter: false
-        }
-    }
-});
-$("#locations").tablesorter({
-    theme : "bootstrap",
-    textExtraction: "complex",
-    headers: {
-        3: {
-            sorter: false
-        }
-    }
-});
-$("#sites").tablesorter({
-    theme : "bootstrap",
-    textExtraction: "complex",
-    headers: {
-        2: {
-            sorter: false
-        }
-    }
-});
-$("#users").tablesorter({
-    theme : "bootstrap",
-    textExtraction: "complex",
-    headers: {
-        4: {
-            sorter: false
-        }
-    }
-});
-
 $("#profileDetailsForm").validate({
     rules: {
         name: {
@@ -241,4 +183,40 @@ $('#editUserModal').on('show.bs.modal', function (event) {
     modal.find('#activey').removeAttr("checked", "checked")
     modal.find('#activen').attr("checked", "checked")
   }
+});
+$.fn.dataTable.ext.search.push(
+    function( settings, data, dataIndex ) {
+      var itemsearch = $('#itemsearch').val().toLowerCase();
+      var locationsearch = $('#locationsearch').val().toLowerCase();
+      var sitesearch = $('#sitesearch').val().toLowerCase();
+      var min = parseInt( $('#mincount').val(), 10 );
+      var max = parseInt( $('#maxcount').val(), 10 );
+
+      var itemSet = (itemsearch == '' ? true : data[0].toLowerCase().includes(itemsearch));
+      var locationSet = (locationsearch == '' ? true : data[2].toLowerCase().includes(locationsearch));
+      var siteSet = (sitesearch == '' ? true : data[1].toLowerCase().includes(sitesearch));
+      var minCount = (isNaN(min) ? true : parseInt(data[3]) >= min);
+      var maxCount = (isNaN(max) ? true : parseInt(data[3]) <= max);
+
+      return itemSet && locationSet && siteSet && minCount && maxCount;
+    }
+);
+var table = $('#stock').DataTable({
+  ordering: true,
+  dom: 'rtp',
+  "columns": [
+    null,
+    null,
+    null,
+    null,
+    { "orderable": false },
+  ]
+});
+$('#itemsearch, #locationsearch, #sitesearch, #mincount, #maxcount').keyup( function() {
+  table.draw();
+});
+$('#itemsearchform, #locationsearchform, #sitesearchform, #mincountform, #maxcountform').bind('reset', function() {
+  setTimeout(function(){
+        table.draw();
+    }, 200);
 });

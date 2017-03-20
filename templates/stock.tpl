@@ -1,13 +1,34 @@
-{include file='header.tpl'}
-{include file='menu.tpl'}
+{extends file="base.tpl"}
+{block name="content"}
     <div class="container-fluid">
-        <div class="row">
-            <div class="col">
+        <div class="fs row">
+            <div class="col bg-faded sidebar">
+            <h1>Filters</h1>
+              <form id="itemsearchform" class="input-group">
+                        <input type="text" id="itemsearch" class="form-control" placeholder="Filter items">
+                        <button type="reset" class="input-group-addon fa fa-times" aria-hidden="true"></button>
+                </form>
+                <form id="sitesearchform" class="input-group">
+                    <input type="text" id="sitesearch" class="form-control" placeholder="Filter sites">
+                    <button type="reset" class="input-group-addon fa fa-times" aria-hidden="true"></button>
+                </form>
+                <form id="locationsearchform" class="input-group">
+                    <input type="text" id="locationsearch" class="form-control" placeholder="Filter locations">
+                    <button type="reset" class="input-group-addon fa fa-times" aria-hidden="true"></button>
+                </form>
+                <form id="mincountform" class="input-group">
+                    <input type="text" id="mincount" class="form-control" placeholder="Minimum count">
+                    <button type="reset" class="input-group-addon fa fa-times" aria-hidden="true"></button>
+                </form>
+                <form id="maxcountform" class="input-group">
+                    <input type="text" id="maxcount" class="form-control" placeholder="Maximum count">
+                    <button type="reset" class="input-group-addon fa fa-times" aria-hidden="true"></button>
+                </form>
             </div>
-            <div class="col-8 align-self-center col-auto">
+            <main class="col-8">
                 <h1>Stock: {$site|escape:'htmlall'}</h1>
                 <form class="form-horizontal" method="post">
-                    <table id="stock" class="table table-hover table-bordered">
+                    <table id="stock" class="table table-hover table-bordered dataTable">
                         <thead class="thead-default">
                             <tr>
                                 <th class="text-center">Item</th>
@@ -20,10 +41,10 @@
                         <tbody>
                             {foreach from=$stock key=id item=item}
                                 <tr>
-                                    <td class="align-middle">{$item.name|escape:'htmlall'}</td>
+                                    <td class="name align-middle">{$item.name|escape:'htmlall'}</td>
                                     <td class="align-middle">{$item.site|escape:'htmlall'}</td>
                                     <td class="align-middle">{$item.location|escape:'htmlall'}</td>
-                                    <td class="align-middle">
+                                    <td data-order="{$item.count}" data-search="{$item.count}" class="align-middle">
                                         <div class="input-group">
                                             <span class="input-group-btn">
                                                 <button
@@ -80,9 +101,9 @@
                         </tbody>
                     </table>
                 </form>
-            </div>
-            <div class="col">
+            </main>
+            <div class="col-2">
             </div>
         </div>
     </div>
-{include file='footer.tpl'}
+{/block}
