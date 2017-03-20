@@ -113,7 +113,7 @@
                     } else {
                         $stmt = $pdo->prepare('
                             UPDATE accounts
-                            SET password=:password
+                            SET password=:password, verified=1
                             WHERE verify_token=:token
                         ');
                         $stmt->bindValue('token', $token, PDO::PARAM_STR);

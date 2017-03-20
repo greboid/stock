@@ -189,7 +189,6 @@
                     } else {
                         $token = $result->verify_token;
                     }
-                    var_dump($result->verify_token);
                     if ($this->sendNewUserMail($result->username,
                                                $result->name,
                                                $result->email,
