@@ -62,6 +62,20 @@
                     $smarty->display('500.tpl');
                 }
             });
+            $router->post('/edit/item', function() use ($smarty, $stock) {
+                try {
+                    $itemID = filter_input(INPUT_POST, "editID", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+                    $locationName = filter_input(INPUT_POST, "editName", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+                    $locationID = filter_input(INPUT_POST, "editLocation", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+                    $categoryID = filter_input(INPUT_POST, "editCategory", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+                    $stockCount = filter_input(INPUT_POST, "editCount", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+                    $stock->editItem($itemID, $locationName, $locationID, $categoryID, $stockCount);
+                    header('Location: /manage/items');
+                } catch (Exception $e) {
+                    $smarty->assign('error', $e->getMessage());
+                    $smarty->display('500.tpl');
+                }
+            });
             $router->get('/manage/items', function() use ($smarty, $stock) {
                 try {
                     $smarty->assign('stock', $stock->getSiteStock(0));

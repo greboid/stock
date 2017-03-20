@@ -205,3 +205,18 @@ $('#editCategoryModal').on('show.bs.modal', function (event) {
     $("#editParent").find("option:contains('"+categoryparent+"')").attr("selected", "selected")
   }
 });
+
+$('#editItemModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget)
+  var itemid = button.data('itemid')
+  var itemname = button.data('itemname')
+  var locationname = button.data('locationname')
+  var categoryname = button.data('categoryname')
+  var stockcount = button.data('stockcount')
+  var modal = $(this)
+  modal.find('#editID').val(itemid)
+  modal.find('#editName').val(itemname)
+  $('#editLocation option').each(function () { if ($(this).text() == locationname) { $(this).attr("selected", "selected") } });
+  $('#editCategory option').each(function () { if ($(this).text().trim() == categoryname) { $(this).attr("selected", "selected") } });
+  modal.find('#editCount').val(stockcount)
+});

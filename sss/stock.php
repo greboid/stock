@@ -215,10 +215,16 @@
             if (!$this->getSiteName($site)) {
                 throw new Exception('Specified site does not exist.');
             }
-            $sql = 'SELECT stock_id as id, site_name as site, location_name as location, stock_name as name, stock_count as count
+            $sql = 'SELECT stock_id as id,
+                        site_name as site,
+                        location_name as location,
+                        stock_name as name,
+                        stock_count as count,
+                        category_name as category
                     FROM '.STOCK_TABLE.'
                     LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
-                    LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id';
+                    LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id
+                    LEFT JOIN '.CATEGORIES_TABLE.' ON '.STOCK_TABLE.'.stock_category='.CATEGORIES_TABLE.'.category_id';
             if ($site != 0) {
                 $sql .= " WHERE site_id=:site";
             }
@@ -233,10 +239,12 @@
             foreach ($results as $result) {
                 $stock[$result->id] =
                     array(
+                        'id'=>$result->id,
                         'name'=>$result->name,
                         'count'=>$result->count,
                         'site'=>$result->site,
-                        'location'=>$result->location
+                        'location'=>$result->location,
+                        'category'=>$result->category
                         );
             }
             return $stock;
@@ -477,6 +485,35 @@
             $statement->bindValue(':categoryID', $categoryID);
             $statement->bindValue(':categoryName', $categoryName);
             $statement->bindValue(':categoryParent', $categoryParent);
+            $statement->execute();
+        }
+
+        public function editItem(int $itemID, string $itemName, int $locationID, int $categoryID, int $stockCount): void {
+            $itemName = trim($itemName);
+            if (empty($itemName)) {
+                throw new Exception('The name cannot be blank.');
+            }
+            if ($itemName == 'all') {
+                throw new Exception('You cannot use all as a name.');
+            }
+            if (preg_match('#\.|\.\.|\\\\|/#', $itemName)) {
+                throw new Exception('The name cannot contain ., .. ,/ or \\');
+            }
+
+            $statement = $this->database->getPDO()->prepare('
+                UPDATE '.STOCK_TABLE.'
+                set stock_name=:itemName,
+                    stock_location=:locationID,
+                    stock_category=:categoryID,
+                    stock_count=:stockCount
+                WHERE stock_id=:itemID
+            ');
+            echo $itemID.' - '.$itemName.' - '.$locationID.' - '.$categoryID.' - '.$stockCount;
+            $statement->bindValue(':itemID', $itemID, PDO::PARAM_INT);
+            $statement->bindValue(':itemName', $itemName, PDO::PARAM_STR);
+            $statement->bindValue(':locationID', $locationID, PDO::PARAM_INT);
+            $statement->bindValue(':categoryID', $categoryID, PDO::PARAM_INT);
+            $statement->bindValue(':stockCount', $stockCount, PDO::PARAM_INT);
             $statement->execute();
         }
 
