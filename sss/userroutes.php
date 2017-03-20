@@ -140,6 +140,20 @@
                 }
                 header('Location: /manage/users');
             });
+            $router->post('/edit/user', function() use ($smarty, $pdo) {
+                try {
+                    $userID = filter_input(INPUT_POST, "editID", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+                    $userUsername = filter_input(INPUT_POST, "editUsername", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+                    $userName = filter_input(INPUT_POST, "editName", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+                    $userEmail = filter_input(INPUT_POST, "editEmail", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+                    $userActive = filter_input(INPUT_POST, "active", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+                    $this->editUser($pdo, $userID, $userUsername, $userName, $userEmail, $userActive);
+                    header('Location: /manage/users');
+                } catch (Exception $e) {
+                    $smarty->assign('error', $e->getMessage());
+                    $smarty->display('500.tpl');
+                }
+            });
             $router->post('/delete/user', function() use ($smarty, $pdo, $msg) {
                 $userid = filter_input(INPUT_POST, "userid", FILTER_SANITIZE_NUMBER_INT);
                 try {
@@ -231,5 +245,22 @@
                 $uri = substr($uri, 0, strpos($uri, '?'));
             }
             return '/' . trim($uri, '/');
+        }
+
+        public function editUser(PDO $pdo, int $userID, string $userUsername, string $userName, string $userEmail, int $userActive): void {
+            $statement = $pdo->prepare('
+                UPDATE '.ACCOUNTS_TABLE.'
+                set username=:username,
+                    email=:name,
+                    name=:email,
+                    active=:active
+                WHERE id=:id
+            ');
+            $statement->bindValue(':id', $userID, PDO::PARAM_INT);
+            $statement->bindValue(':username', $userUsername, PDO::PARAM_STR);
+            $statement->bindValue(':email', $userName, PDO::PARAM_INT);
+            $statement->bindValue(':name', $userEmail, PDO::PARAM_INT);
+            $statement->bindValue(':active', $userActive, PDO::PARAM_INT);
+            $statement->execute();
         }
     }

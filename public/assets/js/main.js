@@ -208,7 +208,7 @@ $('#editCategoryModal').on('show.bs.modal', function (event) {
 
 $('#editItemModal').on('show.bs.modal', function (event) {
   var button = $(event.relatedTarget)
-  var itemid = button.data('itemid')
+  var itemid = button.data('id')
   var itemname = button.data('itemname')
   var locationname = button.data('locationname')
   var categoryname = button.data('categoryname')
@@ -219,4 +219,26 @@ $('#editItemModal').on('show.bs.modal', function (event) {
   $('#editLocation option').each(function () { if ($(this).text() == locationname) { $(this).attr("selected", "selected") } });
   $('#editCategory option').each(function () { if ($(this).text().trim() == categoryname) { $(this).attr("selected", "selected") } });
   modal.find('#editCount').val(stockcount)
+});
+
+$('#editUserModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget)
+  var userid = button.data('userid')
+  var username = button.data('username')
+  var name = button.data('name')
+  var email = button.data('email')
+  var active = button.data('active')
+  var modal = $(this)
+  console.log('User ID: '+userid)
+  modal.find('#editID').val(userid)
+  modal.find('#editUsername').val(username)
+  modal.find('#editName').val(name)
+  modal.find('#editEmail').val(email)
+  if (active == 1) {
+    modal.find('#activey').attr("checked", "checked")
+    modal.find('#activen').removeAttr("checked", "checked")
+  } else {
+    modal.find('#activey').removeAttr("checked", "checked")
+    modal.find('#activen').attr("checked", "checked")
+  }
 });

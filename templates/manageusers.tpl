@@ -25,7 +25,18 @@
                               <td class="align-middle">{$user['email']|escape:'htmlall'}</td>
                               <td class="align-middle">{$user['active']|escape:'htmlall'}</td>
                               <td class="align-middle">
-                                <div class="btn-group" role="group" aria-label="Basic example">
+                                <div class="btn-group">
+                                  <button type="button"
+                                      class="btn btn-primary"
+                                      data-toggle="modal"
+                                      data-target="#editUserModal"
+                                      data-userid="{$user['id']}"
+                                      data-username="{$user['username']|escape:'htmlall'}"
+                                      data-name="{$user['name']|escape:'htmlall'}"
+                                      data-email="{$user['email']|escape:'htmlall'}"
+                                      data-active="{$user['active']|escape:'htmlall'}">
+                                    Edit
+                                  </button>
                                   <button type="submit" name="userid" id="userid" value={$user['id']}
                                     formaction="/user/sendverification"
                                     class="btn btn-secondary"
@@ -94,5 +105,52 @@
           </div>
       </div>
     </div>
-</div>
+  </div>
+
+  <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit User</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="col align-self-center">
+              <form method="post" action="/edit/user" id="editUserForm">
+                <input type="hidden" id="editID" name="editID" value="">
+                <fieldset>
+                  <div class="form-group row">
+                    <label class="col-4 col-form-label" for="editUsername">Username</label>
+                    <input class="col form-control" id="editUsername" name="editUsername" type="text" placeholder="Username" required>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-4 col-form-label" for="editName">Name</label>
+                    <input class="col form-control" id="editName" name="editName" type="text" placeholder="Full name" required>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-4 col-form-label" for="editEmail">Email</label>
+                    <input class="col form-control" id="editEmail" name="editEmail" type="email" placeholder="Email Address" required>
+                  </div>
+                  <div class="row">
+                    <label class="col-4 form-check-label">Is user active?</label>
+                    <label class="form-check-label mr-2">
+                      <input class="form-check-input" type="radio" id="activey" name="active" value="1" checked> Yes
+                    </label>
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="radio" id="activen" name="active" value="0"> No
+                    </label>
+                  </div>
+                </fieldset>
+              </form>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" form="editUserForm" class="btn btn-primary">Save changes</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+      </div>
+    </div>
+  </div>
 {include file='footer.tpl'}
