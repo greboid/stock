@@ -1,5 +1,5 @@
-{extends file="base.tpl"}
-{block name="content"}
+{include file='header.tpl'}
+{include file='menu.tpl'}
     <div class="container-fluid">
         <div class="fs row">
             <div class="col bg-faded sidebar">
@@ -106,4 +106,4 @@
             </div>
         </div>
     </div>
-{/block}
+{include file='footer.tpl'}

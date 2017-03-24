@@ -30,7 +30,7 @@
             });
             $router->get('/', function() use($smarty, $stock) {
                 try {
-                    $smarty->display('index.tpl');
+                    header('Location: /site/all');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
                     $smarty->display('500.tpl');

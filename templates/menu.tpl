@@ -14,12 +14,6 @@
             <li class="nav-item">
                 <a class="nav-link" href="/">Dashboard</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/locations">Locations</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/categories">Categories</a>
-            </li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
         <li class="nav-item dropdown">
