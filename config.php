@@ -32,6 +32,9 @@ if (!defined('SMTP_USERNAME')) {
 if (!defined('SMTP_PASSWORD')) {
     define('SMTP_PASSWORD', '');
 }
+if (!defined('LOGIN_MESSAGE')) {
+    define('LOGIN_MESSAGE', '');
+}
 
 #You might want to change these but probably not
 ##Database settings

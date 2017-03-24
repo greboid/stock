@@ -22,12 +22,14 @@
             $router->before('GET', '(.*)', function($route) use ($smarty, $auth) {
                 if (preg_match('#^(?!auth).*#', $route)) {
                     if ($auth->getStatus() == 'ANON') {
+                        $smarty->assign('loginMessage', LOGIN_MESSAGE);
                         $smarty->display('login.tpl');
                         exit();
                     }
                 }
             });
             $router->get('/auth/login', function() use ($smarty) {
+                $smarty->assign('loginMessage', LOGIN_MESSAGE);
                 $smarty->display('login.tpl');
             });
             $router->post('/auth/login', function() use ($smarty, $auth, $loginService, $msg) {
