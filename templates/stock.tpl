@@ -9,19 +9,29 @@
                         <button type="reset" class="input-group-addon fa fa-times" aria-hidden="true"></button>
                 </form>
                 <form id="sitesearchform" class="input-group">
-                    <input type="text" id="sitesearch" class="form-control" placeholder="Filter sites">
-                    <button type="reset" class="input-group-addon fa fa-times" aria-hidden="true"></button>
+                    <select id="sitesearch" class="form-control" placeholder="Filter sites" multiple style="width: 100%">
+                        {foreach $sites as $site}
+                            <option>{$site}</option>
+                        {/foreach}
+                    </select>
                 </form>
                 <form id="locationsearchform" class="input-group">
-                    <input type="text" id="locationsearch" class="form-control" placeholder="Filter locations">
-                    <button type="reset" class="input-group-addon fa fa-times" aria-hidden="true"></button>
+                    <select id="locationsearch" class="form-control" placeholder="Filter sites" multiple style="width: 100%">
+                        {foreach from=$locations key=siteID item=site}
+                            <optgroup label="{$site['name']|escape:'htmlall'}">
+                            {foreach from=$site['locations'] key=locationID item=location}
+                                <option value="{$location|escape:'htmlall'}">{$location|escape:'htmlall'}</option>
+                            {/foreach}
+                            </optgroup>
+                        {/foreach}
+                    </select>
                 </form>
                 <form id="mincountform" class="input-group">
-                    <input type="text" id="mincount" class="form-control" placeholder="Minimum count">
+                    <input type="number" id="mincount" class="form-control" placeholder="Minimum count" min="0">
                     <button type="reset" class="input-group-addon fa fa-times" aria-hidden="true"></button>
                 </form>
                 <form id="maxcountform" class="input-group">
-                    <input type="text" id="maxcount" class="form-control" placeholder="Maximum count">
+                    <input type="number" id="maxcount" class="form-control" placeholder="Maximum count" min="0">
                     <button type="reset" class="input-group-addon fa fa-times" aria-hidden="true"></button>
                 </form>
             </div>

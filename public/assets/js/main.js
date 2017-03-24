@@ -32,6 +32,16 @@ $("#parent").select2({
     allowClear: true,
     dropdownAutoWidth : true
 });
+$("#sitesearch").select2({
+    placeholder: "Select site(s)",
+    allowClear: true,
+    dropdownAutoWidth : true
+});
+$("#locationsearch").select2({
+    placeholder: "Select location(s)",
+    allowClear: true,
+    dropdownAutoWidth : true
+});
 $.tablesorter.addParser({
     id: 'inputcount',
     is: function(s) {
@@ -187,18 +197,18 @@ $('#editUserModal').on('show.bs.modal', function (event) {
 $.fn.dataTable.ext.search.push(
     function( settings, data, dataIndex ) {
       var itemsearch = $('#itemsearch').val().toLowerCase();
-      var locationsearch = $('#locationsearch').val().toLowerCase();
-      var sitesearch = $('#sitesearch').val().toLowerCase();
-      var min = parseInt( $('#mincount').val(), 10 );
-      var max = parseInt( $('#maxcount').val(), 10 );
+      var locationsearch = $('#locationsearch').val();
+      var sitesearch = $('#sitesearch').val();
+      var min = parseInt($('#mincount').val());
+      var max = parseInt($('#maxcount').val());
 
       var itemSet = (itemsearch == '' ? true : data[0].toLowerCase().includes(itemsearch));
-      var locationSet = (locationsearch == '' ? true : data[2].toLowerCase().includes(locationsearch));
-      var siteSet = (sitesearch == '' ? true : data[1].toLowerCase().includes(sitesearch));
+      var locationSet = (locationsearch.length == 0 ? true : locationsearch.includes(data[2]));
+      var siteSet = (sitesearch.length == 0 ? true : sitesearch.includes(data[1]));
       var minCount = (isNaN(min) ? true : parseInt(data[3]) >= min);
       var maxCount = (isNaN(max) ? true : parseInt(data[3]) <= max);
 
-      return itemSet && locationSet && siteSet && minCount && maxCount;
+      return itemSet && locationSet && siteSet && minCount && maxCount
     }
 );
 var table = $('#stock').DataTable({
@@ -212,10 +222,13 @@ var table = $('#stock').DataTable({
     { "orderable": false },
   ]
 });
-$('#itemsearch, #locationsearch, #sitesearch, #mincount, #maxcount').keyup( function() {
+$('#itemsearch').keyup( function() {
   table.draw();
 });
-$('#itemsearchform, #locationsearchform, #sitesearchform, #mincountform, #maxcountform').bind('reset', function() {
+$( '#locationsearch, #sitesearch, #mincount, #maxcount').change(function() {
+  table.draw();
+});
+$('#itemsearchform, #mincountform, #maxcountform').bind('reset', function() {
   setTimeout(function(){
         table.draw();
     }, 200);
