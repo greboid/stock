@@ -194,6 +194,33 @@ $('#editUserModal').on('show.bs.modal', function (event) {
     modal.find('#activen').attr("checked", "checked")
   }
 });
+$('.itemcountbutton').click( function() {
+  var row = $(this).closest('tr');
+  var newCount = parseInt(row.find('input').val()) + parseInt($(this).val());
+  var itemID = row.data('itemid');
+  var data = '{"newcount":"'+newCount+'"}';
+  $.ajax({
+         'method': 'POST',
+         'dataType': "json",
+         'url': '/edit/item/'+itemID,
+         'data': data
+  }).done(function() {
+    row.find('input').val(newCount);
+  });
+  return false
+});
+$('.itemcount').change(function(){
+  var row = $(this).closest('tr');
+  var newCount = parseInt($(this).val());
+  var itemID = row.data('itemid');
+  var data = '{"newcount":"'+newCount+'"}'
+  $.ajax({
+         'method': 'POST',
+         'dataType': "json",
+         'url': '/edit/item/'+itemID,
+         'data': data
+  });
+});
 $.fn.dataTable.ext.search.push(
     function( settings, data, dataIndex ) {
       var itemsearch = $('#itemsearch').val().toLowerCase();
@@ -225,31 +252,4 @@ $('#itemsearchform, #mincountform, #maxcountform').bind('reset', function() {
   setTimeout(function(){
         table.draw();
     }, 200);
-});
-$('.itemcountbutton').click( function() {
-  var row = $(this).closest('tr');
-  var newCount = parseInt(row.find('input').val()) + parseInt($(this).val());
-  var itemID = row.data('itemid');
-  var data = '{"newcount":"'+newCount+'"}';
-  $.ajax({
-         'method': 'POST',
-         'dataType': "json",
-         'url': '/edit/item/'+itemID,
-         'data': data
-  }).done(function() {
-    row.find('input').val(newCount);
-  });
-  return false
-});
-$('.itemcount').change(function(){
-  var row = $(this).closest('tr');
-  var newCount = parseInt($(this).val());
-  var itemID = row.data('itemid');
-  var data = '{"newcount":"'+newCount+'"}'
-  $.ajax({
-         'method': 'POST',
-         'dataType': "json",
-         'url': '/edit/item/'+itemID,
-         'data': data
-  })
 });
