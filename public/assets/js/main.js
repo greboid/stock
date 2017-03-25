@@ -151,7 +151,7 @@ $("#editCategoryModal").on("show.bs.modal", function (event) {
   var modal = $(this);
   modal.find("#editName").val(categoryname);
   modal.find("#editID").val(categoryid);
-  if (categoryparent == "") {
+  if (categoryparent === "") {
     $("#editParent").find("option:contains(\""+categoryparent+"\")").prop("selected", false);
   } else {
     $("#editParent").find("option:contains(\""+categoryparent+"\")").attr("selected", "selected");
@@ -169,12 +169,12 @@ $("#editItemModal").on("show.bs.modal", function (event) {
   modal.find("#editID").val(itemid);
   modal.find("#editName").val(itemname);
   $("#editLocation option").each(function () {
-    if ($(this).text() == locationname) {
+    if ($(this).text() === locationname) {
       $(this).attr("selected", "selected");
     }
   });
   $("#editCategory option").each(function () {
-    if ($(this).text().trim() == categoryname) {
+    if ($(this).text().trim() === categoryname) {
       $(this).attr("selected", "selected");
     }
   });
@@ -193,7 +193,7 @@ $("#editUserModal").on("show.bs.modal", function (event) {
   modal.find("#editUsername").val(username);
   modal.find("#editName").val(name);
   modal.find("#editEmail").val(email);
-  if (active == 1) {
+  if (active === 1) {
     modal.find("#activey").attr("checked", "checked");
     modal.find("#activen").removeAttr("checked", "checked");
   } else {
@@ -236,9 +236,9 @@ $.fn.dataTable.ext.search.push(
       var min = parseInt($("#mincount").val());
       var max = parseInt($("#maxcount").val());
 
-      var itemSet = (itemsearch == "" ? true : data[0].toLowerCase().includes(itemsearch));
-      var locationSet = (locationsearch.length == 0 ? true : locationsearch.includes(data[2]));
-      var siteSet = (sitesearch.length == 0 ? true : sitesearch.includes(data[1]));
+      var itemSet = (itemsearch === "" ? true : data[0].toLowerCase().includes(itemsearch));
+      var locationSet = (locationsearch.length === 0 ? true : locationsearch.includes(data[2]));
+      var siteSet = (sitesearch.length === 0 ? true : sitesearch.includes(data[1]));
       var minCount = (isNaN(min) ? true : parseInt(data[3]) >= min);
       var maxCount = (isNaN(max) ? true : parseInt(data[3]) <= max);
 
