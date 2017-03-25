@@ -220,7 +220,7 @@
             $mail->Body    = 'Welcome to the stock system '.$name.'.  You username is '.$username.', but to continue you need to <a href="'.$this->getEmailLink($code).'">verify your account</a>.';
             $mail->AltBody = 'Welcome to the stock system '.$name.'.  You username is '.$username.', to continue you need to verify your account, by visiting '.$this->getEmailLink($code);
 
-            if(!$mail->send()) {
+            if (!$mail->send()) {
                 return $mail->ErrorInfo;
             } else {
                 return '';

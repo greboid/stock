@@ -316,7 +316,7 @@
             $results = $statement->fetchAll(PDO::FETCH_CLASS);
             $stock = array();
             foreach ($results as $result) {
-                $stock[$result->categoryID] = NULL;
+                $stock[$result->categoryID] = null;
             }
             foreach ($stock as $key=>$value) {
                 $statement = $this->database->getPDO()->prepare('

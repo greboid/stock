@@ -124,52 +124,60 @@ $('#addUserModal').on('hidden.bs.modal', function () {
 });
 
 $('#editSiteModal').on('show.bs.modal', function (event) {
-  var button = $(event.relatedTarget)
-  var siteName = button.data('sitename')
-  var siteID = button.data('siteid')
-  var modal = $(this)
-  modal.find('#editID').val(siteID)
-  modal.find('#editName').val(siteName)
+  var button = $(event.relatedTarget);
+  var siteName = button.data('sitename');
+  var siteID = button.data('siteid');
+  var modal = $(this);
+  modal.find('#editID').val(siteID);
+  modal.find('#editName').val(siteName);
 });
 
 $('#editLocationModal').on('show.bs.modal', function (event) {
-  var button = $(event.relatedTarget)
-  var locationid = button.data('locationid')
-  var locationname = button.data('locationname')
-  var sitename = button.data('sitename')
-  var modal = $(this)
-  modal.find('#editName').val(locationname)
-  modal.find('#editID').val(locationid)
-  $("#editSite").find("option:contains('"+sitename+"')").attr("selected", "selected")
+  var button = $(event.relatedTarget);
+  var locationid = button.data('locationid');
+  var locationname = button.data('locationname');
+  var sitename = button.data('sitename');
+  var modal = $(this);
+  modal.find('#editName').val(locationname);
+  modal.find('#editID').val(locationid);
+  $("#editSite").find("option:contains('"+sitename+"')").attr("selected", "selected");
 });
 
 $('#editCategoryModal').on('show.bs.modal', function (event) {
-  var button = $(event.relatedTarget)
-  var categoryid = button.data('categoryid')
-  var categoryname = button.data('categoryname')
-  var categoryparent = button.data('categoryparent')
-  var modal = $(this)
-  modal.find('#editName').val(categoryname)
-  modal.find('#editID').val(categoryid)
+  var button = $(event.relatedTarget);
+  var categoryid = button.data('categoryid');
+  var categoryname = button.data('categoryname');
+  var categoryparent = button.data('categoryparent');
+  var modal = $(this);
+  modal.find('#editName').val(categoryname);
+  modal.find('#editID').val(categoryid);
   if (categoryparent == "") {
-    $("#editParent").find("option:contains('"+categoryparent+"')").prop("selected", false)
+    $("#editParent").find("option:contains('"+categoryparent+"')").prop("selected", false);
   } else {
-    $("#editParent").find("option:contains('"+categoryparent+"')").attr("selected", "selected")
+    $("#editParent").find("option:contains('"+categoryparent+"')").attr("selected", "selected");
   }
 });
 
 $('#editItemModal').on('show.bs.modal', function (event) {
-  var button = $(event.relatedTarget)
-  var itemid = button.data('id')
-  var itemname = button.data('itemname')
-  var locationname = button.data('locationname')
-  var categoryname = button.data('categoryname')
-  var stockcount = button.data('stockcount')
-  var modal = $(this)
-  modal.find('#editID').val(itemid)
-  modal.find('#editName').val(itemname)
-  $('#editLocation option').each(function () { if ($(this).text() == locationname) { $(this).attr("selected", "selected") } });
-  $('#editCategory option').each(function () { if ($(this).text().trim() == categoryname) { $(this).attr("selected", "selected") } });
+  var button = $(event.relatedTarget);
+  var itemid = button.data('id');
+  var itemname = button.data('itemname');
+  var locationname = button.data('locationname');
+  var categoryname = button.data('categoryname');
+  var stockcount = button.data('stockcount');
+  var modal = $(this);
+  modal.find('#editID').val(itemid);
+  modal.find('#editName').val(itemname);
+  $('#editLocation option').each(function () {
+    if ($(this).text() == locationname) {
+      $(this).attr("selected", "selected");
+    }
+  });
+  $('#editCategory option').each(function () {
+    if ($(this).text().trim() == categoryname) {
+      $(this).attr("selected", "selected");
+    }
+  });
   modal.find('#editCount').val(stockcount)
 });
 
