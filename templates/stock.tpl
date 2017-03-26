@@ -39,7 +39,6 @@
                 </form>
                 <form id="categorysearchform" class="input-group">
                     <select id="categorysearch" class="form-control" multiple style="width: 100%">
-                        <option></option>
                         {catMenu data=$categories}
                     </select>
                 </form>

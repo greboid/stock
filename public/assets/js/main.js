@@ -237,12 +237,10 @@ $.fn.dataTable.ext.search.push(
     function( settings, data, dataIndex ) {
       var itemsearch = $("#itemsearch").val().toLowerCase();
       var locationsearch = $("#locationsearch").val();
-      var categorysearch = $("#categorysearch").val().map(Function.prototype.call, String.prototype.trim);
+      var categorysearch = $("#categorysearch").val().map(Function.prototype.call, String.prototype.trim).filter(String);
       var sitesearch = $("#sitesearch").val();
       var min = parseInt($("#mincount").val());
       var max = parseInt($("#maxcount").val());
-
-      console.log(categorysearch);
 
       var itemSet = (itemsearch === "" ? true : data[0].toLowerCase().includes(itemsearch));
       var locationSet = (locationsearch.length === 0 ? true : locationsearch.includes(data[2]));
