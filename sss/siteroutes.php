@@ -21,6 +21,7 @@
                 try {
                     if ($stock->getSiteName($siteid) !== false) {
                         $smarty->assign('siteid', $siteid);
+                        $smarty->assign('categories', $stock->getCategories());
                         $smarty->assign('site', $stock->getSiteName($siteid));
                         $smarty->assign('stock', $stock->getSiteStock($siteid));
                         $smarty->display('stock.tpl');

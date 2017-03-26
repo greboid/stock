@@ -42,6 +42,11 @@ $("#locationsearch").select2({
     allowClear: true,
     dropdownAutoWidth : true
 });
+$("#categorysearch").select2({
+    placeholder: "Select category",
+    allowClear: true,
+    dropdownAutoWidth : true
+});
 $.tablesorter.addParser({
     id: "inputcount",
     is: function(s) {
@@ -232,17 +237,21 @@ $.fn.dataTable.ext.search.push(
     function( settings, data, dataIndex ) {
       var itemsearch = $("#itemsearch").val().toLowerCase();
       var locationsearch = $("#locationsearch").val();
+      var categorysearch = $("#categorysearch").val().map(Function.prototype.call, String.prototype.trim);
       var sitesearch = $("#sitesearch").val();
       var min = parseInt($("#mincount").val());
       var max = parseInt($("#maxcount").val());
 
+      console.log(categorysearch);
+
       var itemSet = (itemsearch === "" ? true : data[0].toLowerCase().includes(itemsearch));
       var locationSet = (locationsearch.length === 0 ? true : locationsearch.includes(data[2]));
       var siteSet = (sitesearch.length === 0 ? true : sitesearch.includes(data[1]));
-      var minCount = (isNaN(min) ? true : parseInt(data[3]) >= min);
-      var maxCount = (isNaN(max) ? true : parseInt(data[3]) <= max);
+      var categorySet = (categorysearch === null || categorysearch.length === 0 ? true : categorysearch.includes(data[3]));
+      var minCount = (isNaN(min) ? true : parseInt(data[4]) >= min);
+      var maxCount = (isNaN(max) ? true : parseInt(data[4]) <= max);
 
-      return itemSet && locationSet && siteSet && minCount && maxCount;
+      return itemSet && locationSet && siteSet && categorySet && minCount && maxCount;
     }
 );
 var table = $("#stock").DataTable({
@@ -252,7 +261,7 @@ var table = $("#stock").DataTable({
 $("#itemsearch").keyup(function() {
   table.draw();
 });
-$( "#locationsearch, #sitesearch, #mincount, #maxcount").change(function() {
+$( "#categorysearch, #locationsearch, #sitesearch, #mincount, #maxcount").change(function() {
   table.draw();
 });
 $("#itemsearchform, #mincountform, #maxcountform").bind("reset", function() {

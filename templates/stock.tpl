@@ -1,3 +1,14 @@
+{assign var="nbsp" value="&nbsp;&nbsp;&nbsp;"}
+
+{function name=catMenu level=0}
+  {foreach $data as $entry}
+  <option value="{$nbsp|str_repeat:$level}{$entry['name']|escape:'htmlall'}">{$nbsp|str_repeat:$level}{$entry['name']|escape:'htmlall'}</option>
+      {if isset($entry['subcategories']) && $entry['subcategories']|@count > 0}
+          {catMenu data=$entry['subcategories'] level=$level+1}
+      {/if}
+  {/foreach}
+{/function}
+
 {include file='header.tpl'}
 {include file='menu.tpl'}
     <div class="container-fluid">
@@ -9,14 +20,14 @@
                         <button type="reset" class="input-group-addon fa fa-times" aria-hidden="true"></button>
                 </form>
                 <form id="sitesearchform" class="input-group">
-                    <select id="sitesearch" class="form-control" placeholder="Filter sites" multiple style="width: 100%">
+                    <select id="sitesearch" class="form-control" multiple style="width: 100%">
                         {foreach $sites as $site}
                             <option>{$site}</option>
                         {/foreach}
                     </select>
                 </form>
                 <form id="locationsearchform" class="input-group">
-                    <select id="locationsearch" class="form-control" placeholder="Filter sites" multiple style="width: 100%">
+                    <select id="locationsearch" class="form-control" multiple style="width: 100%">
                         {foreach from=$locations key=siteID item=site}
                             <optgroup label="{$site['name']|escape:'htmlall'}">
                             {foreach from=$site['locations'] key=locationID item=location}
@@ -24,6 +35,12 @@
                             {/foreach}
                             </optgroup>
                         {/foreach}
+                    </select>
+                </form>
+                <form id="categorysearchform" class="input-group">
+                    <select id="categorysearch" class="form-control" multiple style="width: 100%">
+                        <option></option>
+                        {catMenu data=$categories}
                     </select>
                 </form>
                 <form id="mincountform" class="input-group">
@@ -43,6 +60,7 @@
                             <th class="text-center">Item</th>
                             <th class="text-center">Site</th>
                             <th class="text-center">Location</th>
+                            <th class="text-center">Category</th>
                             <th class="text-center">Count</th>
                         </tr>
                     </thead>
@@ -52,6 +70,7 @@
                                 <td class="name align-middle">{$item.name|escape:'htmlall'}</td>
                                 <td class="align-middle">{$item.site|escape:'htmlall'}</td>
                                 <td class="align-middle">{$item.location|escape:'htmlall'}</td>
+                                <td class="align-middle">{$item.category|escape:'htmlall'}</td>
                                 <td data-order="{$item.count}" data-search="{$item.count}" class="align-middle">
                                     <div class="input-group">
                                         <span class="input-group-btn">
