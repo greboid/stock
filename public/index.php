@@ -17,6 +17,7 @@
     use \Bramus\Router\Router;
     use \Aura\Auth\AuthFactory;
     use \Aura\Auth\Verifier\PasswordVerifier;
+    use \Aura\Auth\Status;
     use \ICanBoogie\Storage\RunTimeStorage;
     use \Plasticbrain\FlashMessages\FlashMessages;
 
@@ -63,6 +64,11 @@
     $msg = new FlashMessages();
     $storage->store('flash', $msg);
 
+    if ($auth->getStatus() !== Status::VALID) {
+        $smarty->assign('loginMessage', LOGIN_MESSAGE);
+        $smarty->display('login.tpl');
+    }
+
 
     $storage->store('auth', $auth);
     $storage->store('loginService', $login_service);
@@ -74,21 +80,23 @@
     $storage->store('database', $database);
 
     $authRoutes->addRoutes($router, $storage);
-    $systemRoutes->addRoutes($router, $smarty, $storage);
-    $router->before('GET', '(.*)', function($route) use ($smarty, $stock, $auth, $msg) {
-        $smarty->assign('username', $auth->getUsername());
-        $smarty->assign('sites', $stock->getSites());
-        $smarty->assign('locations', $stock->getLocations());
-        $smarty->assign('categories', $stock->getCategories());
-        $smarty->assign('route', '/'.$route);
-        if ($msg->hasMessages()) {
-            $smarty->assign('msg', $msg->display(null, false));
-        }
-    });
-    $itemRoutes->addRoutes($router, $smarty, $stock, $storage);
-    $locationRoutes->addRoutes($router, $smarty, $stock, $storage);
-    $categoryRoutes->addRoutes($router, $smarty, $stock, $storage);
-    $siteRoutes->addRoutes($router, $smarty, $stock, $storage);
-    $userRoutes->addRoutes($storage);
+    if ($auth->getStatus() === Status::VALID) {
+        $systemRoutes->addRoutes($router, $smarty, $storage);
+        $router->before('GET', '(.*)', function($route) use ($smarty, $stock, $auth, $msg) {
+            $smarty->assign('username', $auth->getUsername());
+            $smarty->assign('sites', $stock->getSites());
+            $smarty->assign('locations', $stock->getLocations());
+            $smarty->assign('categories', $stock->getCategories());
+            $smarty->assign('route', '/'.$route);
+            if ($msg->hasMessages()) {
+                $smarty->assign('msg', $msg->display(null, false));
+            }
+        });
+        $itemRoutes->addRoutes($router, $smarty, $stock, $storage);
+        $locationRoutes->addRoutes($router, $smarty, $stock, $storage);
+        $categoryRoutes->addRoutes($router, $smarty, $stock, $storage);
+        $siteRoutes->addRoutes($router, $smarty, $stock, $storage);
+        $userRoutes->addRoutes($storage);
+    }
 
     $router->run();
