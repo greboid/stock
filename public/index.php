@@ -74,7 +74,7 @@
     $storage->store('database', $database);
 
     $authRoutes->addRoutes($router, $storage);
-    $systemRoutes->addRoutes($router, $smarty, $stock, $storage);
+    $systemRoutes->addRoutes($router, $smarty, $storage);
     $router->before('GET', '(.*)', function($route) use ($smarty, $stock, $auth, $msg) {
         $smarty->assign('username', $auth->getUsername());
         $smarty->assign('sites', $stock->getSites());

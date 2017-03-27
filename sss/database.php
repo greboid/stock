@@ -9,7 +9,7 @@
     class Database {
 
         private $pdo;
-        private $version = 6;
+        private $version = 7;
 
         public function __construct(PDO $pdo = null) {
             if ($pdo == null) {
@@ -200,5 +200,20 @@
             return true;
         }
 
+
+        public function upgrade6to7(): bool {
+            try {
+                $this->pdo->exec('
+                    ALTER TABLE `'.STOCK_TABLE.'` ADD COLUMN `stock_min`
+                            INT(11) DEFAULT -1 NOT NULL AFTER `stock_category`,
+                            ADD COLUMN `stock_max`
+                            INT(11) DEFAULT -1 NOT NULL AFTER `stock_min`;
+                    UPDATE `version` SET `version` = 7;
+                ');
+            } catch (Exception $e) {
+                return false;
+            }
+            return true;
+        }
 
     }

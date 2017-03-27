@@ -10,8 +10,9 @@
 
     class SystemRoutes {
 
-        public function addRoutes(Router $router, Smarty $smarty, Stock $stock, RunTimeStorage $storage): void {
+        public function addRoutes(Router $router, Smarty $smarty, RunTimeStorage $storage): void {
             $msg = $storage->retrieve('flash');
+            $database = $storage->retrieve('database');
             $router->set404(function() use ($smarty) {
                 if (strpos($_SERVER['REQUEST_URI'], '/auth') == 0) {
                     $smarty->display('404.tpl');
@@ -20,15 +21,15 @@
                 header('HTTP/1.1 404 Not Found');
                 $smarty->display('404.tpl');
             });
-            $router->get('/setup/dropandcreate', function() use ($smarty, $stock) {
-                $stock->dropAndCreate();
+            $router->get('/setup/dropandcreate', function() use ($smarty, $database) {
+                $database->dropAndCreate();
                 header('Location: /');
             });
-            $router->get('/setup/dbupgrade', function() use ($smarty, $stock) {
-                $stock->upgrade();
+            $router->get('/setup/dbupgrade', function() use ($smarty, $database) {
+                $database->upgrade();
                 header('Location: /');
             });
-            $router->get('/', function() use($smarty, $stock) {
+            $router->get('/', function() use($smarty) {
                 try {
                     header('Location: /site/all');
                 } catch (Exception $e) {
