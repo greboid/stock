@@ -94,15 +94,19 @@
                 $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
                 $password = filter_input(INPUT_POST, "newpassword", FILTER_UNSAFE_RAW);
                 $password = password_hash($password, PASSWORD_DEFAULT);
-                try {
-                    $stmt = $pdo->prepare('UPDATE '.ACCOUNTS_TABLE.' SET password=:password WHERE username=:username');
-                    $stmt->bindValue(':password', $password);
-                    $stmt->bindValue(':username', $username);
-                    $val = $stmt->execute();
+                if ($auth->getUsername() == $username) {
+                    try {
+                        $stmt = $pdo->prepare('UPDATE '.ACCOUNTS_TABLE.' SET password=:password WHERE username=:username');
+                        $stmt->bindValue(':password', $password);
+                        $stmt->bindValue(':username', $username);
+                        $val = $stmt->execute();
 
-                    $msg->info('Your details have been updated.');
-                } catch (Exception $e) {
-                    $msg->error('Unable to update details: '.$e->getMessage());
+                        $msg->info('Your details have been updated.');
+                    } catch (Exception $e) {
+                        $msg->error('Unable to update details: '.$e->getMessage());
+                    }
+                } else {
+                    $msg->error('Unable to update another user\'s password');
                 }
                 header('Location: /user/profile');
             });

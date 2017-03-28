@@ -75,15 +75,11 @@
     $storage->store('pdo', $database->getPDO());
     $storage->store('database', $database);
 
-    if ($auth->getStatus() !== Status::VALID) {
-        $smarty->assign('loginMessage', LOGIN_MESSAGE);
-        $smarty->display('login.tpl');
-    }
-
-    $authRoutes->addRoutes($router, $storage);
-    if ($auth->getStatus() === Status::VALID) {
-        $systemRoutes->addRoutes($router, $smarty, $storage);
-        $router->before('GET', '(.*)', function($route) use ($smarty, $stock, $auth, $msg) {
+    $router->set404(function() use ($smarty) {
+        header('HTTP/1.1 404 Not Found');
+        $smarty->display('404.tpl');
+    });
+    $router->before('GET', '(.*)', function($route) use ($smarty, $stock, $auth, $msg) {
             $smarty->assign('username', $auth->getUsername());
             $smarty->assign('sites', $stock->getSites());
             $smarty->assign('locations', $stock->getLocations());
@@ -93,11 +89,19 @@
                 $smarty->assign('msg', $msg->display(null, false));
             }
         });
+    $authRoutes->addRoutes($router, $storage);
+    if ($auth->getStatus() === Status::VALID) {
+        $systemRoutes->addRoutes($router, $smarty, $storage);
         $itemRoutes->addRoutes($router, $smarty, $stock, $storage);
         $locationRoutes->addRoutes($router, $smarty, $stock, $storage);
         $categoryRoutes->addRoutes($router, $smarty, $stock, $storage);
         $siteRoutes->addRoutes($router, $smarty, $stock, $storage);
         $userRoutes->addRoutes($storage);
+    } else {
+        $router->get('/', function() use ($smarty) {
+            $smarty->assign('loginMessage', LOGIN_MESSAGE);
+            $smarty->display('login.tpl');
+        });
     }
 
     $router->run();

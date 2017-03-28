@@ -13,14 +13,6 @@
         public function addRoutes(Router $router, Smarty $smarty, RunTimeStorage $storage): void {
             $msg = $storage->retrieve('flash');
             $database = $storage->retrieve('database');
-            $router->set404(function() use ($smarty) {
-                if (strpos($_SERVER['REQUEST_URI'], '/auth') == 0) {
-                    $smarty->display('404.tpl');
-                    exit();
-                }
-                header('HTTP/1.1 404 Not Found');
-                $smarty->display('404.tpl');
-            });
             $router->get('/', function() use($smarty) {
                 try {
                     header('Location: /site/all');

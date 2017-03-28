@@ -1,3 +1,4 @@
+{if isset($username)}
 <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse">
     <button
             class="navbar-toggler navbar-toggler-right"
@@ -51,3 +52,4 @@
     </div>
 </nav>
 {$msg|default:""}
+{/if}
