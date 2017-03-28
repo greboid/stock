@@ -32,10 +32,11 @@
                     if ($name !== false && $location !== false && $count !== false && $category !== false) {
                         $stock->insertItem($name, $location, $category, $count);
                         header('Location: /manage/items');
+                    } else {
+                        http_response_code(400);
+                        $smarty->assign('error', 'Missing required value.');
+                        $smarty->display('500.tpl');
                     }
-                    http_response_code(400);
-                    $smarty->assign('error', 'Missing required value.');
-                    $smarty->display('500.tpl');
                 } catch (Exception $e) {
                     http_response_code(500);
                     $smarty->assign('error', $e->getMessage());
