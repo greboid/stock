@@ -21,14 +21,6 @@
                 header('HTTP/1.1 404 Not Found');
                 $smarty->display('404.tpl');
             });
-            $router->get('/setup/dropandcreate', function() use ($smarty, $database) {
-                $database->dropAndCreate();
-                header('Location: /');
-            });
-            $router->get('/setup/dbupgrade', function() use ($smarty, $database) {
-                $database->upgrade();
-                header('Location: /');
-            });
             $router->get('/', function() use($smarty) {
                 try {
                     header('Location: /site/all');

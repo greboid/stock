@@ -42,7 +42,7 @@
         public function getVersion(): int {
             try {
                 $statement = $this->pdo->prepare('
-                    SELECT version from '.VERSION_TABLE
+                    SELECT version from '.VERSION_TABLE.' LIMIT 1'
                 );
                 $statement->execute();
                 return $version = $statement->fetchObject()->version;
@@ -74,10 +74,12 @@
             $outputs = array();
             $version = $this->getVersion();
             while ($version < $this->version) {
-                $funcname = 'upgrade'.$version.'to'.++$version;
+                $currentVersion = $version;
+                $version = $version + 1;
+                $funcname = 'upgrade'.$currentVersion.'to'.$version;
                 $success = $this->$funcname();
-                if (!$this->$funcname()) {
-                    throw new Exception('Unable to upgrade from '.$version.'to'.++$version);
+                if (!$success) {
+                    throw new Exception('Unable to upgrade from '.$currentVersion.'to'.$version);
                 }
             }
         }
@@ -112,7 +114,7 @@
                     CREATE TABLE IF NOT EXISTS `'.VERSION_TABLE.'` (
                         `version` int(11) NOT NULL
                     );
-                    INSERT INTO `'.VERSION_TABLE.'`(`version`) values (1);
+                    INSERT INTO `'.VERSION_TABLE.'` (`version`) values (\'1\');
                     SET FOREIGN_KEY_CHECKS=1;
                 ');
             } catch (Exception $e) {

@@ -14,10 +14,11 @@
                 <h1 class="text-center">Install or Upgrade</h1>
                 <p>There's something wrong with your database structure.  An
                 attempt to repair this has already been made and failed.  You
-                can try to <a href="/setup/dbupgrade">run this again</a> or you
-                can <a href="/setup/dropandcreate">delete all the data and
-                start again.</a>.  Alternatively you can attempt to repair
-                this manually.</p>
+                will need to repair this manually or contact the developers
+                for assistance.</p>
+                <p>
+                    Details: {$error}
+                </p>
             </div>
             <div class="col">
             </div>

@@ -46,6 +46,7 @@
             $smarty->assign('error', 'The database connection settings are wrong, please check the config');
             $smarty->display('500.tpl');
         } else {
+            $smarty->assign('error', $e->getMessage());
             $smarty->assign('version', false);
             $smarty->display('install.tpl');
         }
@@ -64,11 +65,6 @@
     $msg = new FlashMessages();
     $storage->store('flash', $msg);
 
-    if ($auth->getStatus() !== Status::VALID) {
-        $smarty->assign('loginMessage', LOGIN_MESSAGE);
-        $smarty->display('login.tpl');
-    }
-
 
     $storage->store('auth', $auth);
     $storage->store('loginService', $login_service);
@@ -78,6 +74,11 @@
     $storage->store('router', $router);
     $storage->store('pdo', $database->getPDO());
     $storage->store('database', $database);
+
+    if ($auth->getStatus() !== Status::VALID) {
+        $smarty->assign('loginMessage', LOGIN_MESSAGE);
+        $smarty->display('login.tpl');
+    }
 
     $authRoutes->addRoutes($router, $storage);
     if ($auth->getStatus() === Status::VALID) {
