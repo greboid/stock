@@ -90,7 +90,7 @@
                 }
                 header('Location: /user/profile');
             });
-            $router->post('/user/password', function() use ($smarty, $pdo, $msg) {
+            $router->post('/user/password', function() use ($smarty, $pdo, $msg, $auth) {
                 $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
                 $password = filter_input(INPUT_POST, "newpassword", FILTER_UNSAFE_RAW);
                 $password = password_hash($password, PASSWORD_DEFAULT);
