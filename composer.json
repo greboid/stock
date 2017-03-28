@@ -22,5 +22,9 @@
             "name": "Greg Holmes",
             "email": "git@greg.holmes.name"
         }
-    ]
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "6.0",
+        "phpunit/dbunit": "^3.0"
+    }
 }

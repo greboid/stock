@@ -211,13 +211,19 @@ $(".itemcountbutton").click( function() {
   var newCount = parseInt(row.find("input").val()) + parseInt($(this).val());
   var itemID = row.data("itemid");
   var data = "{\"newcount\":\""+newCount+"\"}";
+  var input = row.find("input");
   $.ajax({
          "method": "POST",
          "dataType": "json",
          "url": "/edit/item/"+itemID,
          "data": data
   }).done(function() {
-    row.find("input").val(newCount);
+    input.val(newCount);
+    if (parseInt(row.data('itemmin')) >= parseInt(newCount)) {
+      input.addClass('belowmin');
+    } else {
+      input.removeClass('belowmin');
+    }
   });
   return false;
 });

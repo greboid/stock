@@ -65,7 +65,7 @@
                     </thead>
                     <tbody>
                         {foreach from=$stock key=id item=item}
-                            <tr data-itemid="{$id|escape:'htmlall'}">
+                            <tr data-itemid="{$id|escape:'htmlall'}" data-itemmax="{$item.max}" data-itemmin="{$item.min}">
                                 <td class="name align-middle">{$item.name|escape:'htmlall'}</td>
                                 <td class="align-middle">{$item.site|escape:'htmlall'}</td>
                                 <td class="align-middle">{$item.location|escape:'htmlall'}</td>
@@ -88,7 +88,7 @@
                                                 &lsaquo;
                                             </button>
                                         </span>
-                                        <input class="itemcount form-control" type="number" name="{$id|escape:'htmlall'}-count" value="{$item.count|escape:'htmlall'}" required min="0" max="{$max_stock}">
+                                        <input class="{if $item.count <= $item.min}belowmin {/if}itemcount form-control" type="number" name="{$id|escape:'htmlall'}-count" value="{$item.count|escape:'htmlall'}" required min="0" max="{$max_stock}">
                                         <span class="input-group-btn">
                                             <button
                                                 class="itemcountbutton btn btn-sm btn-secondary"

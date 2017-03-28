@@ -220,6 +220,8 @@
                         location_name as location,
                         stock_name as name,
                         stock_count as count,
+                        stock_min as min,
+                        stock_max as max,
                         category_name as category
                     FROM '.STOCK_TABLE.'
                     LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
@@ -242,6 +244,8 @@
                         'id'=>$result->id,
                         'name'=>$result->name,
                         'count'=>$result->count,
+                        'max'=>$result->max,
+                        'min'=>$result->min,
                         'site'=>$result->site,
                         'location'=>$result->location,
                         'category'=>$result->category
