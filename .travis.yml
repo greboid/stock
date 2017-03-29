@@ -7,10 +7,10 @@ notifications:
 services:
   - mysql
 before_script:
-- composer self-update
-- composer install --no-interaction
 - mysql -u root -e "CREATE DATABASE stocktest;"
 - mysql -u root -e "CREATE USER 'stocktest'@'localhost' IDENTIFIED BY 'stocktest';"
 - mysql -u root -e "GRANT ALL ON stocktest.* TO 'stocktest'@'localhost';"
 script:
+  - php composer.phar self-update
+  - php composer.phar install --no-interaction
   - ./vendor/bin/phpunit
