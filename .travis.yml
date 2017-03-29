@@ -1,15 +1,14 @@
 language: php
 php:
   - '7.1'
-before_script:
-  - composer self-update
-  - composer install --no-interaction --dev
 notifications:
     on_success: never
     on_failure: always
 services:
   - mysql
 before_script:
+- composer self-update
+- composer install --no-interaction --dev
 - mysql -u root -e "CREATE DATABASE stocktest;"
 - mysql -u root -e "CREATE USER 'stocktest'@'localhost' IDENTIFIED BY 'stocktest';"
 - mysql -u root -e "GRANT ALL ON stocktest.* TO 'stocktest'@'localhost';"
