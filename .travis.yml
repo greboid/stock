@@ -8,7 +8,7 @@ services:
   - mysql
 before_script:
 - composer self-update
-- composer install --no-interaction --dev
+- composer install --no-interaction
 - mysql -u root -e "CREATE DATABASE stocktest;"
 - mysql -u root -e "CREATE USER 'stocktest'@'localhost' IDENTIFIED BY 'stocktest';"
 - mysql -u root -e "GRANT ALL ON stocktest.* TO 'stocktest'@'localhost';"

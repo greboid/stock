@@ -12,7 +12,7 @@
         "phpmailer/phpmailer": "^5.2"
     },
     "autoload": {
-            "psr-4": {"greboid\\stock": "src/"}
+            "psr-4": {"greboid\\stock\\": "src"}
     },
     "license": "MIT",
     "authors": [
