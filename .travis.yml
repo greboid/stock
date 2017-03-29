@@ -9,6 +9,7 @@ notifications:
     on_failure: always
 services:
   - mysql
-before_install:
-  |-
-  mysql -e 'CREATE DATABASE stock; GRANT ALL PRIVILEGES ON *.* TO 'stock'@'%' IDENTIFIED BY 'stock' WITH GRANT OPTION; FLUSH PRIVILEGES;'
+before_script:
+- mysql -u root -e "CREATE DATABASE stock;"
+- mysql -u root -e "CREATE USER 'stock'@'localhost' IDENTIFIED BY 'stock';"
+- mysql -u root -e "GRANT ALL ON stock.* TO 'stock'@'localhost';"
