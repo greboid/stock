@@ -1,6 +1,7 @@
 <?php
     declare(strict_types=1);
 
+    require './vendor/autoload.php';
     require_once('./configs/test.php');
 
     use PHPUnit\Framework\TestCase;
