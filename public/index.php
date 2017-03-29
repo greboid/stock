@@ -2,7 +2,7 @@
     declare(strict_types=1);
 
     require './../vendor/autoload.php';
-    require_once('../configs/config.php');
+    require_once('../configs/production.php');
     session_start();
 
     use \greboid\stock\Database;

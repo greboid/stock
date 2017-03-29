@@ -1,7 +1,7 @@
 <?php
 
-if (file_exists(dirname( __FILE__ ).'/config.local.php')) {
-    include(dirname( __FILE__ ).'/config.local.php');
+if (file_exists(dirname( __FILE__ ).'/production.local.php')) {
+    include(dirname( __FILE__ ).'/production.local.php');
 }
 
 #You probably want to define this in config.local.php
