@@ -10,6 +10,6 @@ notifications:
 services:
   - mysql
 before_script:
-- mysql -u root -e "CREATE DATABASE stock;"
-- mysql -u root -e "CREATE USER 'stock'@'localhost' IDENTIFIED BY 'stock';"
-- mysql -u root -e "GRANT ALL ON stock.* TO 'stock'@'localhost';"
+- mysql -u root -e "CREATE DATABASE stocktest;"
+- mysql -u root -e "CREATE USER 'stocktest'@'localhost' IDENTIFIED BY 'stocktest';"
+- mysql -u root -e "GRANT ALL ON stocktest.* TO 'stocktest'@'localhost';"
