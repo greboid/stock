@@ -5,7 +5,7 @@
 
     use PHPUnit\Framework\TestCase;
 
-    use greboid\stock\Database;
+    use greboid\stock\database;
 
     class DatabaseTest extends TestCase {
 
