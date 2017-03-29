@@ -3,7 +3,7 @@ php:
   - '7.1'
 before_script:
   - composer self-update
-  - composer update --no-interaction --dev
+  - composer install --no-interaction --dev
 notifications:
     on_success: never
     on_failure: always
