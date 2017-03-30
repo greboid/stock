@@ -43,8 +43,41 @@
             ');
         }
 
+        public function testNoArgsToCtor() {
+            $this->database = new Database();
+
+            $this->assertTrue('MySQL server has gone away' !== $this->pdo->getAttribute(PDO::ATTR_SERVER_INFO),
+                              "Issue connecting to the database");
+        }
+
+        public function testPassingPDOToCtor() {
+            $this->pdo = new PDO('mysql:dbname='.STOCK_DB.';host='.STOCK_DB_HOST, STOCK_DB_USER, STOCK_DB_PW);
+            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+
+            $this->database = new Database($this->pdo);
+
+            $this->assertTrue('MySQL server has gone away' !== $this->pdo->getAttribute(PDO::ATTR_SERVER_INFO),
+                              "Issue connecting to the database");
+        }
+
+        public function testPassingNullToCtor() {
+            $this->database = new Database(null);
+
+            $this->assertTrue('MySQL server has gone away' !== $this->pdo->getAttribute(PDO::ATTR_SERVER_INFO),
+                              "Issue connecting to the database");
+        }
+
         public function testGetPDO() {
             $this->assertInstanceOf(PDO::class, $this->database->getPDO());
+        }
+
+        public function testDropAndCreate() {
+            $results = $this->pdo->query('SELECT COUNT(*) as count FROM information_schema.tables WHERE table_schema=\'stocktest\'')->fetchObject();
+            $this->assertTrue($results->count > 0, 'Incorret initial count');
+            $this->database->dropAndCreate();
+            $results = $this->pdo->query('SELECT COUNT(*) as count FROM information_schema.tables WHERE table_schema=\'stocktest\'')->fetchObject();
+            $this->assertTrue($results->count === 0, 'Incorret initial count');
         }
 
 }
