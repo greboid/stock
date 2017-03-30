@@ -14,3 +14,5 @@ script:
   - php composer.phar self-update
   - php composer.phar install --no-interaction
   - ./vendor/bin/phpunit
+after_script:
+  - php vendor/bin/codacycoverage phpunit ./coverage.xml
