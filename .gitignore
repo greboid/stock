@@ -5,3 +5,4 @@ public/.well-known
 configs/*.local.php
 /public/components/
 /vendor/
+coverage.xml
