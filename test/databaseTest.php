@@ -73,10 +73,10 @@
         }
 
         public function testDropAndCreate() {
-            $results = $this->pdo->query('SELECT COUNT(*) as count FROM information_schema.tables WHERE table_schema=\'stocktest\'')->fetchObject();
+            $results = $this->pdo->query('SELECT COUNT(*) as count FROM information_schema.tables WHERE table_schema=\''.STOCK_DB.'\'')->fetchObject();
             $this->assertTrue($results->count > 0, 'Incorret initial count');
             $this->database->dropAndCreate();
-            $results = $this->pdo->query('SELECT COUNT(*) as count FROM information_schema.tables WHERE table_schema=\'stocktest\'')->fetchObject();
+            $results = $this->pdo->query('SELECT COUNT(*) as count FROM information_schema.tables WHERE table_schema=\''.STOCK_DB.'\'')->fetchObject();
             $this->assertTrue($results->count === 0, 'Incorret initial count');
         }
 
