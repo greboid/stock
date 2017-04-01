@@ -10,7 +10,7 @@
 
         private $pdo;
         private $driver = '';
-        private $version = 7;
+        private $version = 8;
 
         public function __construct(PDO $pdo = null) {
             if ($pdo == null) {
@@ -186,6 +186,17 @@
                         ADD COLUMN `stock_max`
                         INT(11) DEFAULT -1 NOT NULL AFTER `stock_min`;
                 UPDATE `version` SET `version` = 7;
+            ');
+        }
+
+        public function upgrade7to8(): string {
+            return $this->execUpgradeSQL('
+                UPDATE `'.CATEGORIES_TABLE.'`
+                    SET category_parent=NULL
+                    WHERE category_parent=0;
+                ALTER TABLE `'.CATEGORIES_TABLE.'`
+                    ADD FOREIGN KEY (`category_parent`)
+                    REFERENCES `'.CATEGORIES_TABLE.'`(`category_id`);
             ');
         }
 

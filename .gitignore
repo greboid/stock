@@ -6,3 +6,4 @@ configs/*.local.php
 /public/components/
 /vendor/
 coverage.xml
+propel.yml

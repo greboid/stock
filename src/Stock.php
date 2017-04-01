@@ -157,7 +157,7 @@
         public function getCategories(): array {
             $statement = $this->database->getPDO()->prepare('
                 SELECT categories.category_id AS categoryID,
-                COALESCE(parents.category_id, 0) AS categoryParent,
+                COALESCE(parents.category_id, null) AS categoryParent,
                 parents.category_name as categoryParentName,
                 COALESCE(categories.category_name, "") AS categoryName
                 FROM '.CATEGORIES_TABLE.' as categories
@@ -174,7 +174,7 @@
                 $thisref['parent'] = $result->categoryParent;
                 $thisref['parentName'] = $result->categoryParentName;
                 $thisref['name'] = $result->categoryName;
-                if ($result->categoryParent == 0) {
+                if ($result->categoryParent == null) {
                     $categories[$result->categoryID] = &$thisref;
                 } else {
                     $refs[$result->categoryParent]['subcategories'][$result->categoryID] = &$thisref;
@@ -280,7 +280,7 @@
         }
 
         public function getCategoryStock(int $categoryID): array {
-            if ($categoryID != 0 && !$this->getCategoryName($categoryID)) {
+            if ($categoryID != null && !$this->getCategoryName($categoryID)) {
                 throw new Exception('Specified category does not exist.');
             }
             $sql = 'SELECT stock_id as id, site_name as site, location_name as location, stock_name as name, stock_count as count, COALESCE(category_name, "") AS category
@@ -486,6 +486,9 @@
                 set category_name=:categoryName, category_parent=:categoryParent
                 WHERE category_id=:categoryID
             ');
+            if ($categoryParent == 0) {
+                $categoryParent = null;
+            }
             $statement->bindValue(':categoryID', $categoryID);
             $statement->bindValue(':categoryName', $categoryName);
             $statement->bindValue(':categoryParent', $categoryParent);
@@ -535,6 +538,9 @@
                 (category_parent, category_name)
                 VALUES (:parentID,:category)
             ');
+            if ($parent == 0) {
+                $parent = null;
+            }
             $statement->bindValue(':parentID', $parent, PDO::PARAM_INT);
             $statement->bindValue(':category', $name, PDO::PARAM_STR);
             $statement->execute();
