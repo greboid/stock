@@ -21,15 +21,16 @@
                 if ($categoryID === -1) {
                     header('HTTP/1.1 404 Not Found');
                     $smarty->display('404.tpl');
-                }
-                try {
-                    $smarty->assign('siteid', $siteID);
-                    $smarty->assign('site', $stock->getSiteName($siteID));
-                    $smarty->assign('stock', $stock->getCategoryStock($categoryID));
-                    $smarty->display('stock.tpl');
-                } catch (Exception $e) {
-                    $smarty->assign('error', $e->getMessage());
-                    $smarty->display('500.tpl');
+                } else {
+                    try {
+                        $smarty->assign('siteid', $siteID);
+                        $smarty->assign('site', $stock->getLocationName($siteID));
+                        $smarty->assign('stock', $stock->getCategoryStock($categoryID));
+                        $smarty->display('stock.tpl');
+                    } catch (Exception $e) {
+                        $smarty->assign('error', $e->getMessage());
+                        $smarty->display('500.tpl');
+                    }
                 }
             });
             $router->get('/add/category', function() use ($smarty, $stock) {

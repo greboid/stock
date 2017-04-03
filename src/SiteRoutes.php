@@ -19,10 +19,10 @@
                     $smarty->display('404.tpl');
                 }
                 try {
-                    if ($stock->getSiteName($siteid) !== false) {
+                    if ($stock->getLocationName($siteid) !== false) {
                         $smarty->assign('siteid', $siteid);
                         $smarty->assign('categories', $stock->getCategories());
-                        $smarty->assign('site', $stock->getSiteName($siteid));
+                        $smarty->assign('site', $stock->getLocationName($siteid));
                         $smarty->assign('stock', $stock->getSiteStock($siteid));
                         $smarty->display('stock.tpl');
                     } else {

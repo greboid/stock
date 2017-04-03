@@ -20,27 +20,14 @@
             }
         }
 
-        public function getSiteName(int $siteID): string {
-            if ($siteID == 0) {
-                return "All Sites";
-            }
-            $statement = $this->database->getPDO()->prepare('
-                SELECT COALESCE((SELECT site_name
-                FROM '.SITES_TABLE.' WHERE site_id=:siteID), "") as siteID
-            ');
-            $statement->bindValue(':siteID', $siteID, PDO::PARAM_INT);
-            $statement->execute();
-            return $statement->fetchObject()->siteID;
-        }
-
         public function getSiteID(string $siteName): int {
             $siteName = strtolower($siteName);
             if ($siteName == 'all') {
                 return 0;
             }
             $statement = $this->database->getPDO()->prepare('
-                SELECT COALESCE((SELECT site_id
-                FROM '.SITES_TABLE.' WHERE site_name=:siteName), -1) as siteName
+                SELECT COALESCE((SELECT location_id
+                FROM '.LOCATIONS_TABLE.' WHERE location_name=:siteName), -1) as siteName
             ');
             $statement->bindValue(':siteName', $siteName, PDO::PARAM_STR);
             $statement->execute();
@@ -86,19 +73,27 @@
 
         public function getSiteForLocation(int $locationID): string {
             $statement = $this->database->getPDO()->prepare('
-                SELECT COALESCE((SELECT site_name
-                FROM '.LOCATIONS_TABLE.'
-                LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id
-                WHERE location_id=:locationID), "") as siteName
+                SELECT location_name as siteName
+                    FROM '.LOCATIONS_TABLE.'
+                    WHERE location_id=(
+                        SELECT location_parent
+                            FROM '.LOCATIONS_TABLE.'
+                            WHERE location_id=:locationID)
             ');
             $statement->bindValue(':locationID', $locationID, PDO::PARAM_INT);
             $statement->execute();
+            if ($statement->rowCount() === 0) {
+                return "";
+            }
             return $statement->fetchObject()->siteName;
         }
 
         public function getSites(): array {
             $statement = $this->database->getPDO()->prepare('
-                SELECT site_id, site_name FROM '.SITES_TABLE.' ORDER BY site_name
+                SELECT location_id as site_id, location_name as site_name
+                    FROM '.LOCATIONS_TABLE.'
+                    WHERE location_parent IS NULL
+                    ORDER BY location_name
             ');
             $statement->execute();
             $results = $statement->fetchAll(PDO::FETCH_CLASS);
@@ -111,18 +106,20 @@
 
         public function getLocations(): array {
             $statement = $this->database->getPDO()->prepare('
-                SELECT site_id, site_name FROM '.SITES_TABLE
-            );
+                SELECT location_id, location_name
+                    FROM '.LOCATIONS_TABLE.'
+                    WHERE location_parent IS NULL
+            ');
             $statement->execute();
             $results = $statement->fetchAll(PDO::FETCH_CLASS);
             $locations = array();
             foreach ($results as $result) {
-                $locations[$result->site_id] = array('name'=>$result->site_name, 'locations'=>array());
+                $locations[$result->location_id] = array('name'=>$result->location_name, 'locations'=>array());
             }
             foreach (array_keys($locations) as $siteid) {
                 $statement = $this->database->getPDO()->prepare('
                     SELECT location_id, location_name
-                    FROM '.LOCATIONS_TABLE.' where location_site=:siteID
+                    FROM '.LOCATIONS_TABLE.' where location_parent=:siteID
                 ');
                 $statement->bindValue(':siteID', $siteid, PDO::PARAM_INT);
                 $statement->execute();
@@ -212,12 +209,12 @@
         }
 
         public function getSiteStock(int $site): array {
-            if (!$this->getSiteName($site)) {
+            if (!$this->getLocationName($site)) {
                 throw new Exception('Specified site does not exist.');
             }
             $sql = 'SELECT stock_id as id,
-                        site_name as site,
-                        location_name as location,
+                        parents.location_name as site,
+                        '.LOCATIONS_TABLE.'.location_name as location,
                         stock_name as name,
                         stock_count as count,
                         stock_min as min,
@@ -225,12 +222,12 @@
                         category_name as category
                     FROM '.STOCK_TABLE.'
                     LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
-                    LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id
+                    LEFT JOIN '.LOCATIONS_TABLE.' as parents ON '.LOCATIONS_TABLE.'.location_parent=parents.location_id
                     LEFT JOIN '.CATEGORIES_TABLE.' ON '.STOCK_TABLE.'.stock_category='.CATEGORIES_TABLE.'.category_id';
             if ($site != 0) {
-                $sql .= " WHERE site_id=:site";
+                $sql .= " WHERE location_id=:site";
             }
-            $sql .= " ORDER BY stock_name, location_name, site_name ASC";
+            $sql .= " ORDER BY stock_name, ".LOCATIONS_TABLE.".location_name, site ASC";
             $statement = $this->database->getPDO()->prepare($sql);
             if ($site != 0) {
                 $statement->bindValue(':site', $site, PDO::PARAM_INT);
@@ -258,14 +255,22 @@
             if (!$this->getLocationName($location)) {
                 throw new Exception('Specified location does not exist.');
             }
-            $sql = 'SELECT stock_id as id, site_name as site, location_name as location, stock_name as name, stock_count as count
+            $sql = 'SELECT stock_id as id,
+                        parents.location_name as site,
+                        '.LOCATIONS_TABLE.'.location_name as location,
+                        stock_name as name,
+                        stock_min as min,
+                        stock_max as max,
+                        category_name as category,
+                        stock_count as count
                                   FROM '.STOCK_TABLE.'
                                   LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
-                                  LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id';
+                                  LEFT JOIN '.LOCATIONS_TABLE.' as parents ON '.LOCATIONS_TABLE.'.location_parent=parents.location_id
+                                  LEFT JOIN '.CATEGORIES_TABLE.' ON '.STOCK_TABLE.'.stock_category='.CATEGORIES_TABLE.'.category_id';
             if ($location != 0) {
-                $sql .= " WHERE location_id=:locationID";
+                $sql .= " WHERE ".LOCATIONS_TABLE.".location_id=:locationID";
             }
-            $sql .= " ORDER BY stock_name, location_name, site_name ASC";
+            $sql .= " ORDER BY stock_name, ".LOCATIONS_TABLE.".location_name, parents.location_name ASC";
             $statement = $this->database->getPDO()->prepare($sql);
             if ($location != 0) {
                 $statement->bindValue(':locationID', $location, PDO::PARAM_INT);
@@ -274,7 +279,15 @@
             $results = $statement->fetchAll(PDO::FETCH_CLASS);
             $stock = array();
             foreach ($results as $result) {
-                $stock[$result->id] = array('name'=>$result->name, 'count'=>$result->count, 'site'=>$result->site, 'location'=>$result->location);
+                $stock[$result->id] = array(
+                        'name'=>$result->name,
+                        'max'=>$result->max,
+                        'min'=>$result->min,
+                        'count'=>$result->count,
+                        'site'=>$result->site,
+                        'location'=>$result->location,
+                        'category'=>$result->category
+                        );
             }
             return $stock;
         }
@@ -283,10 +296,17 @@
             if ($categoryID != null && !$this->getCategoryName($categoryID)) {
                 throw new Exception('Specified category does not exist.');
             }
-            $sql = 'SELECT stock_id as id, site_name as site, location_name as location, stock_name as name, stock_count as count, COALESCE(category_name, "") AS category
+            $sql = 'SELECT stock_id as id,
+                        parents.location_name as site,
+                        '.LOCATIONS_TABLE.'.location_name as location,
+                        stock_name as name,
+                        stock_count as count,
+                        COALESCE(category_name, "") AS category,
+                        stock_min as min,
+                        stock_max as max
                         FROM '.STOCK_TABLE.'
                         LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
-                        LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id
+                        LEFT JOIN '.LOCATIONS_TABLE.' as parents ON '.LOCATIONS_TABLE.'.location_parent=parents.location_id
                         LEFT JOIN '.CATEGORIES_TABLE.' ON '.STOCK_TABLE.'.stock_category='.CATEGORIES_TABLE.'.category_id';
             if ($categoryID != 0) {
                 $sql .= ' WHERE stock_category=:categoryID';
@@ -302,6 +322,8 @@
                 $stock[$result->id] =
                     array(
                           'name'=>$result->name,
+                          'max'=>$result->max,
+                          'min'=>$result->min,
                           'count'=>$result->count,
                           'site'=>$result->site,
                           'location'=>$result->location,
@@ -395,7 +417,7 @@
 
             $statement = $this->database->getPDO()->prepare('
                 INSERT INTO '.LOCATIONS_TABLE.'
-                (location_name, location_site)
+                (location_name, location_parent)
                 VALUES (:location,:siteID)
             ');
             $statement->bindValue(':location', $name, PDO::PARAM_STR);
@@ -416,8 +438,8 @@
             }
 
             $statement = $this->database->getPDO()->prepare('
-                INSERT INTO '.SITES_TABLE.'
-                (site_name)
+                INSERT INTO '.LOCATIONS_TABLE.'
+                (location_name)
                 VALUES (:siteName)
             ');
             $statement->bindValue(':siteName', $name);
@@ -437,9 +459,9 @@
             }
 
             $statement = $this->database->getPDO()->prepare('
-                UPDATE '.SITES_TABLE.'
-                set site_name=:siteName
-                WHERE site_id=:siteID
+                UPDATE '.LOCATIONS_TABLE.'
+                set location_name=:siteName
+                WHERE location_id=:siteID
             ');
             $statement->bindValue(':siteName', $name);
             $statement->bindValue(':siteID', $siteID);
@@ -460,7 +482,7 @@
 
             $statement = $this->database->getPDO()->prepare('
                 UPDATE '.LOCATIONS_TABLE.'
-                set location_name=:locationName, location_site=:siteID
+                set location_name=:locationName, location_parent=:siteID
                 WHERE location_id=:locationID
             ');
             $statement->bindValue(':locationID', $locationID);
@@ -571,7 +593,7 @@
                 throw new Exception('Unable to delete site, it still contains stock.');
             }
             $statement = $this->database->getPDO()->prepare('
-                DELETE FROM '.SITES_TABLE.' WHERE site_id=:siteID
+                DELETE FROM '.LOCATIONS_TABLE.' WHERE location_id=:siteID
             ');
             $statement->bindValue(':siteID', $siteID, PDO::PARAM_INT);
             $statement->execute();

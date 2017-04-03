@@ -10,7 +10,7 @@
 
         private $pdo;
         private $driver = '';
-        private $version = 8;
+        private $version = 9;
 
         public function __construct(PDO $pdo = null) {
             if ($pdo == null) {
@@ -197,6 +197,76 @@
                 ALTER TABLE `'.CATEGORIES_TABLE.'`
                     ADD FOREIGN KEY (`category_parent`)
                     REFERENCES `'.CATEGORIES_TABLE.'`(`category_id`);
+                UPDATE `version` SET `version` = 8;
+            ');
+        }
+
+        public function upgrade8to9(): string {
+            $this->execUpgradeSQL('
+                ALTER TABLE `'.LOCATIONS_TABLE.'`
+                    DROP FOREIGN KEY `locations-sites`;
+            ');
+            $statement = $this->pdo->prepare('
+                SELECT location_id, location_site, location_name
+                    FROM '.LOCATIONS_TABLE.'
+            ');
+            $statement->execute();
+            $results = $statement->fetchAll(PDO::FETCH_CLASS);
+            $locations = array();
+            foreach ($results as $result) {
+                $locations[] =
+                    array(
+                         'id'=>$result->location_id,
+                         'site'=>$result->location_site,
+                         'name'=>$result->location_name
+                         );
+            }
+            $statement = $this->pdo->prepare('
+                SELECT site_id, site_name
+                FROM '.SITES_TABLE.';
+            ');
+            $statement->execute();
+            $results = $statement->fetchAll(PDO::FETCH_CLASS);
+            $sites = array();
+            foreach ($results as $result) {
+                $statement = $this->pdo->prepare('
+                    INSERT INTO '.LOCATIONS_TABLE.'
+                        (location_name)
+                        VALUES (:locationName)
+                ');
+                $statement->bindValue(':locationName',
+                    $result->site_name, PDO::PARAM_STR);
+                $statement->execute();
+                $sites[$result->site_id] =
+                    array(
+                         'name'=>$result->site_name,
+                         'newid'=>$this->pdo->lastInsertId()
+                         );
+            }
+            foreach ($locations as $location) {
+                $statement = $this->pdo->prepare('
+                    UPDATE '.LOCATIONS_TABLE.'
+                        SET location_site=:locationSite
+                        WHERE location_id=:locationID
+                ');
+                $statement->bindValue(':locationSite',
+                    $sites[$location['site']]['newid'], PDO::PARAM_INT);
+                $statement->bindValue(':locationID',
+                    $location['id'], PDO::PARAM_INT);
+                $statement->execute();
+            }
+            $this->execUpgradeSQL('
+                ALTER TABLE `'.LOCATIONS_TABLE.'`
+                    CHANGE `location_site` `location_parent` INT(11) NULL;
+            ');
+            $this->execUpgradeSQL('
+                    ALTER TABLE `'.LOCATIONS_TABLE.'`
+                        ADD FOREIGN KEY (`location_parent`)
+                        REFERENCES `'.LOCATIONS_TABLE.'`(`location_id`);
+            ');
+            return $this->execUpgradeSQL('
+                DROP TABLE IF EXISTS `'.SITES_TABLE.'`;
+                UPDATE `version` SET `version` = 9;
             ');
         }
 
