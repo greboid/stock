@@ -33,7 +33,11 @@
                         'password' => $password,
                     ));
                     $msg->info('You are now logged in: '.htmlspecialchars($auth->getUserData()['name']));
-                    header('Location: /');
+                    if (isset($SESSION['postauthredirect'])) {
+                        header('Location: /'.SESSION['postauthredirect']);
+                    } else {
+                        header('Location: /');
+                    }
                 } catch (\Aura\Auth\Exception\UsernameMissing $e) {
                     $msg->error('You must specify a username.');
                     header('Location: /auth/login');

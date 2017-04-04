@@ -89,6 +89,13 @@
                 $smarty->assign('msg', $msg->display(null, false));
             }
         });
+    $router->before('GET', '(.*)', function($route) use ($smarty, $auth) {
+        if (preg_match('#^(?!auth).*#', $route) && $auth->getStatus() !== Status::VALID) {
+            $SESSION['postauthredirect'] = $route;
+            header('Location: /auth/login');
+            exit();
+        }
+    });
     $authRoutes->addRoutes($router, $storage);
     if ($auth->getStatus() === Status::VALID) {
         $systemRoutes->addRoutes($router, $smarty, $storage);
