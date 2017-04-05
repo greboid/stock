@@ -14,14 +14,14 @@
     class UserRoutes {
 
         public function addRoutes(RunTimeStorage $storage): void {
-            $router = $storage->retrieve('router');
+            $app = $storage->retrieve('app');
             $smarty = $storage->retrieve('smarty');
             $stock = $storage->retrieve('stock');
             $msg = $storage->retrieve('flash');
             $auth = $storage->retrieve('auth');
             $pdo = $storage->retrieve('pdo');
 
-            $router->get('/user/profile', function() use($smarty, $stock, $auth, $pdo) {
+            $app->get('/user/profile', function() use($smarty, $stock, $auth, $pdo) {
                 try {
                     $stmt = $pdo->prepare('SELECT email, name FROM '.ACCOUNTS_TABLE.' WHERE username=:username');
                     $stmt->bindValue(':username', $auth->getUserName());
@@ -29,13 +29,13 @@
                     $userData = $stmt->fetch(PDO::FETCH_ASSOC);
                     $smarty->assign('username', $auth->getUserName());
                     $smarty->assign('userdata', $userData);
-                    $smarty->display('profile.tpl');
+                    return $smarty->fetch('profile.tpl');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
-                    $smarty->display('500.tpl');
+                    return $smarty->return('500.tpl');
                 }
             });
-            $router->get('/user/checkemail', function() use($smarty, $stock, $auth, $pdo) {
+            $app->get('/user/checkemail', function() use($smarty, $stock, $auth, $pdo) {
                 $email = filter_input(INPUT_POST, "email", FILTER_UNSAFE_RAW);
                 if ($email == null) {
                     $email = filter_input(INPUT_GET, "email", FILTER_UNSAFE_RAW);
@@ -55,9 +55,9 @@
                 } else {
                     $smarty->assign('output', "Email address is in use.");
                 }
-                $smarty->display('outputjson.tpl');
+                return $smarty->fetch('outputjson.tpl');
             });
-            $router->get('/user/checkusername', function() use($smarty, $stock, $auth, $pdo) {
+            $app->get('/user/checkusername', function() use($smarty, $stock, $auth, $pdo) {
                 $username = filter_input(INPUT_POST, "username", FILTER_UNSAFE_RAW);
                 if ($username == null) {
                     $username = filter_input(INPUT_GET, "username", FILTER_UNSAFE_RAW);
@@ -72,9 +72,9 @@
                 } else {
                     $smarty->assign('output', "Username is in use.");
                 }
-                $smarty->display('outputjson.tpl');
+                return $smarty->fetch('outputjson.tpl');
             });
-            $router->post('/user/profile', function() use ($smarty, $pdo, $msg) {
+            $app->post('/user/profile', function() use ($smarty, $pdo, $msg, $app) {
                 $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
                 $name = filter_input(INPUT_POST, "name", FILTER_SANITIZE_STRING);
                 $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
@@ -88,9 +88,9 @@
                 } catch (Exception $e) {
                     $msg->error('Unable to update details: '.$e->getMessage());
                 }
-                header('Location: /user/profile');
+                return $app->redirect('/user/profile');
             });
-            $router->post('/user/password', function() use ($smarty, $pdo, $msg, $auth) {
+            $app->post('/user/password', function() use ($smarty, $pdo, $msg, $auth, $app) {
                 $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
                 $password = filter_input(INPUT_POST, "newpassword", FILTER_UNSAFE_RAW);
                 $password = password_hash($password, PASSWORD_DEFAULT);
@@ -108,16 +108,16 @@
                 } else {
                     $msg->error('Unable to update another user\'s password');
                 }
-                header('Location: /user/profile');
+                return $app->redirect('/user/profile');
             });
-            $router->get('/manage/users', function() use ($smarty, $pdo, $msg) {
+            $app->get('/manage/users', function() use ($smarty, $pdo, $msg) {
                 $stmt = $pdo->prepare('SELECT id, username, name, email, active from '.ACCOUNTS_TABLE);
                 $stmt->execute();
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $smarty->assign('users', $results);
-                $smarty->display('manageusers.tpl');
+                return $smarty->fetch('manageusers.tpl');
             });
-            $router->post('/add/user', function() use ($smarty, $pdo, $msg) {
+            $app->post('/add/user', function() use ($smarty, $pdo, $msg, $app) {
                 $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
                 $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
                 $name = filter_input(INPUT_POST, "name", FILTER_SANITIZE_STRING);
@@ -142,9 +142,9 @@
                 if ($this->sendNewUserMail($username, $name, $email, $token) != '') {
                     $msg->error('New user email failed to send.');
                 }
-                header('Location: /manage/users');
+                return $app->redirect('/manage/users');
             });
-            $router->post('/edit/user', function() use ($smarty, $pdo) {
+            $app->post('/edit/user', function() use ($smarty, $pdo, $app) {
                 try {
                     $userID = filter_input(INPUT_POST, "editID", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                     $userUsername = filter_input(INPUT_POST, "editUsername", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
@@ -152,13 +152,13 @@
                     $userEmail = filter_input(INPUT_POST, "editEmail", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
                     $userActive = filter_input(INPUT_POST, "active", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                     $this->editUser($pdo, $userID, $userUsername, $userName, $userEmail, $userActive);
-                    header('Location: /manage/users');
+                    return $app->redirect('/manage/users');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
-                    $smarty->display('500.tpl');
+                    return $smarty->fetch('500.tpl');
                 }
             });
-            $router->post('/delete/user', function() use ($smarty, $pdo, $msg) {
+            $app->post('/delete/user', function() use ($smarty, $pdo, $msg, $app) {
                 $userid = filter_input(INPUT_POST, "userid", FILTER_SANITIZE_NUMBER_INT);
                 try {
                     $stmt = $pdo->prepare('DELETE FROM '.ACCOUNTS_TABLE.' where id=:id;');
@@ -167,9 +167,9 @@
                 } catch (Exception $e) {
                     $msg->error('Unable to delete user: '.$e->getMessage());
                 }
-                header('Location: /manage/users');
+                return $app->redirect('/manage/users');
             });
-            $router->post('/user/sendverification', function() use ($smarty, $pdo, $msg) {
+            $app->post('/user/sendverification', function() use ($smarty, $pdo, $msg, $app) {
                 $userid = filter_input(INPUT_POST, "userid", FILTER_SANITIZE_NUMBER_INT);
                 try {
                     $stmt = $pdo->prepare('
@@ -199,7 +199,7 @@
                                                $token) != '') {
                         $msg->error('New user email failed to send.');
                     }
-                    header('Location: /manage/users');
+                    return $app->redirect('/manage/users');
                 } catch (Exception $e) {
                     $msg->error('Unable to delete user: '.$e->getMessage());
                 }

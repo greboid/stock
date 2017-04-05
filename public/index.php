@@ -14,15 +14,17 @@
     use \greboid\stock\SystemRoutes;
     use \greboid\stock\AuthRoutes;
     use \greboid\stock\UserRoutes;
-    use \Bramus\Router\Router;
     use \Aura\Auth\AuthFactory;
     use \Aura\Auth\Verifier\PasswordVerifier;
     use \Aura\Auth\Status;
     use \ICanBoogie\Storage\RunTimeStorage;
     use \Plasticbrain\FlashMessages\FlashMessages;
 
+
+    use \Silex\Application;
+    use \Symfony\Component\HttpFoundation\Request;
+
     $storage = new RunTimeStorage;
-    $router = new Router();
     $smarty = new Smarty();
     $itemRoutes = new ItemRoutes();
     $locationRoutes = new LocationRoutes();
@@ -38,7 +40,6 @@
     $smarty->assign('max_stock', MAX_STOCK);
     $error = false;
     $database = null;
-
     try {
         $database = new Database();
     } catch (Exception $e) {
@@ -60,55 +61,54 @@
     $from = 'accounts';
     $where = 'active = 1 AND verified = 1';
     $pdo_adapter = $auth_factory->newPdoAdapter($database->getPDO(), $hash, $cols, $from, $where);
-    $login_service = $auth_factory->newLoginService($pdo_adapter);
-    $logout_service = $auth_factory->newLogoutService($pdo_adapter);
+    $loginService = $auth_factory->newLoginService($pdo_adapter);
+    $logoutService = $auth_factory->newLogoutService($pdo_adapter);
     $msg = new FlashMessages();
     $storage->store('flash', $msg);
+    $pdo = $database->getPDO();
 
 
     $storage->store('auth', $auth);
-    $storage->store('loginService', $login_service);
-    $storage->store('logoutService', $logout_service);
+    $storage->store('loginService', $loginService);
+    $storage->store('logoutService', $logoutService);
     $storage->store('stock', $stock);
     $storage->store('smarty', $smarty);
-    $storage->store('router', $router);
     $storage->store('pdo', $database->getPDO());
     $storage->store('database', $database);
 
-    $router->set404(function() use ($smarty) {
-        header('HTTP/1.1 404 Not Found');
-        $smarty->display('404.tpl');
-    });
-    $router->before('GET', '(.*)', function($route) use ($smarty, $stock, $auth, $msg) {
-            $smarty->assign('username', $auth->getUsername());
-            $smarty->assign('sites', $stock->getSites());
-            $smarty->assign('locations', $stock->getLocations());
-            $smarty->assign('categories', $stock->getCategories());
-            $smarty->assign('route', '/'.$route);
-            if ($msg->hasMessages()) {
-                $smarty->assign('msg', $msg->display(null, false));
-            }
-        });
-    $router->before('GET', '(.*)', function($route) use ($smarty, $auth) {
-        if (preg_match('#^(?!auth).*#', $route) && $auth->getStatus() !== Status::VALID) {
-            $SESSION['postauthredirect'] = $route;
-            header('Location: /auth/login');
-            exit();
+
+
+    $app = new Application();
+    $storage->store('app', $app);
+    if (DEBUG) {
+        $app['debug'] = true;
+    }
+    $app->error(function (\Exception $e, Request $request, $code) use($smarty) {
+        switch ($code) {
+            case 404:
+                return $smarty->fetch('404.tpl');
+            default:
+                $smarty->assign('error', 'An unknown error has occurred.');
+                return $smarty->fetch('500.tpl');
         }
     });
-    $authRoutes->addRoutes($router, $storage);
-    if ($auth->getStatus() === Status::VALID) {
-        $systemRoutes->addRoutes($router, $smarty, $storage);
-        $itemRoutes->addRoutes($router, $smarty, $stock, $storage);
-        $locationRoutes->addRoutes($router, $smarty, $stock, $storage);
-        $categoryRoutes->addRoutes($router, $smarty, $stock, $storage);
-        $siteRoutes->addRoutes($router, $smarty, $stock, $storage);
-        $userRoutes->addRoutes($storage);
-    } else {
-        $router->get('/', function() use ($smarty) {
-            $smarty->assign('loginMessage', LOGIN_MESSAGE);
-            $smarty->display('login.tpl');
-        });
-    }
+    $app->before(function (Request $request, Application $app) use ($auth, $smarty, $stock, $msg) {
+        $route = $request->attributes->get('_route');
+        $smarty->assign('username', $auth->getUsername());
+        $smarty->assign('sites', $stock->getSites());
+        $smarty->assign('locations', $stock->getLocations());
+        $smarty->assign('categories', $stock->getCategories());
+        $smarty->assign('route', '/'.$route);
+        if ($msg->hasMessages()) {
+            $smarty->assign('msg', $msg->display(null, false));
+        }
+    });
+    $systemRoutes->addRoutes($storage);
+    $authRoutes->addRoutes($storage);
+    $itemRoutes->addRoutes($storage);
+    $locationRoutes->addRoutes($storage);
+    $categoryRoutes->addRoutes($storage);
+    $siteRoutes->addRoutes($storage);
+    $userRoutes->addRoutes($storage);
 
-    $router->run();
+    $app->run();

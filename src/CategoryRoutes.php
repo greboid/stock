@@ -7,40 +7,45 @@
     use \greboid\stock\Stock;
     use \Bramus\Router\Router;
     use \Smarty;
+    use \ICanBoogie\Storage\RunTimeStorage;
 
     class CategoryRoutes {
 
-        public function addRoutes(Router $router, Smarty $smarty, Stock $stock): void {
-            $router->get('/categories/', function() use ($smarty, $stock) {
-                $smarty->display('categories.tpl');
+        public function addRoutes(RunTimeStorage $storage): void {
+            $app = $storage->retrieve('app');
+            $smarty = $storage->retrieve('smarty');
+            $stock = $storage->retrieve('stock');
+
+            $app->get('/categories/', function() use ($smarty, $stock) {
+                return $smarty->fetch('categories.tpl');
             });
-            $router->get('/category/(.*)', function($categoryName) use ($smarty, $stock) {
+            $app->get('/category/{categoryName}', function($categoryName) use ($smarty, $stock) {
                 $categoryName = filter_var($categoryName, FILTER_UNSAFE_RAW);
                 $categoryID = $stock->getCategoryID($categoryName);
                 $siteID = 0;
                 if ($categoryID === -1) {
                     header('HTTP/1.1 404 Not Found');
-                    $smarty->display('404.tpl');
+                    return $smarty->fetch('404.tpl');
                 }
                 try {
                     $smarty->assign('siteid', $siteID);
                     $smarty->assign('site', $stock->getSiteName($siteID));
                     $smarty->assign('stock', $stock->getCategoryStock($categoryID));
-                    $smarty->display('stock.tpl');
+                    return $smarty->fetch('stock.tpl');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
-                    $smarty->display('500.tpl');
+                    return $smarty->fetch('500.tpl');
                 }
             });
-            $router->get('/add/category', function() use ($smarty, $stock) {
+            $app->get('/add/category', function() use ($smarty, $stock) {
                 try {
-                    $smarty->display('addCategory.tpl');
+                    return $smarty->fetch('addCategory.tpl');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
-                    $smarty->display('500.tpl');
+                    return $smarty->fetch('500.tpl');
                 }
             });
-            $router->post('/add/category', function() use ($smarty, $stock) {
+            $app->post('/add/category', function() use ($smarty, $stock, $app) {
                 $name = filter_input(INPUT_POST, "name", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
                 $parent = filter_input(INPUT_POST, "parent", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                 if ($parent == null) {
@@ -49,19 +54,19 @@
                 try {
                     if ($name !== false && $parent !== false) {
                         $stock->insertCategory($name, $parent);
-                        header('Location: /manage/categories');
+                        return $app->redirect('/manage/categories');
                     } else if ($name !== false) {
                         $stock->insertLocation($name);
-                        header('Location: /manage/categories');
+                        return $app->redirect('/manage/categories');
                     }
                     $smarty->assign('error', 'Missing required value.');
-                    $smarty->display('500.tpl');
+                    return $smarty->fetch('500.tpl');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
-                    $smarty->display('500.tpl');
+                    return $smarty->fetch('500.tpl');
                 }
             });
-            $router->post('/edit/category', function() use ($smarty, $stock) {
+            $app->post('/edit/category', function() use ($smarty, $stock, $app) {
                 try {
                     $categoryID = filter_input(INPUT_POST, "editID", FILTER_VALIDATE_INT);
                     $categoryName = filter_input(INPUT_POST, "editName", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
@@ -73,31 +78,31 @@
                         $stock->editCategory($categoryID, $categoryName, $categoryParent);
                     } else {
                         $smarty->assign('error', 'Missing required value.');
-                        $smarty->display('500.tpl');
+                        return $smarty->fetch('500.tpl');
                     }
-                    header('Location: /manage/categories');
+                    return $app->redirect('/manage/categories');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
-                    $smarty->display('500.tpl');
+                    return $smarty->fetch('500.tpl');
                 }
             });
-            $router->get('/manage/categories', function() use ($smarty, $stock) {
+            $app->get('/manage/categories', function() use ($smarty, $stock) {
                 try {
                     $smarty->assign('allCategoryStock', $stock->getAllCategoryStock());
-                    $smarty->display('managecategories.tpl');
+                    return $smarty->fetch('managecategories.tpl');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
-                    $smarty->display('500.tpl');
+                    return $smarty->fetch('500.tpl');
                 }
             });
-            $router->post('/delete/category/(\d+)', function($categoryid) use ($smarty, $stock) {
+            $app->post('/delete/category/{categoryID}', function($categoryid) use ($smarty, $stock, $app) {
                 $categoryid = filter_var($categoryid, FILTER_VALIDATE_INT);
                 try {
                     $stock->deleteCategory($categoryid);
-                    header('Location: /manage/categories');
+                    return $app->redirect('/manage/categories');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
-                    $smarty->display('500.tpl');
+                    return $smarty->fetch('500.tpl');
                 }
             });
         }

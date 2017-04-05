@@ -5,6 +5,9 @@ if (file_exists(dirname( __FILE__ ).'/production.local.php')) {
 }
 
 #You probably want to define this in config.local.php
+if (!defined('DEBUG')) {
+    define('DEBUG', false);
+}
 if (!defined('STOCK_DB')) {
     define('STOCK_DB', 'stock');
 }

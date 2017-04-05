@@ -10,15 +10,19 @@
 
     class SystemRoutes {
 
-        public function addRoutes(Router $router, Smarty $smarty, RunTimeStorage $storage): void {
+        public function addRoutes(RunTimeStorage $storage): void {
+            $app = $storage->retrieve('app');
+            $smarty = $storage->retrieve('smarty');
+            $stock = $storage->retrieve('stock');
             $msg = $storage->retrieve('flash');
             $database = $storage->retrieve('database');
-            $router->get('/', function() use($smarty) {
+
+            $app->get('/', function() use($smarty, $app){
                 try {
-                    header('Location: /site/all');
+                    return $app->redirect('/site/all');
                 } catch (Exception $e) {
                     $smarty->assign('error', $e->getMessage());
-                    $smarty->display('500.tpl');
+                    return $smarty->fetch('500.tpl');
                 }
             });
         }
