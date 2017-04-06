@@ -135,7 +135,9 @@
         $types = array('error', 'warning', 'info', 'success');
         $messages = array();
         foreach ($types as $type) {
-            array_merge($messages, getMessages($app, $type));
+            foreach(getMessages($app, $type) as $message) {
+                $messages[] = $message;
+            }
         }
         return $messages;
     }
@@ -165,6 +167,9 @@
     }
 
     function message(string $type, string $message): string {
+        if ($type == 'error') {
+            $type = 'danger';
+        }
         return '
             <div class="alert alert-'.$type.' alert-dismissible fade show" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">

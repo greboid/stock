@@ -21,13 +21,14 @@
             $auth = $storage->retrieve('auth');
             $pdo = $storage->retrieve('pdo');
 
-            $app->get('/user/profile', function() use($smarty, $stock, $auth, $pdo) {
+            $app->get('/user/profile', function() use($smarty, $stock, $auth, $pdo, $app) {
                 try {
+                    $token = $app['security.token_storage']->getToken();
                     $stmt = $pdo->prepare('SELECT email, name FROM '.ACCOUNTS_TABLE.' WHERE username=:username');
-                    $stmt->bindValue(':username', $auth->getUserName());
+                    $stmt->bindValue(':username', $token->getUser());
                     $stmt->execute();
                     $userData = $stmt->fetch(PDO::FETCH_ASSOC);
-                    $smarty->assign('username', $auth->getUserName());
+                    $smarty->assign('username', $token->getUser());
                     $smarty->assign('userdata', $userData);
                     return $smarty->fetch('profile.tpl');
                 } catch (Exception $e) {
