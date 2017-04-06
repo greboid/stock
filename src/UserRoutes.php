@@ -84,9 +84,9 @@
                     $stmt->bindValue(':name', $name);
                     $stmt->bindValue(':username', $username);
                     $stmt->execute();
-                    $msg->info('Your details have been updated');
+                    $app['session']->getFlashBag()->add('info', 'Your details have been updated');
                 } catch (Exception $e) {
-                    $msg->error('Unable to update details: '.$e->getMessage());
+                    $app['session']->getFlashBag()->add('error', 'Unable to update details: '.$e->getMessage());
                 }
                 return $app->redirect('/user/profile');
             });
@@ -101,12 +101,12 @@
                         $stmt->bindValue(':username', $username);
                         $val = $stmt->execute();
 
-                        $msg->info('Your details have been updated.');
+                        $app['session']->getFlashBag()->add('info', 'Your details have been updated.');
                     } catch (Exception $e) {
-                        $msg->error('Unable to update details: '.$e->getMessage());
+                        $app['session']->getFlashBag()->add('error', 'Unable to update details: '.$e->getMessage());
                     }
                 } else {
-                    $msg->error('Unable to update another user\'s password');
+                    $app['session']->getFlashBag()->add('error', 'Unable to update another user\'s password');
                 }
                 return $app->redirect('/user/profile');
             });
@@ -137,10 +137,10 @@
                     $stmt->bindValue(':verifytoken', $token);
                     $stmt->execute();
                 } catch (Exception $e) {
-                    $msg->error('Unable to add user: '.$e->getMessage());
+                    $app['session']->getFlashBag()->add('error', 'Unable to add user: '.$e->getMessage());
                 }
                 if ($this->sendNewUserMail($username, $name, $email, $token) != '') {
-                    $msg->error('New user email failed to send.');
+                    $app['session']->getFlashBag()->add('error', 'New user email failed to send.');
                 }
                 return $app->redirect('/manage/users');
             });
@@ -165,7 +165,7 @@
                     $stmt->bindValue(':id', $userid);
                     $stmt->execute();
                 } catch (Exception $e) {
-                    $msg->error('Unable to delete user: '.$e->getMessage());
+                    $app['session']->getFlashBag()->add('error', 'Unable to delete user: '.$e->getMessage());
                 }
                 return $app->redirect('/manage/users');
             });
@@ -197,11 +197,11 @@
                                                $result->name,
                                                $result->email,
                                                $token) != '') {
-                        $msg->error('New user email failed to send.');
+                        $app['session']->getFlashBag()->add('error', 'New user email failed to send.');
                     }
                     return $app->redirect('/manage/users');
                 } catch (Exception $e) {
-                    $msg->error('Unable to delete user: '.$e->getMessage());
+                    $app['session']->getFlashBag()->add('error', 'Unable to delete user: '.$e->getMessage());
                 }
             });
         }
