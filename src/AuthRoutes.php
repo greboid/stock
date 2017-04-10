@@ -5,45 +5,22 @@
 
     use \Exception;
     use \PDO;
-    use \Bramus\Router\Router;
-    use \Smarty;
-    use \ICanBoogie\Storage\RunTimeStorage;
     use \Silex\Application;
-    use \Symfony\Component\HttpFoundation\Request;
 
     class AuthRoutes {
 
-        public function addRoutes(RunTimeStorage $storage): void {
-            $app = $storage->retrieve('app');
-            $loginService = $storage->retrieve('loginService');
-            $smarty = $storage->retrieve('smarty');
-            $stock = $storage->retrieve('stock');
-            $msg = $storage->retrieve('flash');
-            $pdo = $storage->retrieve('pdo');
+        public function addRoutes(Application $app): void {
 
-            $app->get('/auth/login', function() use ($smarty, $app) {
-                $smarty->assign('loginMessage', LOGIN_MESSAGE);
-                $smarty->assign('msg', $app['security.last_error']($app['request_stack']->getCurrentRequest()));
-                return $smarty->fetch('login.tpl');
+            $app->get('/auth/login', function(Application $app) {
+                return $app['twig']->render('login.tpl', array(
+                    'loginMessage' => LOGIN_MESSAGE,
+                    'msg' => $app['security.last_error']($app['request_stack']->getCurrentRequest()),
+                ));
             })->bind('login_get');
-            $app->get('/auth/loggedout', function() use ($smarty, $app) {
-                return $smarty->fetch('loggedout.tpl');
+            $app->get('/auth/loggedout', function(Application $app) {
+                return $app['twig']->render('loggedout.tpl', array());
             });
-            $app->get('/auth/register', function() use ($smarty) {
-                return $smarty->fetch('register.tpl');
-            });
-            $app->get('/auth/reset', function() use ($smarty) {
-                return $smarty->fetch('passwordreset.tpl');
-            });
-            $app->get('/auth/logout', function() use ($smarty, $storage, $msg, $app) {
-                try {
-                    $storage->retrieve('logoutService')->logout($storage->retrieve('auth'));
-                } catch (Exception $e) {
-                    $app['session']->getFlashBag()->add('error', 'Unable to logout: '.$e->getMessage());
-                }
-                return $app->redirect('/');
-            })->bind('login_logout');
-            $app->get('/auth/verifyemail/{token}', function($token) use ($smarty, $pdo, $msg) {
+            $app->get('/auth/verifyemail/{token}', function($token) {
                 try {
                     $stmt = $pdo->prepare('
                         SELECT COALESCE((SELECT id FROM accounts WHERE verify_token=:token), 0) as id
@@ -52,16 +29,17 @@
                     $stmt->execute();
                     $userID = $stmt->fetchObject()->id;
                     if ($userID == 0) {
-                        $smarty->assign('error', 'Unable to find token.');
-                        return $smarty->fetch('500.tpl');
+                        return $app['twig']->render('500.tpl', array(
+                            'error' => 'Unable to find token.',
+                        ));
                     } else {
-                        return $smarty->fetch('verifytoken.tpl');
+                        return $app['twig']->render('verifytoken.tpl', array());
                     }
                 } catch (Exception $e) {
                     $app['session']->getFlashBag()->add('error', 'Unable to verify email: '.$e->getMessage());
                 }
             })->bind('login_verify_get');
-            $app->post('/auth/verifyemail/{token}', function($token) use ($smarty, $pdo, $storage, $app) {
+            $app->post('/auth/verifyemail/{token}', function(Application $app, $token) {
                 $password = filter_input(INPUT_POST, 'newpassword', FILTER_UNSAFE_RAW);
                 try {
                     $stmt = $pdo->prepare('
@@ -71,8 +49,9 @@
                     $stmt->execute();
                     $userID = $stmt->fetchObject()->id;
                     if ($userID == 0) {
-                        $smarty->assign('error', 'Unable to find token.');
-                        return $smarty->fetch('500.tpl');
+                        return $app['twig']->render('500.tpl', array(
+                            'error' => 'Unable to find token.',
+                        ));
                     } else {
                         $stmt = $pdo->prepare('
                             UPDATE accounts

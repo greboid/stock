@@ -1,18 +1,18 @@
-{include file='header.tpl'}
-{$msg|default:""}
+{{ include('header.tpl') }}
 <div class="container form-signin">
     <div class="row">
         <div class="col">
         </div>
         <div class="col">
-            {if !empty($loginMessage)}
+            {{ msg|default('') }}
+            {% if not loginMessage is empty %}
                 <div class="alert alert-info alert-dismissible fade show" role="alert">
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
-                    {$loginMessage}
+                    {{ loginMessage|raw }}
                 </div>
-            {/if}
+            {% endif %}
             <form class="form-signin" action="/auth/login_check" method="post">
                 <h2 class="form-signin-heading">Please sign in</h2>
                 <label for="_username" class="sr-only">Username</label>
@@ -26,4 +26,4 @@
         </div>
     </div>
 </div>
-{include file='footer.tpl'}
+{{ include('footer.tpl') }}

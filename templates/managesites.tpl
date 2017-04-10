@@ -1,5 +1,5 @@
-{include file='header.tpl'}
-{include file='menu.tpl'}
+{{ include('header.tpl') }}
+{{ include('menu.tpl') }}
     <div class="container-fluid">
         <div class="row">
             <div class="col">
@@ -16,28 +16,32 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {foreach from=$sites key=siteid item=site}
+                            {%for siteid, site in sites %}
                                 <tr>
-                                        <td class="align-middle">{$site|escape:'htmlall'}</td>
-                                        <td class="align-middle">{$locations[$siteid]['locations']|@count}</td>
+                                        <td class="align-middle">{{ site }}</td>
+                                        <td class="align-middle">{{ locations[siteid]['locations']|count }}</td>
                                         <td class="align-middle">
                                             <div class="input-group">
                                                 <span class="input-group-btn">
                                                     <button type="button" class="btn btn-primary"
                                                         data-toggle="modal"
                                                         data-target="#editSiteModal"
-                                                        data-siteid="{$siteid}"
-                                                        data-siteName="{$site|escape:'htmlall'}">
+                                                        data-siteid="{{ siteid }}"
+                                                        data-siteName="{{ site }}">
                                                             Edit
                                                     </button>
                                                 </span>
                                                 <span class="input-group-btn">
-                                                    <button formaction="/delete/site/{$siteid}" class="btn btn-danger"{if $locations[$siteid]['locations']|@count != 0} disabled{/if}>Delete</button>
+                                                    <button
+                                                        formaction="/delete/site/{$siteid}"
+                                                        class="btn btn-danger"{% if locations[siteid]['locations']|count != 0 %} disabled{% endif %}>
+                                                            Delete
+                                                    </button>
                                                 </span>
                                             </div>
                                         </td>
                                 </tr>
-                            {/foreach}
+                            {% endfor %}
                         </tbody>
                     </table>
                 </form>
@@ -109,4 +113,4 @@
             </div>
         </div>
     </div>
-{include file='footer.tpl'}
+{{ include('footer.tpl') }}

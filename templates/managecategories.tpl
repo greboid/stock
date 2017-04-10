@@ -1,9 +1,10 @@
-{function name=catMenu}
-  {foreach $data as $entry}
+{% macro catMenu(data, allCategoryStock) %}
+    {% import _self as macros %}
+    {% for entry in data %}
         <tr>
             <form method="post">
-                <td class="align-middle">{$entry['name']|escape:'htmlall'}</td>
-                <td class="align-middle">{$entry['parentName']|escape:'htmlall'}</td>
+                <td class="align-middle">{{ entry['name'] }}</td>
+                <td class="align-middle">{{ entry['parentName'] }}</td>
                 <td class="align-middle">
                     <div class="input-group">
                         <span class="input-group-btn">
@@ -11,17 +12,19 @@
                                     class="btn btn-primary"
                                     data-toggle="modal"
                                     data-target="#editCategoryModal"
-                                    data-categoryID="{$entry['id']}"
-                                    data-categoryName="{$entry['name']|escape:'htmlall'}"
-                                    data-categoryParent="{$entry['parentName']|escape:'htmlall'}">
+                                    data-categoryID="{{ entry['id'] }}"
+                                    data-categoryName="{{ entry['name'] }}"
+                                    data-categoryParent="{{ entry['parentName'] }}">
                                 Edit
                             </button>
                         </span>
                         <span class="input-group-btn">
                             <button
-                                    formaction="/delete/category/{$entry['id']}"
+                                    formaction="/delete/category/{{ entry['id'] }}"
                                     class="btn btn-danger"
-                                    {if (isset($entry['subcategories'])) || ($allCategoryStock[$entry['id']] > 0)}disabled{/if}>
+                                    {% if entry['subcategories'] is defined
+                                        or (allCategoryStock[entry['id']] is defined
+                                        and allCategoryStock[entry['id']] > 0) %}disabled{% endif %}>
                                 Delete
                             </button>
                         </span>
@@ -29,27 +32,24 @@
                 </td>
             </form>
         </tr>
-      {if isset($entry['subcategories']) && $entry['subcategories']|@count > 0}
-        {catMenu data=$entry['subcategories']}
-      {/if}
-  {/foreach}
-  </ul>
-{/function}
-
-{assign var="nbsp" value="&nbsp;&nbsp;&nbsp;"}
-
-{function name=pickCatMenu level=0}
-  {foreach $data as $entry}
-      <option value="{$entry['id']}">{$nbsp|str_repeat:$level}{$entry['name']|escape:'htmlall'|truncate:30}</option>
-      {if isset($entry['subcategories']) && $entry['subcategories']|@count > 0}
-        {pickCatMenu data=$entry['subcategories'] level=$level+1}
-      {/if}
-  {/foreach}
-{/function}
-
-
-{include file='header.tpl'}
-{include file='menu.tpl'}
+        {% if entry['subcategories'] is defined and entry['subcategories']|count > 0 %}
+            {{ macros.catMenu(entry['subcategories']) }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+{% macro pickCatMenu(data, level, allCategoryStock) %}
+    {% import _self as macros %}
+    {% set nbsp = '&nbsp;&nbsp;&nbsp;' %}
+    {% for entry in data %}
+        <option value="{{ entry.id }}">{{ repeat(nbsp,level)|raw }}{{ entry.name }}</option>
+        {% if entry['subcategories'] is defined and entry['subcategories']|count > 0 %}
+            {{ macros.pickCatMenu(entry['subcategories'], level+1) }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+{% import _self as macros %}
+{{ include('header.tpl') }}
+{{ include('menu.tpl') }}
     <div class="container-fluid">
         <div class="row">
             <div class="col">
@@ -65,7 +65,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {catMenu data=$categories}
+                        {{ macros.catMenu(categories, allCategoryStock) }}
                     </tbody>
                 </table>
                 <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#addCategoryModal">
@@ -96,15 +96,15 @@
                                 <label class="col-2 col-form-label" for="name">Name</label>
                                 <input class="col form-control" id="name" name="name" type="text" placeholder="name" required>
                             </div>
-                            {if $categories|@count > 0}
+                            {% if categories|count > 0 %}
                             <div class="form-group row">
                                 <label for="site" class="col-2 col-form-label">Parent</label>
                                 <select class="col form-control" id="parent" name="parent">
                                     <option selected=""></option>
-                                    {pickCatMenu data=$categories}
+                                    {{ macros.pickCatMenu(categories, 0, allCategoryStock) }}
                                 </select>
                             </div>
-                            {/if}
+                            {% endif %}
                         </fieldset>
                     </form>
                 </div>
@@ -135,15 +135,15 @@
                                 <label class="col-2 col-form-label" for="editName">Name</label>
                                 <input class="col form-control" id="editName" name="editName" type="text" placeholder="name" required>
                             </div>
-                            {if $categories|@count > 0}
+                            {% if categories|count > 0 %}
                             <div class="form-group row">
                                 <label for="editParent" class="col-2 col-form-label">Parent</label>
                                 <select class="col form-control" id="editParent" name="editParent">
                                     <option selected=""></option>
-                                    {pickCatMenu data=$categories}
+                                    {{ macros.pickCatMenu(categories, 0, allCategoryStock) }}
                                 </select>
                             </div>
-                            {/if}
+                            {% endif %}
                         </fieldset>
                     </form>
                 </div>
@@ -155,4 +155,4 @@
         </div>
     </div>
 </div>
-{include file='footer.tpl'}
+{{ include('footer.tpl') }}

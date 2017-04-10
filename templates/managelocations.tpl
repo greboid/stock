@@ -1,5 +1,5 @@
-{include file='header.tpl'}
-{include file='menu.tpl'}
+{{ include('header.tpl') }}
+{{ include('menu.tpl') }}
     <div class="container-fluid">
         <div class="row">
             <div class="col">
@@ -16,29 +16,29 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {foreach from=$locationsstockcount key=locationid item=location}
+                        {% for locationid, location in locationsstockcount %}
                             <tr>
                                 <form method="post">
-                                        <td class="align-middle">{$locationid|escape:'htmlall'}</td>
-                                        <td class="align-middle">{$locationsstockcount[$locationid]['sitename']|escape:'htmlall'}</td>
-                                        <td class="align-middle">{$locationsstockcount[$locationid]['stockcount']|escape:'htmlall'}</td>
+                                        <td class="align-middle">{{ locationid }}</td>
+                                        <td class="align-middle">{{ locationsstockcount[locationid]['sitename'] }}</td>
+                                        <td class="align-middle">{{ locationsstockcount[locationid]['stockcount'] }}</td>
                                         <td class="align-middle">
                                             <div class="input-group">
                                                 <span class="input-group-btn">
                                                     <button type="button"
                                                         data-toggle="modal"
                                                         data-target="#editLocationModal"
-                                                        data-locationID="{$locationsstockcount[$locationid]['id']}"
-                                                        data-locationname="{$locationid|escape:'htmlall'}"
-                                                        data-siteName="{$locationsstockcount[$locationid]['sitename']|escape:'htmlall'}"
+                                                        data-locationID="{{ locationsstockcount[locationid]['id'] }}"
+                                                        data-locationname="{{ locationid }}"
+                                                        data-siteName="{{ locationsstockcount[locationid]['sitename'] }}"
                                                             class="btn btn-primary">
                                                         Edit
                                                     </button>
                                                 </span>
                                                 <span class="input-group-btn">
-                                                    <button formaction="/delete/location/{$locationsstockcount[$locationid]['id']}"
+                                                    <button formaction="/delete/location/{{locationsstockcount[locationid]['id']}}"
                                                             class="btn btn-danger"
-                                                            {if $locationsstockcount[$locationid]['stockcount'] != 0} disabled{/if}>
+                                                            {% if locationsstockcount[locationid]['stockcount'] != 0 %} disabled{% endif %}>
                                                         Delete
                                                     </button>
                                                 </span>
@@ -46,7 +46,7 @@
                                         </td>
                                 </form>
                             </tr>
-                        {/foreach}
+                        {% endfor %}
                     </tbody>
                 </table>
                 <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#addLocationModal">
@@ -80,9 +80,9 @@
                                     <label class="col-2 col-for-label" for="site">Site</label>
                                     <select class="col form-control" id="site" name="site" required>
                                         <option selected=""></option>
-                                        {foreach from=$sites key=siteID item=site}
-                                            <option value="{$siteID|escape:'htmlall'}">{$site|escape:'htmlall'}</option>
-                                        {/foreach}
+                                        {% for siteID, site in sites %}
+                                            <option value="{{ siteID }}">{{ site }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
                             </fieldset>
@@ -119,9 +119,9 @@
                                     <label class="col-2 col-for-label" for="editSite">Site</label>
                                     <select class="col form-control" id="editSite" name="editSite" required>
                                         <option selected=""></option>
-                                        {foreach from=$sites key=siteID item=site}
-                                            <option value="{$siteID|escape:'htmlall'}">{$site|escape:'htmlall'}</option>
-                                        {/foreach}
+                                        {% for siteID, site in sites %}
+                                            <option value="{{ siteID }}">{{ site }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
                             </fieldset>
@@ -135,4 +135,4 @@
             </div>
         </div>
     </div>
-{include file='footer.tpl'}
+{{ include('footer.tpl') }}

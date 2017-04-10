@@ -1,5 +1,5 @@
-{include file='header.tpl'}
-{$msg|default:""}
+{{ include('header.tpl') }}
+{{ msg|default('') }}
 <div class="container form-signin">
     <div class="row">
         <div class="col">
@@ -11,4 +11,4 @@
         </div>
     </div>
 </div>
-{include file='footer.tpl'}
+{{ include('footer.tpl') }}

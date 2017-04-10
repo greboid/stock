@@ -1,5 +1,5 @@
-{include file='header.tpl'}
-{include file='menu.tpl'}
+{{ include('header.tpl') }}
+{{ include('menu.tpl') }}
 <div class="container-fluid">
     <div class="row">
         <div class="col">
@@ -9,18 +9,18 @@
             <h2>User Details</h2>
             <form method="post" action="/user/profile" id="profileDetailsForm">
                 <fieldset>
-                    <input id="username" name="username" type="hidden" value="{$username|escape:'htmlall'}">
+                    <input id="username" name="username" type="hidden" value="{{ username }}">
                     <div class="form-group row">
                         <label class="col-4 col-form-label" for="username">Username</label>
-                        <input class="col form-control" type="text" placeholder="name" disabled value="{$username|escape:'htmlall'}">
+                        <input class="col form-control" type="text" placeholder="name" disabled value="{{ username }}">
                     </div>
                     <div class="form-group row">
                         <label class="col-4 col-form-label" for="name">Name</label>
-                        <input class="col form-control" id="name" name="name" type="text" placeholder="name" required value="{$userdata['name']|escape:'htmlall'}">
+                        <input class="col form-control" id="name" name="name" type="text" placeholder="name" required value="{{ userdata['name'] }}">
                     </div>
                     <div class="form-group row">
                         <label class="col-4 col-for-label" for="email">Email Address</label>
-                        <input class="col form-control" id="email" type="email" name="email" required value="{$userdata['email']|escape:'htmlall'}">
+                        <input class="col form-control" id="email" type="email" name="email" required value="{{ userdata['email'] }}">
                     </div>
                     <div class="offset-4 form-group row">
                         <button class="btn btn-primary btn-block" type="submit">Update Details</button>
@@ -29,7 +29,7 @@
             </form>
             <h2>Password</h2>
             <form method="post" action="/user/password" id="changePasswordForm">
-                <input id="username" name="username" type="hidden" value="{$username|escape:'htmlall'}">
+                <input id="username" name="username" type="hidden" value="{{ username }}">
                 <fieldset>
                     <div class="form-group row">
                         <label class="col-4 col-form-label" for="newpassword">New Password</label>
@@ -49,4 +49,4 @@
         </div>
     </div>
 </div>
-{include file='footer.tpl'}
+{{ include('footer.tpl') }}

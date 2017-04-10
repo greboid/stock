@@ -1,1 +1,1 @@
-{$output|@json_encode}
+{{ output|json_encode|raw }}

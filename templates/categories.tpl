@@ -1,31 +1,32 @@
-{function name=catMenu}
+{% macro catMenu(data) %}
+  {% import _self as macros %}
   <ul>
-  {foreach $data as $entry}
+  {% for entry in data %}
     <li>
-      <a href="/category/{$entry['name']|escape:'htmlall'}">{$entry['name']|escape:'htmlall'|truncate:30}</a>
-      {if isset($entry['subcategories']) && $entry['subcategories']|@count > 0}
+      <a href="/category/{{ entry['name'] }}">{{ entry['name'] }}</a>
+      {% if entry['subcategories'] is defined and entry['subcategories']|count > 0 %}
         <ul>
-          {catMenu data=$entry['subcategories']}
+          {{ macros.catMenu(entry['subcategories']) }}
         </ul>
-      {/if}
+      {% endif %}
     </li>
-  {/foreach}
+  {% endfor %}
   </ul>
-{/function}
+{% endmacro %}
 
-
-{include file='header.tpl'}
-{include file='menu.tpl'}
+{% import _self as macros %}
+{{ include('header.tpl') }}
+{{ include('menu.tpl') }}
   <div class="container-fluid">
       <div class="row">
           <div class="col">
           </div>
           <div class="col align-self-center">
               <h1 class="text-center">Categories</h1>
-              {catMenu data=$categories}
+              {{ macros.catMenu(categories) }}
           </div>
           <div class="col">
           </div>
       </div>
   </div>
-{include file='footer.tpl'}
+{{ include('footer.tpl') }}

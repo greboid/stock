@@ -4,39 +4,31 @@
     namespace greboid\stock;
 
     use \Exception;
-    use \Bramus\Router\Router;
-    use \Smarty;
-    use \ICanBoogie\Storage\RunTimeStorage;
     use \PDO;
     use \sweelix\guid\Guid;
     use \PHPMailer;
+    use \Silex\Application;
 
     class UserRoutes {
 
-        public function addRoutes(RunTimeStorage $storage): void {
-            $app = $storage->retrieve('app');
-            $smarty = $storage->retrieve('smarty');
-            $stock = $storage->retrieve('stock');
-            $msg = $storage->retrieve('flash');
-            $auth = $storage->retrieve('auth');
-            $pdo = $storage->retrieve('pdo');
+        public function addRoutes(\Silex\Application $app): void {
 
-            $app->get('/user/profile', function() use($smarty, $stock, $auth, $pdo, $app) {
+            $app->get('/user/profile', function(Application $app) {
                 try {
                     $token = $app['security.token_storage']->getToken();
-                    $stmt = $pdo->prepare('SELECT email, name FROM '.ACCOUNTS_TABLE.' WHERE username=:username');
+                    $stmt = $app['pdo']->prepare('SELECT email, name FROM '.ACCOUNTS_TABLE.' WHERE username=:username');
                     $stmt->bindValue(':username', $token->getUser());
                     $stmt->execute();
                     $userData = $stmt->fetch(PDO::FETCH_ASSOC);
-                    $smarty->assign('username', $token->getUser());
-                    $smarty->assign('userdata', $userData);
-                    return $smarty->fetch('profile.tpl');
+                    return $app['twig']->render('profile.tpl', array(
+                        'username' => $token->getUser(),
+                        'userdata' => $userData,
+                    ));
                 } catch (Exception $e) {
-                    $smarty->assign('error', $e->getMessage());
-                    return $smarty->return('500.tpl');
+                    return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->get('/user/checkemail', function() use($smarty, $stock, $auth, $pdo) {
+            $app->get('/user/checkemail', function(Application $app) {
                 $email = filter_input(INPUT_POST, "email", FILTER_UNSAFE_RAW);
                 if ($email == null) {
                     $email = filter_input(INPUT_GET, "email", FILTER_UNSAFE_RAW);
@@ -46,41 +38,47 @@
                     $username = filter_input(INPUT_GET, "username", FILTER_UNSAFE_RAW);
                 }
                 $sql = 'SELECT COUNT(*) as count FROM '.ACCOUNTS_TABLE.' WHERE email=:email AND username != :username';
-                $stmt = $pdo->prepare($sql);
+                $stmt = $app['pdo']->prepare($sql);
                 $stmt->bindParam(':username', $username);
                 $stmt->bindParam(':email', $email);
                 $stmt->execute();
                 $row = $stmt->fetchObject();
+                $output = '';
                 if ($row->count == 0) {
-                    $smarty->assign('output', "true");
+                    $output = 'true';
                 } else {
-                    $smarty->assign('output', "Email address is in use.");
+                    $output = 'Email Address is in use.';
                 }
-                return $smarty->fetch('outputjson.tpl');
+                return $app['twig']->render('outputjson.tpl', array(
+                    'output' => $output,
+                ));
             });
-            $app->get('/user/checkusername', function() use($smarty, $stock, $auth, $pdo) {
+            $app->get('/user/checkusername', function(Application $app) {
                 $username = filter_input(INPUT_POST, "username", FILTER_UNSAFE_RAW);
                 if ($username == null) {
                     $username = filter_input(INPUT_GET, "username", FILTER_UNSAFE_RAW);
                 }
                 $sql = 'SELECT COUNT(*) as count FROM '.ACCOUNTS_TABLE.' WHERE username=:username';
-                $stmt = $pdo->prepare($sql);
+                $stmt = $app['pdo']->prepare($sql);
                 $stmt->bindParam(':username', $username);
                 $stmt->execute();
                 $row = $stmt->fetchObject();
+                $output = '';
                 if ($row->count == 0) {
-                    $smarty->assign('output', "true");
+                    $output = 'true';
                 } else {
-                    $smarty->assign('output', "Username is in use.");
+                    $output = 'Username is in use.';
                 }
-                return $smarty->fetch('outputjson.tpl');
+                return $app['twig']->render('outputjson.tpl', array(
+                    'output' => $output,
+                ));
             });
-            $app->post('/user/profile', function() use ($smarty, $pdo, $msg, $app) {
+            $app->post('/user/profile', function(Application $app) {
                 $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
                 $name = filter_input(INPUT_POST, "name", FILTER_SANITIZE_STRING);
                 $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
                 try {
-                    $stmt = $pdo->prepare('UPDATE '.ACCOUNTS_TABLE.' SET email=:email, name=:name WHERE username=:username');
+                    $stmt = $app['pdo']->prepare('UPDATE '.ACCOUNTS_TABLE.' SET email=:email, name=:name WHERE username=:username');
                     $stmt->bindValue(':email', $email);
                     $stmt->bindValue(':name', $name);
                     $stmt->bindValue(':username', $username);
@@ -91,13 +89,17 @@
                 }
                 return $app->redirect('/user/profile');
             });
-            $app->post('/user/password', function() use ($smarty, $pdo, $msg, $auth, $app) {
+            $app->post('/user/password', function(Application $app) {
                 $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
                 $password = filter_input(INPUT_POST, "newpassword", FILTER_UNSAFE_RAW);
                 $password = password_hash($password, PASSWORD_DEFAULT);
-                if ($auth->getUsername() == $username) {
+                $token = $app['security.token_storage']->getToken();
+                if ($token == null) {
+                    return $app->redirect('/user/profile');
+                }
+                if ($token->getUser() == $username) {
                     try {
-                        $stmt = $pdo->prepare('UPDATE '.ACCOUNTS_TABLE.' SET password=:password WHERE username=:username');
+                        $stmt = $app['pdo']->prepare('UPDATE '.ACCOUNTS_TABLE.' SET password=:password WHERE username=:username');
                         $stmt->bindValue(':password', $password);
                         $stmt->bindValue(':username', $username);
                         $val = $stmt->execute();
@@ -111,14 +113,15 @@
                 }
                 return $app->redirect('/user/profile');
             });
-            $app->get('/manage/users', function() use ($smarty, $pdo, $msg) {
-                $stmt = $pdo->prepare('SELECT id, username, name, email, active from '.ACCOUNTS_TABLE);
+            $app->get('/manage/users', function(Application $app) {
+                $stmt = $app['pdo']->prepare('SELECT id, username, name, email, active from '.ACCOUNTS_TABLE);
                 $stmt->execute();
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                $smarty->assign('users', $results);
-                return $smarty->fetch('manageusers.tpl');
+                return $app['twig']->render('manageusers.tpl', array(
+                    'users' => $results,
+                ));
             });
-            $app->post('/add/user', function() use ($smarty, $pdo, $msg, $app) {
+            $app->post('/add/user', function(Application $app) {
                 $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
                 $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
                 $name = filter_input(INPUT_POST, "name", FILTER_SANITIZE_STRING);
@@ -126,7 +129,7 @@
 
                 try {
                     $token = Guid::v4();
-                    $stmt = $pdo->prepare('INSERT INTO '.ACCOUNTS_TABLE.'
+                    $stmt = $app['pdo']->prepare('INSERT INTO '.ACCOUNTS_TABLE.'
                                           (username, name, email, active, verified, password, verify_token)
                                           VALUES (:username, :name, :email, :active, :verified, :password, :verifytoken);');
                     $stmt->bindValue(':username', $username);
@@ -145,24 +148,23 @@
                 }
                 return $app->redirect('/manage/users');
             });
-            $app->post('/edit/user', function() use ($smarty, $pdo, $app) {
+            $app->post('/edit/user', function(Application $app) {
                 try {
                     $userID = filter_input(INPUT_POST, "editID", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                     $userUsername = filter_input(INPUT_POST, "editUsername", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
                     $userName = filter_input(INPUT_POST, "editName", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
                     $userEmail = filter_input(INPUT_POST, "editEmail", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
                     $userActive = filter_input(INPUT_POST, "active", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
-                    $this->editUser($pdo, $userID, $userUsername, $userName, $userEmail, $userActive);
+                    $this->editUser($app['pdo'], $userID, $userUsername, $userName, $userEmail, $userActive);
                     return $app->redirect('/manage/users');
                 } catch (Exception $e) {
-                    $smarty->assign('error', $e->getMessage());
-                    return $smarty->fetch('500.tpl');
+                    return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->post('/delete/user', function() use ($smarty, $pdo, $msg, $app) {
+            $app->post('/delete/user', function(Application $app) {
                 $userid = filter_input(INPUT_POST, "userid", FILTER_SANITIZE_NUMBER_INT);
                 try {
-                    $stmt = $pdo->prepare('DELETE FROM '.ACCOUNTS_TABLE.' where id=:id;');
+                    $stmt = $app['pdo']->prepare('DELETE FROM '.ACCOUNTS_TABLE.' where id=:id;');
                     $stmt->bindValue(':id', $userid);
                     $stmt->execute();
                 } catch (Exception $e) {
@@ -170,10 +172,10 @@
                 }
                 return $app->redirect('/manage/users');
             });
-            $app->post('/user/sendverification', function() use ($smarty, $pdo, $msg, $app) {
+            $app->post('/user/sendverification', function(Application $app) {
                 $userid = filter_input(INPUT_POST, "userid", FILTER_SANITIZE_NUMBER_INT);
                 try {
-                    $stmt = $pdo->prepare('
+                    $stmt = $app['pdo']->prepare('
                         SELECT username, name, email, verify_token
                         FROM '.ACCOUNTS_TABLE.'
                         WHERE id=:userID
@@ -183,7 +185,7 @@
                     $result = $stmt->fetchObject();
                     if (empty($result->verify_token)) {
                         $token = Guid::v4();
-                        $stmt = $pdo->prepare('
+                        $stmt = $app['pdo']->prepare('
                             UPDATE '.ACCOUNTS_TABLE.'
                             SET verify_token=:token
                             WHERE id=:userID
@@ -208,6 +210,8 @@
         }
 
         private function sendNewUserMail($username, $name, $email, $code): string {
+            //TODO FIX ME :(
+            return '';
             $mail = new PHPMailer;
             $mail->isSMTP();
             $mail->Host = SMTP_SERVER;

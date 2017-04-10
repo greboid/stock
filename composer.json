@@ -3,12 +3,12 @@
     "description": "Simple Stock System",
     "type": "project",
     "require": {
-        "smarty/smarty": "^3.1",
         "icanboogie/storage": "^2.1",
         "sweelix/guid": "^1.0",
         "codacy/coverage": "^1.0",
         "silex/silex": "~2.0",
-        "symfony/security": "^3.2"
+        "symfony/security": "^3.2",
+        "twig/twig": "^2.3"
     },
     "autoload": {
             "psr-4": {"greboid\\stock\\": "src"}

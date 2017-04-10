@@ -5,103 +5,90 @@
 
     use \Exception;
     use \greboid\stock\Stock;
-    use \Bramus\Router\Router;
-    use \Smarty;
-    use \ICanBoogie\Storage\RunTimeStorage;
+    use \Silex\Application;
 
     class LocationRoutes {
 
-        public function addRoutes(RunTimeStorage $storage): void {
-            $app = $storage->retrieve('app');
-            $smarty = $storage->retrieve('smarty');
-            $stock = $storage->retrieve('stock');
+        public function addRoutes(Application $app): void {
 
-            $app->get('/locations/', function() use ($smarty, $stock) {
-                return $smarty->fetch('locations.tpl');
+            $app->get('/locations/', function(Application $app) {
+                return $app['twig']->render('locations.tpl', array());
             });
-            $app->get('/location/{locationName}', function($locationName) use ($smarty, $stock) {
+            $app->get('/location/{locationName}', function(Application $app, $locationName) {
                 $locationName = filter_var($locationName, FILTER_UNSAFE_RAW);
-                $locationid = $stock->getLocationID($locationName);
+                $locationid = $app['stock']->getLocationID($locationName);
                 if ($locationid === false) {
-                    header('HTTP/1.1 404 Not Found');
-                    return $smarty->fetch('404.tpl');
+                    return $app->abort(404, 'Location '.$locationid.' not found.');
                 }
                 try {
-                    if ($stock->getLocationName($locationid) !== false) {
-                        $smarty->assign('locationid', $locationid);
-                        $smarty->assign('site', $stock->getLocationName($locationid));
-                        $smarty->assign('stock', $stock->getLocationStock($locationid));
-                        return $smarty->fetch('stock.tpl');
+                    if ($app['stock']->getLocationName($locationid) !== false) {
+                        return $app['twig']->render('stock.tpl', array(
+                            'locationid' => $locationid,
+                            'site' => $app['stock']->getLocationName($locationid),
+                            'stock' => $app['stock']->getLocationStock($locationid),
+                        ));
                     } else {
-                        header('HTTP/1.1 404 Not Found');
-                        return $smarty->fetch('404.tpl');
+                        return $app->abort(404, 'Location '.$locationid.' not found.');
                     }
                 } catch (Exception $e) {
-                    $smarty->assign('error', $e->getMessage());
-                    return $smarty->fetch('500.tpl');
+                    return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->get('/add/location', function() use ($smarty, $stock, $app) {
-                if (count($stock->getLocations()) == 0) {
+            $app->get('/add/location', function(Application $app) {
+                if (count($app['stock']->getLocations()) == 0) {
                     return $app->redirect('/add/site');
                 }
                 try {
-                    return $smarty->fetch('addlocation.tpl');
+                    return $app['twig']->render('addlocation.tpl', array());
                 } catch (Exception $e) {
-                    $smarty->assign('error', $e->getMessage());
-                    return $smarty->fetch('500.tpl');
+                    return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->post('/add/location', function() use ($smarty, $stock, $app) {
+            $app->post('/add/location', function(Application $app) {
                 try {
                     $name = filter_input(INPUT_POST, "name", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
                     $site = filter_input(INPUT_POST, "site", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                     if ($name !== false && $site !== false) {
-                        $stock->insertLocation($name, $site);
+                        $app['stock']->insertLocation($name, $site);
                     } else {
-                        $smarty->assign('error', 'Missing required value.');
-                        return $smarty->fetch('500.tpl');
+                        return $app->abort(500, 'Missing required value.');
                     }
                     return $app->redirect('/manage/locations');
                 } catch (Exception $e) {
-                    $smarty->assign('error', $e->getMessage());
-                    return $smarty->fetch('500.tpl');
+                    return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->post('/edit/location', function() use ($smarty, $stock, $app) {
+            $app->post('/edit/location', function(Application $app) {
                 try {
                     $locationID = filter_input(INPUT_POST, "editID", FILTER_VALIDATE_INT);
                     $locationName = filter_input(INPUT_POST, "editName", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
                     $siteID = filter_input(INPUT_POST, "editSite", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                     if ($locationName !== false) {
-                        $stock->editLocation($locationID, $locationName, $siteID);
+                        $app['stock']->editLocation($locationID, $locationName, $siteID);
                     } else {
-                        $smarty->assign('error', 'Missing required value.');
-                        return $smarty->fetch('500.tpl');
+                        return $app->abort(500, 'Missing required value.');
                     }
                     return $app->redirect('/manage/locations');
                 } catch (Exception $e) {
-                    $smarty->assign('error', $e->getMessage());
-                    return $smarty->fetch('500.tpl');
+                    return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->get('/manage/locations', function() use ($smarty, $stock) {
+            $app->get('/manage/locations', function(Application $app) {
                 try {
-                    $smarty->assign('locationsstockcount', $stock->getLocationStockCounts());
-                    return $smarty->fetch('managelocations.tpl');
+                    return $app['twig']->render('managelocations.tpl', array(
+                        'locationsstockcount' => $app['stock']->getLocationStockCounts(),
+                    ));
                 } catch (Exception $e) {
-                    $smarty->assign('error', $e->getMessage());
-                    return $smarty->fetch('500.tpl');
+                    return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->post('/delete/location/{locationid}', function($locationid) use ($smarty, $stock, $app) {
+            $app->post('/delete/location/{locationid}', function(Application $app, $locationid) {
                 $locationid = filter_var($locationid, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                 try {
-                    $stock->deleteLocation($locationid);
+                    $app['stock']->deleteLocation($locationid);
                     return $app->redirect('/manage/locations');
                 } catch (Exception $e) {
-                    $smarty->assign('error', $e->getMessage());
-                    return $smarty->fetch('500.tpl');
+                    return $app->abort(500, $e->getMessage());
                 }
             });
         }

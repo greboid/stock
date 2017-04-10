@@ -14,8 +14,6 @@
     use \greboid\stock\AuthRoutes;
     use \greboid\stock\UserRoutes;
     use \greboid\stock\UserProvider;
-    use \ICanBoogie\Storage\RunTimeStorage;
-
 
     use \Silex\Application;
     use \Symfony\Component\HttpFoundation\Request;
@@ -23,8 +21,6 @@
     use \Silex\Provider\SessionServiceProvider;
     use \Silex\Provider\SecurityServiceProvider;
 
-    $storage = new RunTimeStorage;
-    $smarty = new Smarty();
     $itemRoutes = new ItemRoutes();
     $locationRoutes = new LocationRoutes();
     $categoryRoutes = new CategoryRoutes();
@@ -32,43 +28,52 @@
     $systemRoutes = new SystemRoutes();
     $authRoutes = new AuthRoutes();
     $userRoutes = new UserRoutes();
-    $smarty->setTemplateDir(TEMPLATES_PATH);
-    $smarty->setCompileDir(TEMPLATES_CACHE_PATH);
-    $smarty->setCacheDir(CACHE_PATH);
-    $smarty->setConfigDir(CONFIG_PATH);
-    $smarty->assign('max_stock', MAX_STOCK);
     $error = false;
     $database = null;
     try {
         $database = new Database();
     } catch (Exception $e) {
         if ($e->getMessage() == 'Unable to connect to the database.') {
-            $smarty->assign('error', 'The database connection settings are wrong, please check the config');
-            $smarty->display('500.tpl');
+            return $app['twig']->render('500.tpl', array(
+                'error' => 'The database connection settings are wrong, please check the config',
+            ));
         } else {
-            $smarty->assign('error', $e->getMessage());
-            $smarty->assign('version', false);
-            $smarty->display('install.tpl');
+            return $app['twig']->render('install.tpl', array(
+                'error' => $e->getMessage(),
+            ));
         }
         exit();
     }
     $stock = new Stock($database);
 
-
-    $storage->store('stock', $stock);
-    $storage->store('smarty', $smarty);
-    $storage->store('pdo', $database->getPDO());
-    $storage->store('database', $database);
-
-
     $session = new Session();
     $app = new Application();
-    $storage->store('app', $app);
     $app['db'] = $database->getPDO();
+    $app['stock'] = $stock;
+    $app['pdo'] = $database->getPDO();
+    $app['database'] = $database;
     $app['session'] = $session;
     if (DEBUG) {
         $app['debug'] = true;
     }
+    $app->register(new Silex\Provider\TwigServiceProvider(), array(
+        'twig.path' => __DIR__.'\..\templates',
+        'twig.options' => array('debug' => true),
+    ));
+    $app->extend('twig', function($twig, $app) {
+        $twig->addFilter(new Twig_Filter('repeat', 'str_reapeat'));
+        $twig->addFilter(new Twig_Filter('count', 'count'));
+        $twig->addFunction(new Twig_Function('repeat', 'str_repeat'));
+        $twig->addFunction(new Twig_Function('var_dump', 'var_dump'));
+        $twig->addFunction(new Twig_Function('truncate', function ($text, $chars = 25) {
+            $text = $text." ";
+            $text = substr($text,0,$chars);
+            $text = substr($text,0,strrpos($text,' '));
+            $text = $text."...";
+            return $text;
+        }));
+        return $twig;
+    });
     $app->register(new SessionServiceProvider());
     $app->register(new SecurityServiceProvider(), array(
         'security.firewalls' => array(
@@ -96,37 +101,39 @@
     ));
 
 
-    $app->error(function (\Exception $e, Request $request, $code) use($smarty, $app) {
+    $app->error(function (\Exception $e, Request $request, $code) use($app) {
         switch ($code) {
             case 404:
-                return $smarty->fetch('404.tpl');
+                return $app['twig']->render('404.tpl', array());
             default:
-                $smarty->assign('error', 'An unknown error has occurred.');
-                return $smarty->fetch('500.tpl');
+                return $app['twig']->render('500.tpl', array(
+                    'error' => $e->getMessage(),
+                ));
         }
     });
-    $app->before(function (Request $request, Application $app) use ($smarty, $stock) {
+    $app->before(function (Request $request, Application $app) use ($stock) {
         $user = '';
         $token = $app['security.token_storage']->getToken();
         if ($token !== null) {
             $user = $token->getUser();
         }
         $route = $request->attributes->get('_route');
-        $smarty->assign('username', $user);
-        $smarty->assign('sites', $stock->getSites());
-        $smarty->assign('locations', $stock->getLocations());
-        $smarty->assign('categories', $stock->getCategories());
-        $smarty->assign('route', '/'.$route);
-        $smarty->assign('msg', implode(getAllMessages($app)));
+        $app['twig']->addGlobal('max_stock', MAX_STOCK);
+        $app['twig']->addGlobal('username', $user);
+        $app['twig']->addGlobal('sites', $stock->getSites());
+        $app['twig']->addGlobal('locations', $stock->getLocations());
+        $app['twig']->addGlobal('categories', $stock->getCategories());
+        $app['twig']->addGlobal('route', '/'.$route);
+        $app['twig']->addGlobal('msg', implode(getAllMessages($app)));
     });
 
-    $systemRoutes->addRoutes($storage);
-    $authRoutes->addRoutes($storage);
-    $itemRoutes->addRoutes($storage);
-    $locationRoutes->addRoutes($storage);
-    $categoryRoutes->addRoutes($storage);
-    $siteRoutes->addRoutes($storage);
-    $userRoutes->addRoutes($storage);
+    $systemRoutes->addRoutes($app);
+    $authRoutes->addRoutes($app);
+    $itemRoutes->addRoutes($app);
+    $locationRoutes->addRoutes($app);
+    $categoryRoutes->addRoutes($app);
+    $siteRoutes->addRoutes($app);
+    $userRoutes->addRoutes($app);
 
     $app->boot();
     $app->run();

@@ -1,4 +1,4 @@
-{if isset($username)}
+{% if username is defined %}
 <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse">
     <button
             class="navbar-toggler navbar-toggler-right"
@@ -51,5 +51,5 @@
       </ul>
     </div>
 </nav>
-{$msg|default:""}
-{/if}
+{{ msg|default("")|raw }}
+{% endif %}

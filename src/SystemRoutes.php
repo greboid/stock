@@ -4,25 +4,19 @@
     namespace greboid\stock;
 
     use \Exception;
-    use \Bramus\Router\Router;
-    use \Smarty;
-    use \ICanBoogie\Storage\RunTimeStorage;
+    use \Silex\Application;
 
     class SystemRoutes {
 
-        public function addRoutes(RunTimeStorage $storage): void {
-            $app = $storage->retrieve('app');
-            $smarty = $storage->retrieve('smarty');
-            $stock = $storage->retrieve('stock');
-            $msg = $storage->retrieve('flash');
-            $database = $storage->retrieve('database');
+        public function addRoutes(Application $app): void {
 
-            $app->get('/', function() use($smarty, $app){
+            $app->get('/', function(Application $app) {
                 try {
                     return $app->redirect('/site/all');
                 } catch (Exception $e) {
-                    $smarty->assign('error', $e->getMessage());
-                    return $smarty->fetch('500.tpl');
+                    return $app['twig']->render('500.tpl', array(
+                        'error' => $e->getMessage(),
+                    ));
                 }
             });
         }

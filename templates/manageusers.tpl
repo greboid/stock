@@ -1,5 +1,5 @@
-{include file='header.tpl'}
-{include file='menu.tpl'}
+{{ include('header.tpl') }}
+{{ include('menu.tpl') }}
   <div class="container-fluid">
       <div class="row">
           <div class="col">
@@ -18,38 +18,38 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {foreach from=$users key=id item=user}
+                        {% for id, user in users %}
                             <tr>
-                              <td class="align-middle">{$user['username']|escape:'htmlall'}</td>
-                              <td class="align-middle">{$user['name']|escape:'htmlall'}</td>
-                              <td class="align-middle">{$user['email']|escape:'htmlall'}</td>
-                              <td class="align-middle">{$user['active']|escape:'htmlall'}</td>
+                              <td class="align-middle">{{ user['username'] }}</td>
+                              <td class="align-middle">{{ user['name'] }}</td>
+                              <td class="align-middle">{{ user['email'] }}</td>
+                              <td class="align-middle">{{ user['active'] }}</td>
                               <td class="align-middle">
                                 <div class="btn-group">
                                   <button type="button"
                                       class="btn btn-primary"
                                       data-toggle="modal"
                                       data-target="#editUserModal"
-                                      data-userid="{$user['id']}"
-                                      data-username="{$user['username']|escape:'htmlall'}"
-                                      data-name="{$user['name']|escape:'htmlall'}"
-                                      data-email="{$user['email']|escape:'htmlall'}"
-                                      data-active="{$user['active']|escape:'htmlall'}"
-                                      {if $username == $user['username']}disabled{/if}>
+                                      data-userid="{{ user['id'] }}"
+                                      data-username="{{ user['username'] }}"
+                                      data-name="{{ user['name'] }}"
+                                      data-email="{{ user['email'] }}"
+                                      data-active="{{ user['active'] }}"
+                                      {% if username == user['username'] %}disabled{% endif %}>
                                     Edit
                                   </button>
-                                  <button type="submit" name="userid" id="userid" value={$user['id']}
+                                  <button type="submit" name="userid" id="userid" value={{ user['id'] }}
                                     formaction="/user/sendverification"
                                     class="btn btn-secondary"
-                                    {if $username == $user['username']}disabled{/if}>Send Verification</button>
-                                  <button type="submit" name="userid" id="userid" value={$user['id']}
+                                    {% if username == user['username'] %}disabled{% endif %}>Send Verification</button>
+                                  <button type="submit" name="userid" id="userid" value={{ user['id'] }}
                                     formaction="/delete/user"
                                     class="btn btn-danger"
-                                    {if $username == $user['username']}disabled{/if}>Delete</button>
+                                    {% if username == user['username'] %}disabled{% endif %}>Delete</button>
                                 </div>
                               </td>
                             </tr>
-                        {/foreach}
+                        {% endfor %}
                     </tbody>
                 </table>
               </form>
@@ -154,4 +154,4 @@
       </div>
     </div>
   </div>
-{include file='footer.tpl'}
+{{ include('footer.tpl') }}

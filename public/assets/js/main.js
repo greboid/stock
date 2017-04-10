@@ -165,7 +165,7 @@ $("#editCategoryModal").on("show.bs.modal", function (event) {
 
 $("#editItemModal").on("show.bs.modal", function (event) {
   var button = $(event.relatedTarget);
-  var itemid = button.data("id");
+  var itemid = button.data("itemid");
   var itemname = button.data("itemname");
   var locationname = button.data("locationname");
   var categoryname = button.data("categoryname");
