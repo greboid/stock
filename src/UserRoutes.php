@@ -221,7 +221,7 @@
                 ->addPart('Welcome to the stock system '.$name.'.  You username is '
                           .$username.', but to continue you need to <a href="'
                           .$this->getEmailLink($code).'">verify your account</a>.', 'text/html');
-            $result = $app['mailer']->send($message, $failures);W
+            $result = $app['mailer']->send($message, $failures);
             $app['swiftmailer.spooltransport']
                 ->getSpool()
                 ->flushQueue($app['swiftmailer.transport']);
