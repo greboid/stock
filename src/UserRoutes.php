@@ -143,7 +143,7 @@
                 } catch (Exception $e) {
                     $app['session']->getFlashBag()->add('error', 'Unable to add user: '.$e->getMessage());
                 }
-                if ($this->sendNewUserMail($username, $name, $email, $token) != '') {
+                if ($this->sendNewUserMail($app, $username, $name, $email, $token) != '') {
                     $app['session']->getFlashBag()->add('error', 'New user email failed to send.');
                 }
                 return $app->redirect('/manage/users');
@@ -196,41 +196,38 @@
                     } else {
                         $token = $result->verify_token;
                     }
-                    if ($this->sendNewUserMail($result->username,
+                    if ($this->sendNewUserMail($app,
+                                               $result->username,
                                                $result->name,
                                                $result->email,
                                                $token) != '') {
                         $app['session']->getFlashBag()->add('error', 'New user email failed to send.');
                     }
-                    return $app->redirect('/manage/users');
                 } catch (Exception $e) {
-                    $app['session']->getFlashBag()->add('error', 'Unable to delete user: '.$e->getMessage());
+                    $app['session']->getFlashBag()->add('error', 'Unable to send verification: '.$e->getMessage());
                 }
+                return $app->redirect('/manage/users');
             });
         }
 
-        private function sendNewUserMail($username, $name, $email, $code): string {
-            //TODO FIX ME :(
-            return '';
-            $mail = new PHPMailer;
-            $mail->isSMTP();
-            $mail->Host = SMTP_SERVER;
-            $mail->SMTPAuth = true;
-            $mail->Username = SMTP_USERNAME;
-            $mail->Password = SMTP_PASSWORD;
-            $mail->Port = SMTP_PORT;
+        private function sendNewUserMail($app, $username, $name, $email, $code): string {
+            $message = \Swift_Message::newInstance()
+                ->setSubject('Welcome to the Stock System')
+                ->setFrom(array('noreply@'.$_SERVER['HTTP_HOST'] =>'Stock System'))
+                ->setTo(array($email => $name))
+                ->setBody('Welcome to the stock system '.$name.'.  You username is '
+                          .$username.', to continue you need to verify your account, by visiting '
+                          .$this->getEmailLink($code))
+                ->addPart('Welcome to the stock system '.$name.'.  You username is '
+                          .$username.', but to continue you need to <a href="'
+                          .$this->getEmailLink($code).'">verify your account</a>.', 'text/html');
+            $result = $app['mailer']->send($message, $failures);W
+            $app['swiftmailer.spooltransport']
+                ->getSpool()
+                ->flushQueue($app['swiftmailer.transport']);
 
-            $mail->setFrom('noreply@'.$_SERVER['HTTP_HOST'], 'Stock System');
-            $mail->addAddress($email, $name);
-
-            $mail->isHTML(true);
-
-            $mail->Subject = 'Welcome to the Stock System';
-            $mail->Body    = 'Welcome to the stock system '.$name.'.  You username is '.$username.', but to continue you need to <a href="'.$this->getEmailLink($code).'">verify your account</a>.';
-            $mail->AltBody = 'Welcome to the stock system '.$name.'.  You username is '.$username.', to continue you need to verify your account, by visiting '.$this->getEmailLink($code);
-
-            if (!$mail->send()) {
-                return $mail->ErrorInfo;
+            if (!$result) {
+                return 'Some shit went wrong';
             } else {
                 return '';
             }

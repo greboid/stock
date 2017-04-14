@@ -8,7 +8,8 @@
         "codacy/coverage": "^1.0",
         "silex/silex": "~2.0",
         "symfony/security": "^3.2",
-        "twig/twig": "^2.3"
+        "twig/twig": "^2.3",
+        "swiftmailer/swiftmailer": "^5.4"
     },
     "autoload": {
             "psr-4": {"greboid\\stock\\": "src"}

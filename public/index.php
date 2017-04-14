@@ -20,6 +20,7 @@
     use \Symfony\Component\HttpFoundation\Session\Session;
     use \Silex\Provider\SessionServiceProvider;
     use \Silex\Provider\SecurityServiceProvider;
+    use Silex\Provider\SwiftmailerServiceProvider;
 
     $itemRoutes = new ItemRoutes();
     $locationRoutes = new LocationRoutes();
@@ -74,6 +75,17 @@
         }));
         return $twig;
     });
+    $app['swiftmailer.use_spool'] = false;
+    $app->register(new SwiftmailerServiceProvider(), [
+        'swiftmailer.options' => [
+            'host' => SMTP_SERVER,
+            'port' => SMTP_PORT,
+            'username' => SMTP_USERNAME,
+            'password' => SMTP_PASSWORD,
+            'encryption' => 'tls',
+            'auth_mode' => 'login',
+        ],
+    ]);
     $app->register(new SessionServiceProvider());
     $app->register(new SecurityServiceProvider(), array(
         'security.firewalls' => array(
