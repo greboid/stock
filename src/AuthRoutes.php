@@ -20,9 +20,9 @@
             $app->get('/auth/loggedout', function(Application $app) {
                 return $app['twig']->render('loggedout.tpl', array());
             });
-            $app->get('/auth/verifyemail/{token}', function($token) {
+            $app->get('/auth/verifyemail/{token}', function(Application $app, $token) {
                 try {
-                    $stmt = $pdo->prepare('
+                    $stmt = $app['pdo']->prepare('
                         SELECT COALESCE((SELECT id FROM accounts WHERE verify_token=:token), 0) as id
                     ');
                     $stmt->bindValue(':token', $token, PDO::PARAM_STR);
@@ -42,7 +42,7 @@
             $app->post('/auth/verifyemail/{token}', function(Application $app, $token) {
                 $password = filter_input(INPUT_POST, 'newpassword', FILTER_UNSAFE_RAW);
                 try {
-                    $stmt = $pdo->prepare('
+                    $stmt = $app['pdo']->prepare('
                         SELECT COALESCE((SELECT id FROM accounts WHERE verify_token=:token), 0) as id
                     ');
                     $stmt->bindValue(':token', $token, PDO::PARAM_STR);
@@ -53,7 +53,7 @@
                             'error' => 'Unable to find token.',
                         ));
                     } else {
-                        $stmt = $pdo->prepare('
+                        $stmt = $app['pdo']->prepare('
                             UPDATE accounts
                             SET password=:password, verified=1
                             WHERE verify_token=:token
