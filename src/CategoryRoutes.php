@@ -11,10 +11,10 @@
 
         public function addRoutes(Application $app): void {
 
-            $app->get('/categories/', function(Application $app) {
+            $app->get('/categories', function(Application $app) {
                 return $app['twig']->render('categories.tpl', array());
             });
-            $app->get('/category/{categoryName}', function(Application $app, $categoryName) {
+            $app->get('/categories/{categoryName}', function(Application $app, $categoryName) {
                 $categoryName = filter_var($categoryName, FILTER_UNSAFE_RAW);
                 $categoryID = $app['stock']->getCategoryID($categoryName);
                 $siteID = 0;
@@ -31,14 +31,14 @@
                     return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->get('/add/category', function(Application $app) {
+            $app->get('/categories/add', function(Application $app) {
                 try {
                     return $app['twig']->render('addCategory.tpl', array());
                 } catch (Exception $e) {
                     return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->post('/add/category', function(Application $app) {
+            $app->post('/categories/add', function(Application $app) {
                 $name = filter_input(INPUT_POST, "name", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
                 $parent = filter_input(INPUT_POST, "parent", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                 if ($parent == null) {
@@ -57,7 +57,7 @@
                     return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->post('/edit/category', function(Application $app) {
+            $app->post('/categories/edit/{categoryID}', function(Application $app, $categoryID) {
                 try {
                     $categoryID = filter_input(INPUT_POST, "editID", FILTER_VALIDATE_INT);
                     $categoryName = filter_input(INPUT_POST, "editName", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
@@ -75,7 +75,7 @@
                     return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->get('/manage/categories', function(Application $app) {
+            $app->get('/categories/manage', function(Application $app) {
                 try {
                     return $app['twig']->render('managecategories.tpl', array(
                         'allCategoryStock' => $app['stock']->getAllCategoryStock(),
@@ -84,7 +84,7 @@
                     return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->post('/delete/category/{categoryID}', function(Application $app, $categoryID) {
+            $app->post('/categories/delete/{categoryID}', function(Application $app, $categoryID) {
                 $categoryID = filter_var($categoryID, FILTER_VALIDATE_INT);
                 try {
                     $app['stock']->deleteCategory($categoryID);

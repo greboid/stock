@@ -20,7 +20,7 @@
                         </span>
                         <span class="input-group-btn">
                             <button
-                                    formaction="/delete/category/{{ entry['id'] }}"
+                                    formaction="/categories/delete/{{ entry['id'] }}"
                                     class="btn btn-danger"
                                     {% if entry['subcategories'] is defined
                                         or (allCategoryStock[entry['id']] is defined
@@ -89,7 +89,7 @@
             </div>
             <div class="modal-body">
                     <div class="col align-self-center">
-                    <form method="post" action="/add/category" id="addCategoryForm">
+                    <form method="post" action="/categories/add" id="addCategoryForm">
                         <input type="hidden" id="action" name="action" value="addlocation">
                         <fieldset>
                             <div class="form-group row">
@@ -128,7 +128,7 @@
             </div>
             <div class="modal-body">
                     <div class="col align-self-center">
-                    <form method="post" action="/edit/category" id="editCategoryForm">
+                    <form method="post" action="/categories/edit/1" id="editCategoryForm">
                         <input type="hidden" id="editID" name="editID" value="">
                         <fieldset>
                             <div class="form-group row">

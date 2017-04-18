@@ -3,7 +3,7 @@
   <ul>
   {% for entry in data %}
     <li>
-      <a href="/category/{{ entry['name'] }}">{{ entry['name'] }}</a>
+      <a href="/categories/{{ entry['name'] }}">{{ entry['name'] }}</a>
       {% if entry['subcategories'] is defined and entry['subcategories']|count > 0 %}
         <ul>
           {{ macros.catMenu(entry['subcategories']) }}
