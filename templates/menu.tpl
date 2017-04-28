@@ -1,4 +1,4 @@
-{% if username is defined %}
+{% if is_granted('IS_AUTHENTICATED_FULLY') %}
 <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse">
     <button
             class="navbar-toggler navbar-toggler-right"
@@ -51,5 +51,6 @@
       </ul>
     </div>
 </nav>
-{{ msg|default("")|raw }}
 {% endif %}
+{{ msg|default("")|raw }}
+
