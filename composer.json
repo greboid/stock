@@ -9,7 +9,8 @@
         "silex/silex": "~2.0",
         "symfony/security": "^3.2",
         "twig/twig": "^2.3",
-        "swiftmailer/swiftmailer": "^5.4"
+        "swiftmailer/swiftmailer": "^5.4",
+        "symfony/twig-bridge": "^3.2"
     },
     "autoload": {
             "psr-4": {"greboid\\stock\\": "src"}
