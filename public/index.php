@@ -4,6 +4,7 @@
     require_once('../vendor/autoload.php');
     require_once('../configs/production.php');
 
+    use \greboid\stock\StockApplication;
     use \greboid\stock\Database;
     use \greboid\stock\Stock;
     use \greboid\stock\ItemRoutes;
@@ -48,7 +49,7 @@
     $stock = new Stock($database);
 
     $session = new Session();
-    $app = new Application();
+    $app = new StockApplication();
     $app['db'] = $database->getPDO();
     $app['stock'] = $stock;
     $app['pdo'] = $database->getPDO();

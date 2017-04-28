@@ -12,10 +12,10 @@
         public function addRoutes(Application $app): void {
 
             $app->get('/auth/login', function(Application $app) {
-                return $app['twig']->render('login.tpl', array(
-                    'loginMessage' => LOGIN_MESSAGE,
-                    'msg' => $app['security.last_error']($app['request_stack']->getCurrentRequest()),
-                ));
+                return $app->render('login.tpl', [
+                        'loginMessage' => LOGIN_MESSAGE,
+                        'msg' => $app['security.last_error']($app['request_stack']->getCurrentRequest()),
+                    ]);
             })->bind('login_get');
             $app->get('/auth/loggedout', function(Application $app) {
                 return $app['twig']->render('loggedout.tpl', array());
