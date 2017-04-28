@@ -21,7 +21,8 @@
     use \Symfony\Component\HttpFoundation\Session\Session;
     use \Silex\Provider\SessionServiceProvider;
     use \Silex\Provider\SecurityServiceProvider;
-    use Silex\Provider\SwiftmailerServiceProvider;
+    use \Silex\Provider\SwiftmailerServiceProvider;
+    use \Silex\Provider\FormServiceProvider;
 
     $itemRoutes = new ItemRoutes();
     $locationRoutes = new LocationRoutes();
@@ -76,6 +77,8 @@
         }));
         return $twig;
     });
+    $app->register(new FormServiceProvider());
+    $app->register(new Silex\Provider\ValidatorServiceProvider());
     $app['swiftmailer.use_spool'] = false;
     $app->register(new SwiftmailerServiceProvider(), [
         'swiftmailer.options' => [
