@@ -12,7 +12,7 @@
 
         public function addRoutes(Application $app): void {
 
-            $app->get('/add/item', function(Application $app) {
+            $app->get('/item/add', function(Application $app) {
                 if (count($app['stock']->getSites()) == 0) {
                     return $app->redirect('/add/location');
                 }
@@ -22,7 +22,7 @@
                     return $app->abprt(500, $e->getMessage());
                 }
             });
-            $app->post('/add/item', function(Application $app, Request $request) {
+            $app->post('/item/add', function(Application $app, Request $request) {
                 $name = $request->get('name');
                 $location = intval($request->request->get('location'), 10);
                 $category = intval($request->request->get('category'), 10);
@@ -30,7 +30,7 @@
                 try {
                     if ($name !== false && $location !== false && $count !== false && $category !== false) {
                         $app['stock']->insertItem($name, $location, $category, $count);
-                        return $app->redirect('/manage/items');
+                        return $app->redirect('/items/manage');
                     } else {
                         return $app->abort(400, 'Missing Required Value');
                     }
@@ -38,7 +38,7 @@
                     return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->post('/edit/item/{itemid}', function(Application $app, $itemid) {
+            $app->post('/item/edit/{itemid}', function(Application $app, $itemid) {
                 $data = json_decode(file_get_contents('php://input'), true);
                 try {
                     if ($itemid !== null) {
@@ -55,7 +55,7 @@
                     return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->post('/edit/item', function(Application $app, Request $request) {
+            $app->post('/item/edit', function(Application $app, Request $request) {
                 try {
                     $itemID = intval($request->request->get('editID'), 10);
                     $locationName = $request->request->get('editName');
@@ -63,12 +63,12 @@
                     $categoryID = intval($request->request->get('editCategory'), 10);
                     $stockCount = intval($request->request->get('editCount'), 10);
                     $app['stock']->editItem($itemID, $locationName, $locationID, $categoryID, $stockCount);
-                    return $app->redirect('/manage/items');
+                    return $app->redirect('/items/manage');
                 } catch (Exception $e) {
                     return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->get('/manage/items', function(Application $app) {
+            $app->get('/items/manage', function(Application $app) {
                 try {
                     return $app['twig']->render('manageitems.tpl', array(
                         'stock' => $app['stock']->getSiteStock(0),
@@ -77,11 +77,11 @@
                     return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->post('/delete/item/{itemid}', function(Application $app, $itemid) {
+            $app->post('/item/delete/{itemid}', function(Application $app, $itemid) {
                 $itemid = filter_var($itemid, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                 try {
                     $app['stock']->deleteItem($itemid);
-                    return $app->redirect('/manage/items');
+                    return $app->redirect('/items/manage');
                 } catch (Exception $e) {
                     return $app->abort(500, $e->getMessage());
                 }

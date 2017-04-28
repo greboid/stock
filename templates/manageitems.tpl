@@ -53,7 +53,7 @@
                                                     </button>
                                                 </span>
                                                 <span class="input-group-btn">
-                                                    <button formaction="/delete/item/{{ id }}"
+                                                    <button formaction="/item/delete/{{ id }}"
                                                             class="btn btn-danger">
                                                         Delete
                                                     </button>
@@ -85,7 +85,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="col align-self-center">
-                        <form method="post" action="/add/item" id="addItemForm">
+                        <form method="post" action="/item/add" id="addItemForm">
                             <input type="hidden" id="action" name="action" value="additem">
                             <fieldset>
                                 <div class="form-group row">
@@ -139,7 +139,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="col align-self-center">
-                        <form method="post" action="/edit/item" id="editItemForm">
+                        <form method="post" action="/item/edit" id="editItemForm">
                             <input type="hidden" id="editID" name="editID" value="">
                             <fieldset>
                                 <div class="form-group row">

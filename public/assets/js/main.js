@@ -215,7 +215,7 @@ $(".itemcountbutton").click( function() {
   $.ajax({
          "method": "POST",
          "dataType": "json",
-         "url": "/edit/item/"+itemID,
+         "url": "/item/edit/"+itemID,
          "data": data
   }).done(function() {
     input.val(newCount);
@@ -235,7 +235,7 @@ $(".itemcount").change(function(){
   $.ajax({
          "method": "POST",
          "dataType": "json",
-         "url": "/edit/item/"+itemID,
+         "url": "/item/edit/"+itemID,
          "data": data
   });
 });
