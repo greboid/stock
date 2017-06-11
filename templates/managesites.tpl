@@ -33,7 +33,7 @@
                                                 </span>
                                                 <span class="input-group-btn">
                                                     <button
-                                                        formaction="/delete/site/{$siteid}"
+                                                        formaction="/site/delete/{$siteid}"
                                                         class="btn btn-danger"{% if locations[siteid]['locations']|count != 0 %} disabled{% endif %}>
                                                             Delete
                                                     </button>
@@ -65,7 +65,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="col align-self-center">
-                        <form method="post" action="/add/site" id="addSiteForm">
+                        <form method="post" action="/site/add" id="addSiteForm">
                             <input type="hidden" id="action" name="action" value="addsite">
                             <fieldset>
                                 <div class="form-group row">
@@ -95,7 +95,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="col align-self-center">
-                        <form method="post" action="/edit/site" id="editSiteForm">
+                        <form method="post" action="/site/edit" id="editSiteForm">
                             <input type="hidden" id="editID" name="editID" value="">
                             <fieldset>
                                 <div class="form-group row">

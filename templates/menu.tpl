@@ -21,13 +21,13 @@
             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manage <span class="caret"></span></a>
             <ul class="dropdown-menu navbar-inverse bg-inverse dropdown-menu-right">
                 <li class="nav-item">
-                    <a class="nav-link" href="/manage/sites">Manage Sites</a>
+                    <a class="nav-link" href="/sites/manage">Manage Sites</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/manage/locations">Manage Locations</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/manage/categories">Manage Categories</a>
+                    <a class="nav-link" href="/categories/manage">Manage Categories</a>
                 </li>
                 <li>
                     <a class="nav-link" href="/items/manage">Manage Items</a>

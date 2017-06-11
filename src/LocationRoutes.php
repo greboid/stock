@@ -36,7 +36,7 @@
             });
             $app->get('/add/location', function(Application $app) {
                 if (count($app['stock']->getLocations()) == 0) {
-                    return $app->redirect('/add/site');
+                    return $app->redirect('/site/add');
                 }
                 try {
                     return $app['twig']->render('addlocation.tpl', array());
