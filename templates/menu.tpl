@@ -33,7 +33,7 @@
                     <a class="nav-link" href="/items/manage">Manage Items</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/manage/users">Manage Users</a>
+                    <a class="nav-link" href="/users/manage">Manage Users</a>
                 </li>
             </ul>
         </li>

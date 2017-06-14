@@ -43,7 +43,7 @@
                                     class="btn btn-secondary"
                                     {% if username == user['username'] %}disabled{% endif %}>Send Verification</button>
                                   <button type="submit" name="userid" id="userid" value={{ user['id'] }}
-                                    formaction="/delete/user"
+                                    formaction="/user/delete"
                                     class="btn btn-danger"
                                     {% if username == user['username'] %}disabled{% endif %}>Delete</button>
                                 </div>
@@ -73,7 +73,7 @@
           </div>
           <div class="modal-body">
             <div class="col align-self-center">
-              <form method="post" action="/add/user" id="addUserForm">
+              <form method="post" action="/user/add" id="addUserForm">
                 <fieldset>
                   <div class="form-group row">
                     <label class="col-4 col-form-label" for="username">Username</label>
@@ -119,7 +119,7 @@
           </div>
           <div class="modal-body">
             <div class="col align-self-center">
-              <form method="post" action="/edit/user" id="editUserForm">
+              <form method="post" action="/user/edit" id="editUserForm">
                 <input type="hidden" id="editID" name="editID" value="">
                 <fieldset>
                   <div class="form-group row">
