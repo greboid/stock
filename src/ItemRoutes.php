@@ -14,7 +14,7 @@
 
             $app->get('/item/add', function(Application $app) {
                 if (count($app['stock']->getSites()) == 0) {
-                    return $app->redirect('/add/location');
+                    return $app->redirect('/location/add');
                 }
                 try {
                     return $app['twig']->render('additem.tpl', array());

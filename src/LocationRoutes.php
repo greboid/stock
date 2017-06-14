@@ -34,7 +34,7 @@
                     return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->get('/add/location', function(Application $app) {
+            $app->get('/location/add', function(Application $app) {
                 if (count($app['stock']->getLocations()) == 0) {
                     return $app->redirect('/site/add');
                 }
@@ -44,7 +44,7 @@
                     return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->post('/add/location', function(Application $app) {
+            $app->post('/location/add', function(Application $app) {
                 try {
                     $name = filter_input(INPUT_POST, "name", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
                     $site = filter_input(INPUT_POST, "site", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
@@ -53,12 +53,12 @@
                     } else {
                         return $app->abort(500, 'Missing required value.');
                     }
-                    return $app->redirect('/manage/locations');
+                    return $app->redirect('/locations/manage');
                 } catch (Exception $e) {
                     return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->post('/edit/location', function(Application $app) {
+            $app->post('/location/edit', function(Application $app) {
                 try {
                     $locationID = filter_input(INPUT_POST, "editID", FILTER_VALIDATE_INT);
                     $locationName = filter_input(INPUT_POST, "editName", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
@@ -68,12 +68,12 @@
                     } else {
                         return $app->abort(500, 'Missing required value.');
                     }
-                    return $app->redirect('/manage/locations');
+                    return $app->redirect('/locations/manage');
                 } catch (Exception $e) {
                     return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->get('/manage/locations', function(Application $app) {
+            $app->get('/locations/manage', function(Application $app) {
                 try {
                     return $app['twig']->render('managelocations.tpl', array(
                         'locationsstockcount' => $app['stock']->getLocationStockCounts(),
@@ -82,11 +82,11 @@
                     return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->post('/delete/location/{locationid}', function(Application $app, $locationid) {
+            $app->post('/location/delete/{locationid}', function(Application $app, $locationid) {
                 $locationid = filter_var($locationid, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                 try {
                     $app['stock']->deleteLocation($locationid);
-                    return $app->redirect('/manage/locations');
+                    return $app->redirect('/locations/manage');
                 } catch (Exception $e) {
                     return $app->abort(500, $e->getMessage());
                 }

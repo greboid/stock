@@ -36,7 +36,7 @@
                                                     </button>
                                                 </span>
                                                 <span class="input-group-btn">
-                                                    <button formaction="/delete/location/{{locationsstockcount[locationid]['id']}}"
+                                                    <button formaction="/location/delete/{{locationsstockcount[locationid]['id']}}"
                                                             class="btn btn-danger"
                                                             {% if locationsstockcount[locationid]['stockcount'] != 0 %} disabled{% endif %}>
                                                         Delete
@@ -69,7 +69,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="col align-self-center">
-                        <form method="post" action="/add/location" id="addLocationForm">
+                        <form method="post" action="/location/add" id="addLocationForm">
                             <input type="hidden" id="action" name="action" value="addlocation">
                             <fieldset>
                                 <div class="form-group row">
@@ -108,7 +108,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="col align-self-center">
-                        <form method="post" action="/edit/location" id="editLocationForm">
+                        <form method="post" action="/location/edit" id="editLocationForm">
                             <input type="hidden" id="editID" name="editID" value="">
                             <fieldset>
                                 <div class="form-group row">
