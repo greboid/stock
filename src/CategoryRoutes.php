@@ -14,6 +14,15 @@
             $app->get('/categories', function(Application $app) {
                 return $app['twig']->render('categories.tpl', array());
             });
+            $app->get('/categories/manage', function(Application $app) {
+                try {
+                    return $app['twig']->render('managecategories.tpl', array(
+                        'allCategoryStock' => $app['stock']->getAllCategoryStock(),
+                    ));
+                } catch (Exception $e) {
+                    return $app->abort(500, $e->getMessage());
+                }
+            });
             $app->get('/categories/{categoryName}', function(Application $app, $categoryName) {
                 $categoryName = filter_var($categoryName, FILTER_UNSAFE_RAW);
                 $categoryID = $app['stock']->getCategoryID($categoryName);
@@ -71,15 +80,6 @@
                         return $app->abort(500, 'Missing required value.');
                     }
                     return $app->redirect('/manage/categories');
-                } catch (Exception $e) {
-                    return $app->abort(500, $e->getMessage());
-                }
-            });
-            $app->get('/categories/manage', function(Application $app) {
-                try {
-                    return $app['twig']->render('managecategories.tpl', array(
-                        'allCategoryStock' => $app['stock']->getAllCategoryStock(),
-                    ));
                 } catch (Exception $e) {
                     return $app->abort(500, $e->getMessage());
                 }

@@ -11,6 +11,13 @@
 
         public function addRoutes(Application $app): void {
 
+            $app->get('/site/manage', function(Application $app) {
+                try {
+                    return $app['twig']->render('managesites.tpl', array());
+                } catch (Exception $e) {
+                    return $app->abort(500, $e->getMessage());
+                }
+            });
             $app->get('/site/{siteName}', function(Application $app, $siteName) {
                 $siteName = filter_var($siteName, FILTER_UNSAFE_RAW);
                 $siteid = $app['stock']->getSiteID($siteName);
@@ -62,13 +69,6 @@
                         return $app->abort(500, 'Missing required value.');
                     }
                     return $app->redirect('/site/manage');
-                } catch (Exception $e) {
-                    return $app->abort(500, $e->getMessage());
-                }
-            });
-            $app->get('/site/manage', function(Application $app) {
-                try {
-                    return $app['twig']->render('managesites.tpl', array());
                 } catch (Exception $e) {
                     return $app->abort(500, $e->getMessage());
                 }
