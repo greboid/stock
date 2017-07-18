@@ -11,7 +11,7 @@
 
         public function addRoutes(Application $app): void {
 
-            $app->get('/locations/', function(Application $app) {
+            $app->get('/location/', function(Application $app) {
                 return $app['twig']->render('locations.tpl', array());
             });
             $app->get('/location/{locationName}', function(Application $app, $locationName) {
