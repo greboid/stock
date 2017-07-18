@@ -53,7 +53,7 @@
                     } else {
                         return $app->abort(500, 'Missing required value.');
                     }
-                    return $app->redirect('/locations/manage');
+                    return $app->redirect('/location/manage');
                 } catch (Exception $e) {
                     return $app->abort(500, $e->getMessage());
                 }
@@ -68,12 +68,12 @@
                     } else {
                         return $app->abort(500, 'Missing required value.');
                     }
-                    return $app->redirect('/locations/manage');
+                    return $app->redirect('/location/manage');
                 } catch (Exception $e) {
                     return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->get('/locations/manage', function(Application $app) {
+            $app->get('/location/manage', function(Application $app) {
                 try {
                     return $app['twig']->render('managelocations.tpl', array(
                         'locationsstockcount' => $app['stock']->getLocationStockCounts(),
@@ -86,7 +86,7 @@
                 $locationid = filter_var($locationid, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                 try {
                     $app['stock']->deleteLocation($locationid);
-                    return $app->redirect('/locations/manage');
+                    return $app->redirect('/location/manage');
                 } catch (Exception $e) {
                     return $app->abort(500, $e->getMessage());
                 }

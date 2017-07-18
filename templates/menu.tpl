@@ -24,7 +24,7 @@
                     <a class="nav-link" href="/sites/manage">Manage Sites</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/locations/manage">Manage Locations</a>
+                    <a class="nav-link" href="/location/manage">Manage Locations</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/categories/manage">Manage Categories</a>
