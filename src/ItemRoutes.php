@@ -30,7 +30,7 @@
                 try {
                     if ($name !== false && $location !== false && $count !== false && $category !== false) {
                         $app['stock']->insertItem($name, $location, $category, $count);
-                        return $app->redirect('/items/manage');
+                        return $app->redirect('/item/manage');
                     } else {
                         return $app->abort(400, 'Missing Required Value');
                     }
@@ -63,12 +63,12 @@
                     $categoryID = intval($request->request->get('editCategory'), 10);
                     $stockCount = intval($request->request->get('editCount'), 10);
                     $app['stock']->editItem($itemID, $locationName, $locationID, $categoryID, $stockCount);
-                    return $app->redirect('/items/manage');
+                    return $app->redirect('/item/manage');
                 } catch (Exception $e) {
                     return $app->abort(500, $e->getMessage());
                 }
             });
-            $app->get('/items/manage', function(Application $app) {
+            $app->get('/item/manage', function(Application $app) {
                 try {
                     return $app['twig']->render('manageitems.tpl', array(
                         'stock' => $app['stock']->getSiteStock(0),
@@ -81,7 +81,7 @@
                 $itemid = filter_var($itemid, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                 try {
                     $app['stock']->deleteItem($itemid);
-                    return $app->redirect('/items/manage');
+                    return $app->redirect('/item/manage');
                 } catch (Exception $e) {
                     return $app->abort(500, $e->getMessage());
                 }
