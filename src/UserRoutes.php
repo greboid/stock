@@ -113,7 +113,7 @@
                 }
                 return $app->redirect('/user/profile');
             });
-            $app->get('/users/manage', function(Application $app) {
+            $app->get('/user/manage', function(Application $app) {
                 $stmt = $app['pdo']->prepare('SELECT id, username, name, email, active from '.ACCOUNTS_TABLE);
                 $stmt->execute();
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -146,7 +146,7 @@
                 if ($this->sendNewUserMail($app, $username, $name, $email, $token) != '') {
                     $app['session']->getFlashBag()->add('error', 'New user email failed to send.');
                 }
-                return $app->redirect('/users/manage');
+                return $app->redirect('/user/manage');
             });
             $app->post('/user/edit', function(Application $app) {
                 try {
@@ -156,7 +156,7 @@
                     $userEmail = filter_input(INPUT_POST, "editEmail", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
                     $userActive = filter_input(INPUT_POST, "active", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                     $this->editUser($app['pdo'], $userID, $userUsername, $userName, $userEmail, $userActive);
-                    return $app->redirect('/users/manage');
+                    return $app->redirect('/user/manage');
                 } catch (Exception $e) {
                     return $app->abort(500, $e->getMessage());
                 }
@@ -170,7 +170,7 @@
                 } catch (Exception $e) {
                     $app['session']->getFlashBag()->add('error', 'Unable to delete user: '.$e->getMessage());
                 }
-                return $app->redirect('/users/manage');
+                return $app->redirect('/user/manage');
             });
             $app->post('/user/sendverification', function(Application $app) {
                 $userid = filter_input(INPUT_POST, "userid", FILTER_SANITIZE_NUMBER_INT);
@@ -206,7 +206,7 @@
                 } catch (Exception $e) {
                     $app['session']->getFlashBag()->add('error', 'Unable to send verification: '.$e->getMessage());
                 }
-                return $app->redirect('/users/manage');
+                return $app->redirect('/user/manage');
             });
         }
 
