@@ -21,7 +21,7 @@
             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manage <span class="caret"></span></a>
             <ul class="dropdown-menu navbar-inverse bg-inverse dropdown-menu-right">
                 <li class="nav-item">
-                    <a class="nav-link" href="/sites/manage">Manage Sites</a>
+                    <a class="nav-link" href="/site/manage">Manage Sites</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/location/manage">Manage Locations</a>
