@@ -19,7 +19,7 @@
                         {% for locationid, location in locationsstockcount %}
                             <tr>
                                 <form method="post">
-                                        <td class="align-middle">{{ locationid }}</td>
+                                        <td class="align-middle">{{ locationsstockcount[locationid]['name'] }}</td>
                                         <td class="align-middle">{{ locationsstockcount[locationid]['sitename'] }}</td>
                                         <td class="align-middle">{{ locationsstockcount[locationid]['stockcount'] }}</td>
                                         <td class="align-middle">

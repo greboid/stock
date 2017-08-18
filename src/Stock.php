@@ -191,7 +191,7 @@
             $results = $statement->fetchAll(PDO::FETCH_CLASS);
             $locations = array();
             foreach ($results as $result) {
-                $locations[$result->name] = array('name'=>$result->name, 'id'=>$result->id, 'stockcount'=>0);
+                $locations[$result->id] = array('name'=>$result->name, 'id'=>$result->id, 'stockcount'=>0);
             }
             foreach ($locations as &$location) {
                 $statement = $this->database->getPDO()->prepare('
@@ -215,7 +215,7 @@
                 throw new Exception('Specified site does not exist.');
             }
             $sql = 'SELECT stock_id as id,
-                        parents.location_id as site,
+                        parents.location_name as site,
                         '.LOCATIONS_TABLE.'.location_name as location,
                         stock_name as name,
                         stock_count as count,
