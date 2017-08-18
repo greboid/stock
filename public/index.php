@@ -60,7 +60,7 @@
         $app['debug'] = true;
     }
     $app->register(new Silex\Provider\TwigServiceProvider(), array(
-        'twig.path' => __DIR__.'\..\templates',
+        'twig.path' => __DIR__.'/../templates',
         'twig.options' => array('debug' => true),
     ));
     $app->extend('twig', function($twig, $app) {
