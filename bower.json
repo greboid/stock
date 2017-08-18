@@ -22,8 +22,9 @@
     "jquery.tablesorter": "*",
     "select2-bootstrap-theme": "^0.1.0-beta.9",
     "jquery-validation": "^1.16.0",
-    "datatables.net": "^2.1.1",
-    "datatables.net-bs": "^2.1.1"
+    "datatables.net": "^1.10.15",
+    "datatables.net-bs": "^1.10.15",
+    "components-font-awesome": "^4.7.0"
   },
   "resolutions": {
     "bootstrap": "4.0.0-alpha.6"
