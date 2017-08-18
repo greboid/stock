@@ -74,7 +74,7 @@
                 }
             });
             $app->post('/site/delete/{siteid}', function(Application $app, $siteid) {
-                $siteid = filter_var($siteid, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+                $siteid = filter_var(intval($siteid), FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                 try {
                     $app['stock']->deleteSite($siteid);
                     return $app->redirect('/site/manage');
