@@ -5,111 +5,55 @@
 
     use \Exception;
     use \PDO;
-    use \Bramus\Router\Router;
-    use \Aura\Auth\Auth;
-    use \Smarty;
-    use \ICanBoogie\Storage\RunTimeStorage;
+    use \Silex\Application;
 
     class AuthRoutes {
 
-        public function addRoutes(Router $router, RunTimeStorage $storage): void {
-            $auth = $storage->retrieve('auth');
-            $loginService = $storage->retrieve('loginService');
-            $smarty = $storage->retrieve('smarty');
-            $stock = $storage->retrieve('stock');
-            $msg = $storage->retrieve('flash');
-            $pdo = $storage->retrieve('pdo');
+        public function addRoutes(Application $app): void {
 
-            $router->get('/auth/login', function() use ($smarty) {
-                $smarty->assign('loginMessage', LOGIN_MESSAGE);
-                $smarty->display('login.tpl');
+            $app->get('/auth/login', function(Application $app) {
+                return $app->render('login.tpl', [
+                        'loginMessage' => LOGIN_MESSAGE,
+                        'msg' => $app['security.last_error']($app['request_stack']->getCurrentRequest()),
+                    ]);
+            })->bind('login_get');
+            $app->get('/auth/loggedout', function(Application $app) {
+                return $app['twig']->render('loggedout.tpl', array());
             });
-            $router->post('/auth/login', function() use ($smarty, $auth, $loginService, $msg) {
-                $username = filter_input(INPUT_POST, "username", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
-                $password = filter_input(INPUT_POST, "password", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
+            $app->get('/auth/verifyemail/{token}', function(Application $app, $token) {
                 try {
-                    $loginService->login($auth, array(
-                        'username' => $username,
-                        'password' => $password,
-                    ));
-                    $msg->info('You are now logged in: '.htmlspecialchars($auth->getUserData()['name']));
-                    if (isset($SESSION['postauthredirect'])) {
-                        header('Location: /'.SESSION['postauthredirect']);
-                    } else {
-                        header('Location: /');
-                    }
-                } catch (\Aura\Auth\Exception\UsernameMissing $e) {
-                    $msg->error('You must specify a username.');
-                    header('Location: /auth/login');
-                } catch (\Aura\Auth\Exception\PasswordMissing $e) {
-                    $msg->error('You must specify a password.');
-                    header('Location: /auth/login');
-                } catch (\Aura\Auth\Exception\MultipleMatches $e) {
-                    $msg->error('Unable to login, multiple user matches.');
-                    header('Location: /auth/login');
-                } catch (\Aura\Auth\Exception\UsernameNotFound $e) {
-                    $msg->error('Incorrect login details.');
-                    header('Location: /auth/login');
-                } catch (\Aura\Auth\Exception\PasswordIncorrect $e) {
-                    $msg->error('Incorrect login details.');
-                    header('Location: /auth/login');
-                } catch (\Aura\Auth\Exception\ConnectionFailed $e) {
-                    $msg->error('Unable to connect to authentication source.');
-                    header('Location: /auth/login');
-                } catch (\Aura\Auth\Exception\BindFailed $e) {
-                    $msg->error('Unable to connect to authentication source.');
-                    header('Location: /auth/login');
-                } catch (InvalidLoginException $e) {
-                    $msg->error('Incorrect login details.');
-                    header('Location: /auth/login');
-                }
-            });
-            $router->get('/auth/register', function() use ($smarty) {
-                $smarty->display('register.tpl');
-            });
-            $router->get('/auth/reset', function() use ($smarty) {
-                $smarty->display('passwordreset.tpl');
-            });
-            $router->get('/auth/logout', function() use ($smarty, $storage, $msg) {
-                try {
-                    $storage->retrieve('logoutService')->logout($storage->retrieve('auth'));
-                } catch (Exception $e) {
-                    $msg->error('Unable to logout: '.$e->getMessage());
-                }
-                header('Location: /');
-            });
-            $router->get('/auth/verifyemail/(.*)', function($token) use ($smarty, $pdo, $msg) {
-                try {
-                    $stmt = $pdo->prepare('
+                    $stmt = $app['pdo']->prepare('
                         SELECT COALESCE((SELECT id FROM accounts WHERE verify_token=:token), 0) as id
                     ');
                     $stmt->bindValue(':token', $token, PDO::PARAM_STR);
                     $stmt->execute();
                     $userID = $stmt->fetchObject()->id;
                     if ($userID == 0) {
-                        $smarty->assign('error', 'Unable to find token.');
-                        $smarty->display('500.tpl');
+                        return $app['twig']->render('500.tpl', array(
+                            'error' => 'Unable to find token.',
+                        ));
                     } else {
-                        $smarty->display('verifytoken.tpl');
+                        return $app['twig']->render('verifytoken.tpl', array());
                     }
                 } catch (Exception $e) {
-                    $msg->error('Unable to verify email: '.$e->getMessage());
+                    $app['session']->getFlashBag()->add('error', 'Unable to verify email: '.$e->getMessage());
                 }
-            });
-            $router->post('/auth/verifyemail/(.*)', function($token) use ($smarty, $pdo, $storage) {
+            })->bind('login_verify_get');
+            $app->post('/auth/verifyemail/{token}', function(Application $app, $token) {
                 $password = filter_input(INPUT_POST, 'newpassword', FILTER_UNSAFE_RAW);
                 try {
-                    $stmt = $pdo->prepare('
+                    $stmt = $app['pdo']->prepare('
                         SELECT COALESCE((SELECT id FROM accounts WHERE verify_token=:token), 0) as id
                     ');
                     $stmt->bindValue(':token', $token, PDO::PARAM_STR);
                     $stmt->execute();
                     $userID = $stmt->fetchObject()->id;
                     if ($userID == 0) {
-                        $smarty->assign('error', 'Unable to find token.');
-                        $smarty->display('500.tpl');
+                        return $app['twig']->render('500.tpl', array(
+                            'error' => 'Unable to find token.',
+                        ));
                     } else {
-                        $stmt = $pdo->prepare('
+                        $stmt = $app['pdo']->prepare('
                             UPDATE accounts
                             SET password=:password, verified=1
                             WHERE verify_token=:token
@@ -119,9 +63,9 @@
                         $stmt->execute();
                     }
                 } catch (Exception $e) {
-                    $msg->error('Unable to verify email: '.$e->getMessage());
+                    $app['session']->getFlashBag()->add('error', 'Unable to verify email: '.$e->getMessage());
                 }
-                header('Location: /');
-            });
+                return $app->redirect('/');
+            })->bind('login_verify_post');
         }
     }

@@ -1,16 +1,16 @@
-{assign var="nbsp" value="&nbsp;&nbsp;&nbsp;"}
-
-{function name=catMenu level=0}
-  {foreach $data as $entry}
-      <option value="{$entry['id']}">{$nbsp|str_repeat:$level}{$entry['name']|escape:'htmlall'|truncate:30}</option>
-      {if isset($entry['subcategories']) && $entry['subcategories']|@count > 0}
-        {catMenu data=$entry['subcategories'] level=$level+1}
-      {/if}
-  {/foreach}
-{/function}
-
-{include file='header.tpl'}
-{include file='menu.tpl'}
+{% macro catMenu(data, level) %}
+    {% import _self as macros %}
+    {% set nbsp = '&nbsp;&nbsp;&nbsp;' %}
+    {% for entry in data %}
+        <option value="{{ entry.id }}">{{ repeat(nbsp,level)|raw }}{{ entry.name }}</option>
+        {% if entry['subcategories'] is defined and entry['subcategories']|count > 0 %}
+            {{ macros.catMenu(entry['subcategories'], level+1) }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+{% import _self as macros %}
+{{ include('header.tpl') }}
+{{ include('menu.tpl') }}
     <div class="container-fluid">
         <div class="row">
             <div class="col">
@@ -29,14 +29,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {foreach from=$stock key=id item=item}
+                        {% for id, item in stock %}
                             <tr>
                                 <form method="post">
-                                        <td class="align-middle">{$item['name']|escape:'htmlall'}</td>
-                                        <td class="align-middle">{$item['location']|escape:'htmlall'}</td>
-                                        <td class="align-middle">{$item['site']|escape:'htmlall'}</td>
-                                        <td class="align-middle">{$item['category']|escape:'htmlall'}</td>
-                                        <td class="align-middle">{$item['count']|escape:'htmlall'}</td>
+                                        <td class="align-middle">{{ item['name'] }}</td>
+                                        <td class="align-middle">{{ item['location'] }}</td>
+                                        <td class="align-middle">{{ item['site'] }}</td>
+                                        <td class="align-middle">{{ item['category'] }}</td>
+                                        <td class="align-middle">{{ item['count'] }}</td>
                                         <td class="align-middle">
                                             <div class="input-group">
                                                 <span class="input-group-btn">
@@ -44,16 +44,16 @@
                                                             class="btn btn-primary"
                                                             data-toggle="modal"
                                                             data-target="#editItemModal"
-                                                            data-itemID="{$item['id']}"
-                                                            data-itemname="{$item['name']|escape:'htmlall'}"
-                                                            data-locationname="{$item['location']|escape:'htmlall'}"
-                                                            data-categoryname="{$item['category']|escape:'htmlall'}"
-                                                            data-stockcount="{$item['count']|escape:'htmlall'}">
+                                                            data-itemid="{{ item['id'] }}"
+                                                            data-itemname="{{ item['name'] }}"
+                                                            data-locationname="{{ item['location'] }}"
+                                                            data-categoryname="{{ item['category'] }}"
+                                                            data-stockcount="{{ item['count'] }}">
                                                         Edit
                                                     </button>
                                                 </span>
                                                 <span class="input-group-btn">
-                                                    <button formaction="/delete/item/{$id}"
+                                                    <button formaction="/item/delete/{{ id }}"
                                                             class="btn btn-danger">
                                                         Delete
                                                     </button>
@@ -62,7 +62,7 @@
                                         </td>
                                 </form>
                             </tr>
-                        {/foreach}
+                        {% endfor %}
                     </tbody>
                 </table>
                 <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#addItemModal">
@@ -85,7 +85,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="col align-self-center">
-                        <form method="post" action="/add/item" id="addItemForm">
+                        <form method="post" action="/item/add" id="addItemForm">
                             <input type="hidden" id="action" name="action" value="additem">
                             <fieldset>
                                 <div class="form-group row">
@@ -96,20 +96,20 @@
                                     <label class="col-3 col-form-label" for="location">Location</label>
                                     <select class="col form-control" id="location" name="location" required>
                                         <option selected=""></option>
-                                        {foreach from=$locations key=siteID item=site}
-                                            <optgroup label="{$site['name']|escape:'htmlall'}">
-                                            {foreach from=$site['locations'] key=locationID item=location}
-                                                <option value="{$locationID|escape:'htmlall'}">{$location}</option>
-                                            {/foreach}
+                                        {% for siteID, site in locations %}
+                                            <optgroup label="{{ site['name'] }}">
+                                            {% for locationID, location in site['locations'] %}
+                                                <option value="{{ locationID }}">{{ location }}</option>
+                                            {% endfor %}
                                             </optgroup>
-                                        {/foreach}
+                                        {% endfor %}
                                     </select>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-3 col-form-label" for="category">Category</label>
                                     <select class="col form-control" id="category" name="category" required>
                                         <option selected=""></option>
-                                        {catMenu data=$categories}
+                                        {{ macros.catMenu(categories) }}
                                     </select>
                                 </div>
                                 <div class="form-group row">
@@ -139,7 +139,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="col align-self-center">
-                        <form method="post" action="/edit/item" id="editItemForm">
+                        <form method="post" action="/item/edit" id="editItemForm">
                             <input type="hidden" id="editID" name="editID" value="">
                             <fieldset>
                                 <div class="form-group row">
@@ -150,25 +150,25 @@
                                     <label class="col-3 col-form-label" for="editLocation">Location</label>
                                     <select class="col form-control" id="editLocation" name="editLocation" required>
                                         <option selected=""></option>
-                                        {foreach from=$locations key=siteID item=site}
-                                            <optgroup label="{$site['name']|escape:'htmlall'}">
-                                            {foreach from=$site['locations'] key=locationID item=location}
-                                                <option value="{$locationID|escape:'htmlall'}">{$location}</option>
-                                            {/foreach}
+                                        {% for siteID, site in locations %}
+                                            <optgroup label="{{ site['name'] }}">
+                                            {% for locationID, location in site['locations'] %}
+                                                <option value="{{ locationID }}">{{ location }}</option>
+                                            {% endfor %}
                                             </optgroup>
-                                        {/foreach}
+                                        {% endfor %}
                                     </select>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-3 col-form-label" for="category">Category</label>
                                     <select class="col form-control" id="editCategory" name="editCategory" required>
                                         <option selected=""></option>
-                                        {catMenu data=$categories}
+                                        {{ macros.catMenu(categories) }}
                                     </select>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-3 col-form-label" for="editCount">Initial Stock Count</label>
-                                    <input class="col form-control" id="editCount" name="editCount" type="number" placeholder="Initial count" required min="0" max="{$max_stock}">
+                                    <input class="col form-control" id="editCount" name="editCount" type="number" placeholder="Initial count" required min="0" max="{{ max_stock }}">
                                 </div>
                             </fieldset>
                         </form>
@@ -181,4 +181,4 @@
             </div>
         </div>
     </div>
-{include file='footer.tpl'}
+{{ include('footer.tpl') }}

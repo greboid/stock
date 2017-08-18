@@ -3,14 +3,18 @@
     "description": "Simple Stock System",
     "type": "project",
     "require": {
-        "smarty/smarty": "^3.1",
-        "bramus/router": "~1.0",
-        "aura/auth": "^2.0",
         "icanboogie/storage": "^2.1",
-        "plasticbrain/php-flash-messages": "^1.0",
         "sweelix/guid": "^1.0",
-        "phpmailer/phpmailer": "^5.2",
-        "codacy/coverage": "^1.0"
+        "codacy/coverage": "^1.0",
+        "silex/silex": "~2.0",
+        "symfony/security": "^3.2",
+        "twig/twig": "^2.3",
+        "swiftmailer/swiftmailer": "^5.4",
+        "symfony/twig-bridge": "^3.2",
+        "symfony/validator": "^3.2",
+        "symfony/config": "^3.2",
+        "symfony/intl": "^3.2",
+        "symfony/form": "^3.2"
     },
     "autoload": {
             "psr-4": {"greboid\\stock\\": "src"}

@@ -1,11 +1,5 @@
-{if $version == false}
-    {assign var=errorText value='Installation'}
-{else}
-    {assign var=errorText value='Upgrade'}
-{/if}
-
-{include file='header.tpl'}
-{$msg|default:""}
+{{ include('header.tpl') }}
+{{ msg|default("")|raw }}
     <div class="container-fluid">
         <div class="row">
             <div class="col">
@@ -17,11 +11,11 @@
                 will need to repair this manually or contact the developers
                 for assistance.</p>
                 <p>
-                    Details: {$error}
+                    Details: {{ error }}
                 </p>
             </div>
             <div class="col">
             </div>
         </div>
     </div>
-{include file='footer.tpl'}
+{{ include('footer.tpl') }}

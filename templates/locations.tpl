@@ -1,5 +1,5 @@
-{include file='header.tpl'}
-{include file='menu.tpl'}
+{{ include('header.tpl') }}
+{{ include('menu.tpl') }}
   <div class="container-fluid">
       <div class="row">
           <div class="col">
@@ -10,24 +10,24 @@
               <li>
                   <a class="pure-menu-link" href="/site/all">All</a>
               </li>
-              {foreach from=$sites key=siteid item=site}
+              {% for siteid, site in sites %}
                 <li class="pure-menu-item">
-                    <a class="pure-menu-link" href="/site/{$site|escape:'htmlall'}">{$site|escape:'htmlall'|truncate:30}</a>
+                    <a class="pure-menu-link" href="/site/{{ site }}">{{ site }}</a>
                     <ul>
-                        {foreach from=$locations[$siteid]['locations'] item=location}
-                            {foreach from=$location item=loc}
+                        {% for location in locations[siteid]['locations'] %}
+                            {% for loc in location %}
                             <li>
-                                <a class="pure-menu-link" href="/location/{$loc|escape:'htmlall'}">{$loc|escape:'htmlall'|truncate:30}</a>
+                                <a class="pure-menu-link" href="/location/{{ loc }}">{{ loc }}</a>
                             </li>
-                            {/foreach}
-                        {/foreach}
+                            {% endfor %}
+                        {% endfor %}
                     </ul>
                 </li>
-              {/foreach}
+              {% endfor %}
               </ul>
           </div>
           <div class="col">
           </div>
       </div>
   </div>
-{include file='footer.tpl'}
+{{ include('footer.tpl') }}

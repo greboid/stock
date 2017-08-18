@@ -1,16 +1,16 @@
-{assign var="nbsp" value="&nbsp;&nbsp;&nbsp;"}
-
-{function name=catMenu level=0}
-  {foreach $data as $entry}
-  <option value="{$nbsp|str_repeat:$level}{$entry['name']|escape:'htmlall'}">{$nbsp|str_repeat:$level}{$entry['name']|escape:'htmlall'}</option>
-      {if isset($entry['subcategories']) && $entry['subcategories']|@count > 0}
-          {catMenu data=$entry['subcategories'] level=$level+1}
-      {/if}
-  {/foreach}
-{/function}
-
-{include file='header.tpl'}
-{include file='menu.tpl'}
+{% macro catMenu(data, level) %}
+    {% import _self as macros %}
+    {% set nbsp = '&nbsp;&nbsp;&nbsp;' %}
+    {% for entry in data %}
+        <option value="{{ repeat(nbsp,level)|raw }}{{ entry.name }}">{{ repeat(nbsp,level)|raw }}{{ entry.name }}</option>
+        {% if entry['subcategories'] is defined and entry['subcategories']|count > 0 %}
+            {{ macros.catMenu(entry['subcategories'], level+1) }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+{% import _self as macros %}
+{{ include('header.tpl') }}
+{{ include('menu.tpl') }}
     <div class="container-fluid">
         <div class="fs row">
             <div class="col bg-faded sidebar">
@@ -21,25 +21,25 @@
                 </form>
                 <form id="sitesearchform" class="input-group">
                     <select id="sitesearch" class="form-control" multiple style="width: 100%">
-                        {foreach $sites as $site}
-                            <option>{$site}</option>
-                        {/foreach}
+                        {% for site in sites %}
+                            <option>{{ site }}</option>
+                        {% endfor %}
                     </select>
                 </form>
                 <form id="locationsearchform" class="input-group">
                     <select id="locationsearch" class="form-control" multiple style="width: 100%">
-                        {foreach from=$locations key=siteID item=site}
-                            <optgroup label="{$site['name']|escape:'htmlall'}">
-                            {foreach from=$site['locations'] key=locationID item=location}
-                                <option value="{$location|escape:'htmlall'}">{$location|escape:'htmlall'}</option>
-                            {/foreach}
+                        {% for siteID, site in locations %}
+                            <optgroup label="{{ site['name'] }}">
+                            {% for locationID, location in site['locations'] %}
+                                <option value="{{ location }}">{{ location }}</option>
+                            {% endfor %}
                             </optgroup>
-                        {/foreach}
+                        {% endfor %}
                     </select>
                 </form>
                 <form id="categorysearchform" class="input-group">
                     <select id="categorysearch" class="form-control" multiple style="width: 100%">
-                        {catMenu data=$categories}
+                        {{ macros.catMenu(categories, 0) }}
                     </select>
                 </form>
                 <form id="mincountform" class="input-group">
@@ -52,7 +52,7 @@
                 </form>
             </div>
             <main class="col-8">
-                <h1>Stock: {$site|escape:'htmlall'}</h1>
+                <h1>Stock: {{ site }}</h1>
                 <table id="stock" class="table table-hover table-bordered dataTable">
                     <thead class="thead-default">
                         <tr>
@@ -64,19 +64,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {foreach from=$stock key=id item=item}
-                            <tr data-itemid="{$id|escape:'htmlall'}" data-itemmax="{$item.max}" data-itemmin="{$item.min}">
-                                <td class="name align-middle">{$item.name|escape:'htmlall'}</td>
-                                <td class="align-middle">{$item.site|escape:'htmlall'}</td>
-                                <td class="align-middle">{$item.location|escape:'htmlall'}</td>
-                                <td class="align-middle">{$item.category|escape:'htmlall'}</td>
-                                <td data-order="{$item.count}" data-search="{$item.count}" class="align-middle">
+                        {% for id, item in stock %}
+                            <tr data-itemid="{{ id }}" data-itemmax="{{ item.max }}" data-itemmin="{{ item.min }}">
+                                <td class="name align-middle">{{ item.name }}</td>
+                                <td class="align-middle">{{ item.site }}</td>
+                                <td class="align-middle">{{ item.location }}</td>
+                                <td class="align-middle">{{ item.category }}</td>
+                                <td data-order="{{ item.count }}" data-search="{{ item.count }}" class="align-middle">
                                     <div class="input-group">
                                         <span class="input-group-btn">
                                             <button
                                                 class="itemcountbutton btn btn-sm btn-secondary"
                                                 value="-2"
-                                                {if $item.count < 2} disabled{/if}>
+                                                {% if item.count < 2 %} disabled{% endif %}>
                                                 &laquo;
                                             </button>
                                         </span>
@@ -84,16 +84,23 @@
                                             <button
                                                 class="itemcountbutton btn btn-sm btn-secondary"
                                                 value="-1"
-                                                {if $item.count == 0} disabled{/if}>
+                                                {% if item.count == 0 %} disabled{% endif %}>
                                                 &lsaquo;
                                             </button>
                                         </span>
-                                        <input class="{if $item.count <= $item.min}belowmin {/if}itemcount form-control" type="number" name="{$id|escape:'htmlall'}-count" value="{$item.count|escape:'htmlall'}" required min="0" max="{$max_stock}">
+                                        <input
+                                            class="{% if item.count <= item.min %}belowmin {% endif %}itemcount form-control"
+                                            type="number"
+                                            name="{{ id }}-count"
+                                            value="{{ item.count }}"
+                                            required
+                                            min="0"
+                                            max="{{ max_stock}}">
                                         <span class="input-group-btn">
                                             <button
                                                 class="itemcountbutton btn btn-sm btn-secondary"
                                                 value="1"
-                                                {if $item.count == $max_stock} disabled{/if}>
+                                                {% if item.count == max_stock %} disabled{% endif %}>
                                                 &rsaquo;
                                             </button>
                                         </span>
@@ -101,14 +108,14 @@
                                             <button
                                                 class="itemcountbutton btn btn-sm btn-secondary"
                                                 value="2"
-                                                {if $item.count > ($max_stock-2)} disabled{/if}>
+                                                {% if item.count > (max_stock-2) %} disabled{% endif %}>
                                                 &raquo;
                                             </button>
                                         </span>
                                     </div>
                                 </td>
                             </tr>
-                        {/foreach}
+                        {% endfor %}
                     </tbody>
                 </table>
             </main>
@@ -116,4 +123,4 @@
             </div>
         </div>
     </div>
-{include file='footer.tpl'}
+{{ include('footer.tpl') }}

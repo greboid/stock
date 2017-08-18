@@ -4,38 +4,31 @@
     namespace greboid\stock;
 
     use \Exception;
-    use \Bramus\Router\Router;
-    use \Smarty;
-    use \ICanBoogie\Storage\RunTimeStorage;
     use \PDO;
     use \sweelix\guid\Guid;
     use \PHPMailer;
+    use \Silex\Application;
 
     class UserRoutes {
 
-        public function addRoutes(RunTimeStorage $storage): void {
-            $router = $storage->retrieve('router');
-            $smarty = $storage->retrieve('smarty');
-            $stock = $storage->retrieve('stock');
-            $msg = $storage->retrieve('flash');
-            $auth = $storage->retrieve('auth');
-            $pdo = $storage->retrieve('pdo');
+        public function addRoutes(\Silex\Application $app): void {
 
-            $router->get('/user/profile', function() use($smarty, $stock, $auth, $pdo) {
+            $app->get('/user/profile', function(Application $app) {
                 try {
-                    $stmt = $pdo->prepare('SELECT email, name FROM '.ACCOUNTS_TABLE.' WHERE username=:username');
-                    $stmt->bindValue(':username', $auth->getUserName());
+                    $token = $app['security.token_storage']->getToken();
+                    $stmt = $app['pdo']->prepare('SELECT email, name FROM '.ACCOUNTS_TABLE.' WHERE username=:username');
+                    $stmt->bindValue(':username', $token->getUser());
                     $stmt->execute();
                     $userData = $stmt->fetch(PDO::FETCH_ASSOC);
-                    $smarty->assign('username', $auth->getUserName());
-                    $smarty->assign('userdata', $userData);
-                    $smarty->display('profile.tpl');
+                    return $app['twig']->render('profile.tpl', array(
+                        'username' => $token->getUser(),
+                        'userdata' => $userData,
+                    ));
                 } catch (Exception $e) {
-                    $smarty->assign('error', $e->getMessage());
-                    $smarty->display('500.tpl');
+                    return $app->abort(500, $e->getMessage());
                 }
             });
-            $router->get('/user/checkemail', function() use($smarty, $stock, $auth, $pdo) {
+            $app->get('/user/checkemail', function(Application $app) {
                 $email = filter_input(INPUT_POST, "email", FILTER_UNSAFE_RAW);
                 if ($email == null) {
                     $email = filter_input(INPUT_GET, "email", FILTER_UNSAFE_RAW);
@@ -45,79 +38,90 @@
                     $username = filter_input(INPUT_GET, "username", FILTER_UNSAFE_RAW);
                 }
                 $sql = 'SELECT COUNT(*) as count FROM '.ACCOUNTS_TABLE.' WHERE email=:email AND username != :username';
-                $stmt = $pdo->prepare($sql);
+                $stmt = $app['pdo']->prepare($sql);
                 $stmt->bindParam(':username', $username);
                 $stmt->bindParam(':email', $email);
                 $stmt->execute();
                 $row = $stmt->fetchObject();
+                $output = '';
                 if ($row->count == 0) {
-                    $smarty->assign('output', "true");
+                    $output = 'true';
                 } else {
-                    $smarty->assign('output', "Email address is in use.");
+                    $output = 'Email Address is in use.';
                 }
-                $smarty->display('outputjson.tpl');
+                return $app['twig']->render('outputjson.tpl', array(
+                    'output' => $output,
+                ));
             });
-            $router->get('/user/checkusername', function() use($smarty, $stock, $auth, $pdo) {
+            $app->get('/user/checkusername', function(Application $app) {
                 $username = filter_input(INPUT_POST, "username", FILTER_UNSAFE_RAW);
                 if ($username == null) {
                     $username = filter_input(INPUT_GET, "username", FILTER_UNSAFE_RAW);
                 }
                 $sql = 'SELECT COUNT(*) as count FROM '.ACCOUNTS_TABLE.' WHERE username=:username';
-                $stmt = $pdo->prepare($sql);
+                $stmt = $app['pdo']->prepare($sql);
                 $stmt->bindParam(':username', $username);
                 $stmt->execute();
                 $row = $stmt->fetchObject();
+                $output = '';
                 if ($row->count == 0) {
-                    $smarty->assign('output', "true");
+                    $output = 'true';
                 } else {
-                    $smarty->assign('output', "Username is in use.");
+                    $output = 'Username is in use.';
                 }
-                $smarty->display('outputjson.tpl');
+                return $app['twig']->render('outputjson.tpl', array(
+                    'output' => $output,
+                ));
             });
-            $router->post('/user/profile', function() use ($smarty, $pdo, $msg) {
+            $app->post('/user/profile', function(Application $app) {
                 $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
                 $name = filter_input(INPUT_POST, "name", FILTER_SANITIZE_STRING);
                 $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
                 try {
-                    $stmt = $pdo->prepare('UPDATE '.ACCOUNTS_TABLE.' SET email=:email, name=:name WHERE username=:username');
+                    $stmt = $app['pdo']->prepare('UPDATE '.ACCOUNTS_TABLE.' SET email=:email, name=:name WHERE username=:username');
                     $stmt->bindValue(':email', $email);
                     $stmt->bindValue(':name', $name);
                     $stmt->bindValue(':username', $username);
                     $stmt->execute();
-                    $msg->info('Your details have been updated');
+                    $app['session']->getFlashBag()->add('info', 'Your details have been updated');
                 } catch (Exception $e) {
-                    $msg->error('Unable to update details: '.$e->getMessage());
+                    $app['session']->getFlashBag()->add('error', 'Unable to update details: '.$e->getMessage());
                 }
-                header('Location: /user/profile');
+                return $app->redirect('/user/profile');
             });
-            $router->post('/user/password', function() use ($smarty, $pdo, $msg, $auth) {
+            $app->post('/user/password', function(Application $app) {
                 $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
                 $password = filter_input(INPUT_POST, "newpassword", FILTER_UNSAFE_RAW);
                 $password = password_hash($password, PASSWORD_DEFAULT);
-                if ($auth->getUsername() == $username) {
+                $token = $app['security.token_storage']->getToken();
+                if ($token == null) {
+                    return $app->redirect('/user/profile');
+                }
+                if ($token->getUser() == $username) {
                     try {
-                        $stmt = $pdo->prepare('UPDATE '.ACCOUNTS_TABLE.' SET password=:password WHERE username=:username');
+                        $stmt = $app['pdo']->prepare('UPDATE '.ACCOUNTS_TABLE.' SET password=:password WHERE username=:username');
                         $stmt->bindValue(':password', $password);
                         $stmt->bindValue(':username', $username);
                         $val = $stmt->execute();
 
-                        $msg->info('Your details have been updated.');
+                        $app['session']->getFlashBag()->add('info', 'Your details have been updated.');
                     } catch (Exception $e) {
-                        $msg->error('Unable to update details: '.$e->getMessage());
+                        $app['session']->getFlashBag()->add('error', 'Unable to update details: '.$e->getMessage());
                     }
                 } else {
-                    $msg->error('Unable to update another user\'s password');
+                    $app['session']->getFlashBag()->add('error', 'Unable to update another user\'s password');
                 }
-                header('Location: /user/profile');
+                return $app->redirect('/user/profile');
             });
-            $router->get('/manage/users', function() use ($smarty, $pdo, $msg) {
-                $stmt = $pdo->prepare('SELECT id, username, name, email, active from '.ACCOUNTS_TABLE);
+            $app->get('/user/manage', function(Application $app) {
+                $stmt = $app['pdo']->prepare('SELECT id, username, name, email, active from '.ACCOUNTS_TABLE);
                 $stmt->execute();
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                $smarty->assign('users', $results);
-                $smarty->display('manageusers.tpl');
+                return $app['twig']->render('manageusers.tpl', array(
+                    'users' => $results,
+                ));
             });
-            $router->post('/add/user', function() use ($smarty, $pdo, $msg) {
+            $app->post('/user/add', function(Application $app) {
                 $username = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
                 $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
                 $name = filter_input(INPUT_POST, "name", FILTER_SANITIZE_STRING);
@@ -125,7 +129,7 @@
 
                 try {
                     $token = Guid::v4();
-                    $stmt = $pdo->prepare('INSERT INTO '.ACCOUNTS_TABLE.'
+                    $stmt = $app['pdo']->prepare('INSERT INTO '.ACCOUNTS_TABLE.'
                                           (username, name, email, active, verified, password, verify_token)
                                           VALUES (:username, :name, :email, :active, :verified, :password, :verifytoken);');
                     $stmt->bindValue(':username', $username);
@@ -137,42 +141,41 @@
                     $stmt->bindValue(':verifytoken', $token);
                     $stmt->execute();
                 } catch (Exception $e) {
-                    $msg->error('Unable to add user: '.$e->getMessage());
+                    $app['session']->getFlashBag()->add('error', 'Unable to add user: '.$e->getMessage());
                 }
-                if ($this->sendNewUserMail($username, $name, $email, $token) != '') {
-                    $msg->error('New user email failed to send.');
+                if ($this->sendNewUserMail($app, $username, $name, $email, $token) != '') {
+                    $app['session']->getFlashBag()->add('error', 'New user email failed to send.');
                 }
-                header('Location: /manage/users');
+                return $app->redirect('/user/manage');
             });
-            $router->post('/edit/user', function() use ($smarty, $pdo) {
+            $app->post('/user/edit', function(Application $app) {
                 try {
                     $userID = filter_input(INPUT_POST, "editID", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                     $userUsername = filter_input(INPUT_POST, "editUsername", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
                     $userName = filter_input(INPUT_POST, "editName", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
                     $userEmail = filter_input(INPUT_POST, "editEmail", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
                     $userActive = filter_input(INPUT_POST, "active", FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
-                    $this->editUser($pdo, $userID, $userUsername, $userName, $userEmail, $userActive);
-                    header('Location: /manage/users');
+                    $this->editUser($app['pdo'], $userID, $userUsername, $userName, $userEmail, $userActive);
+                    return $app->redirect('/user/manage');
                 } catch (Exception $e) {
-                    $smarty->assign('error', $e->getMessage());
-                    $smarty->display('500.tpl');
+                    return $app->abort(500, $e->getMessage());
                 }
             });
-            $router->post('/delete/user', function() use ($smarty, $pdo, $msg) {
+            $app->post('/user/delete', function(Application $app) {
                 $userid = filter_input(INPUT_POST, "userid", FILTER_SANITIZE_NUMBER_INT);
                 try {
-                    $stmt = $pdo->prepare('DELETE FROM '.ACCOUNTS_TABLE.' where id=:id;');
+                    $stmt = $app['pdo']->prepare('DELETE FROM '.ACCOUNTS_TABLE.' where id=:id;');
                     $stmt->bindValue(':id', $userid);
                     $stmt->execute();
                 } catch (Exception $e) {
-                    $msg->error('Unable to delete user: '.$e->getMessage());
+                    $app['session']->getFlashBag()->add('error', 'Unable to delete user: '.$e->getMessage());
                 }
-                header('Location: /manage/users');
+                return $app->redirect('/user/manage');
             });
-            $router->post('/user/sendverification', function() use ($smarty, $pdo, $msg) {
+            $app->post('/user/sendverification', function(Application $app) {
                 $userid = filter_input(INPUT_POST, "userid", FILTER_SANITIZE_NUMBER_INT);
                 try {
-                    $stmt = $pdo->prepare('
+                    $stmt = $app['pdo']->prepare('
                         SELECT username, name, email, verify_token
                         FROM '.ACCOUNTS_TABLE.'
                         WHERE id=:userID
@@ -182,7 +185,7 @@
                     $result = $stmt->fetchObject();
                     if (empty($result->verify_token)) {
                         $token = Guid::v4();
-                        $stmt = $pdo->prepare('
+                        $stmt = $app['pdo']->prepare('
                             UPDATE '.ACCOUNTS_TABLE.'
                             SET verify_token=:token
                             WHERE id=:userID
@@ -193,39 +196,38 @@
                     } else {
                         $token = $result->verify_token;
                     }
-                    if ($this->sendNewUserMail($result->username,
+                    if ($this->sendNewUserMail($app,
+                                               $result->username,
                                                $result->name,
                                                $result->email,
                                                $token) != '') {
-                        $msg->error('New user email failed to send.');
+                        $app['session']->getFlashBag()->add('error', 'New user email failed to send.');
                     }
-                    header('Location: /manage/users');
                 } catch (Exception $e) {
-                    $msg->error('Unable to delete user: '.$e->getMessage());
+                    $app['session']->getFlashBag()->add('error', 'Unable to send verification: '.$e->getMessage());
                 }
+                return $app->redirect('/user/manage');
             });
         }
 
-        private function sendNewUserMail($username, $name, $email, $code): string {
-            $mail = new PHPMailer;
-            $mail->isSMTP();
-            $mail->Host = SMTP_SERVER;
-            $mail->SMTPAuth = true;
-            $mail->Username = SMTP_USERNAME;
-            $mail->Password = SMTP_PASSWORD;
-            $mail->Port = SMTP_PORT;
+        private function sendNewUserMail($app, $username, $name, $email, $code): string {
+            $message = \Swift_Message::newInstance()
+                ->setSubject('Welcome to the Stock System')
+                ->setFrom(array('noreply@'.$_SERVER['HTTP_HOST'] =>'Stock System'))
+                ->setTo(array($email => $name))
+                ->setBody('Welcome to the stock system '.$name.'.  You username is '
+                          .$username.', to continue you need to verify your account, by visiting '
+                          .$this->getEmailLink($code))
+                ->addPart('Welcome to the stock system '.$name.'.  You username is '
+                          .$username.', but to continue you need to <a href="'
+                          .$this->getEmailLink($code).'">verify your account</a>.', 'text/html');
+            $result = $app['mailer']->send($message, $failures);
+            $app['swiftmailer.spooltransport']
+                ->getSpool()
+                ->flushQueue($app['swiftmailer.transport']);
 
-            $mail->setFrom('noreply@'.$_SERVER['HTTP_HOST'], 'Stock System');
-            $mail->addAddress($email, $name);
-
-            $mail->isHTML(true);
-
-            $mail->Subject = 'Welcome to the Stock System';
-            $mail->Body    = 'Welcome to the stock system '.$name.'.  You username is '.$username.', but to continue you need to <a href="'.$this->getEmailLink($code).'">verify your account</a>.';
-            $mail->AltBody = 'Welcome to the stock system '.$name.'.  You username is '.$username.', to continue you need to verify your account, by visiting '.$this->getEmailLink($code);
-
-            if (!$mail->send()) {
-                return $mail->ErrorInfo;
+            if (!$result) {
+                return 'Some shit went wrong';
             } else {
                 return '';
             }

@@ -5,107 +5,81 @@
 
     use \Exception;
     use \greboid\stock\Stock;
-    use \Bramus\Router\Router;
-    use \Smarty;
+    use \Silex\Application;
 
     class SiteRoutes {
 
-        public function addRoutes(Router $router, Smarty $smarty, Stock $stock): void {
-            $router->get('/site/(.*)', function($siteName) use ($smarty, $stock) {
+        public function addRoutes(Application $app): void {
+
+            $app->get('/site/manage', function(Application $app) {
+                try {
+                    return $app['twig']->render('managesites.tpl', array());
+                } catch (Exception $e) {
+                    return $app->abort(500, $e->getMessage());
+                }
+            });
+            $app->get('/site/{siteName}', function(Application $app, $siteName) {
                 $siteName = filter_var($siteName, FILTER_UNSAFE_RAW);
-                $siteid = $stock->getSiteID($siteName);
+                $siteid = $app['stock']->getSiteID($siteName);
                 if ($siteid === false) {
-                    header('HTTP/1.1 404 Not Found');
-                    $smarty->display('404.tpl');
+                    return $app->abort(404, 'Site '.$siteid.' not found');
                 }
                 try {
-                    if ($stock->getSiteName($siteid) !== false) {
-                        $smarty->assign('siteid', $siteid);
-                        $smarty->assign('categories', $stock->getCategories());
-                        $smarty->assign('site', $stock->getSiteName($siteid));
-                        $smarty->assign('stock', $stock->getSiteStock($siteid));
-                        $smarty->display('stock.tpl');
+                    if ($app['stock']->getSiteName($siteid) !== false) {
+                        return $app['twig']->render('stock.tpl', array(
+                            'siteid' => $siteid,
+                            'categories' => $app['stock']->getCategories(),
+                            'site' => $app['stock']->getSiteName($siteid),
+                            'stock' => $app['stock']->getSiteStock($siteid),
+                        ));
                     } else {
-                        header('HTTP/1.1 404 Not Found');
-                        $smarty->display('404.tpl');
+                        return $app->abort(404, 'Site '.$siteid.' not found');
                     }
                 } catch (Exception $e) {
-                    $smarty->assign('error', $e->getMessage());
-                    $smarty->display('500.tpl');
+                    return $app->abort(500, $e->getMessage());
                 }
             });
-            $router->get('/json/site/(.*)', function($siteName) use ($smarty, $stock) {
-                $siteName = filter_var($siteName, FILTER_UNSAFE_RAW);
-                $siteid = $stock->getSiteID($siteName);
-                if ($siteid === false) {
-                    header('HTTP/1.1 404 Not Found');
-                }
+            $app->get('/site/add', function(Application $app) {
                 try {
-                    if ($stock->getSiteName($siteid) !== false) {
-                        $smarty->assign('output', $stock->getSiteStock($siteid));
-                        $smarty->display('outputjson.tpl');
-                    } else {
-                        header('HTTP/1.1 404 Not Found');
-                    }
+                    return $app['twig']->render('addsite.tpl', array());
                 } catch (Exception $e) {
-                    header('HTTP/1.1 500 Oops');
+                    return $app->abort(500, $e->getMessage());
                 }
             });
-            $router->get('/add/site', function() use ($smarty, $stock) {
-                try {
-                    $smarty->display('addsite.tpl');
-                } catch (Exception $e) {
-                    $smarty->assign('error', $e->getMessage());
-                    $smarty->display('500.tpl');
-                }
-            });
-            $router->post('/edit/site', function() use ($smarty, $stock) {
+            $app->post('/site/edit', function(Application $app) {
                 try {
                     $siteID = filter_input(INPUT_POST, "editID", FILTER_VALIDATE_INT);
                     $name = filter_input(INPUT_POST, "editName", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
                     if ($name !== false) {
-                        $stock->editSite($siteID, $name);
+                        $app['stock']->editSite($siteID, $name);
                     } else {
-                        $smarty->assign('error', 'Missing required value.');
-                        $smarty->display('500.tpl');
+                        return $app->abort(500, 'Missing required value.');
                     }
-                    header('Location: /manage/sites');
+                    return $app->redirect('/site/manage');
                 } catch (Exception $e) {
-                    $smarty->assign('error', $e->getMessage());
-                    $smarty->display('500.tpl');
+                    return $app->abort(500, $e->getMessage());
                 }
             });
-            $router->post('/add/site', function() use ($smarty, $stock) {
+            $app->post('/site/add', function(Application $app) {
                 try {
                     $name = filter_input(INPUT_POST, "addName", FILTER_UNSAFE_RAW, FILTER_NULL_ON_FAILURE);
                     if ($name !== false) {
-                        $stock->insertSite($name);
+                        $app['stock']->insertSite($name);
                     } else {
-                        $smarty->assign('error', 'Missing required value.');
-                        $smarty->display('500.tpl');
+                        return $app->abort(500, 'Missing required value.');
                     }
-                    header('Location: /manage/sites');
+                    return $app->redirect('/site/manage');
                 } catch (Exception $e) {
-                    $smarty->assign('error', $e->getMessage());
-                    $smarty->display('500.tpl');
+                    return $app->abort(500, $e->getMessage());
                 }
             });
-            $router->get('/manage/sites', function() use ($smarty, $stock) {
-                try {
-                    $smarty->display('managesites.tpl');
-                } catch (Exception $e) {
-                    $smarty->assign('error', $e->getMessage());
-                    $smarty->display('500.tpl');
-                }
-            });
-            $router->post('/delete/site/(\d+)', function($siteid) use ($smarty, $stock) {
+            $app->post('/site/delete/{siteid}', function(Application $app, $siteid) {
                 $siteid = filter_var($siteid, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
                 try {
-                    $stock->deleteSite($siteid);
-                    header('Location: /manage/sites');
+                    $app['stock']->deleteSite($siteid);
+                    return $app->redirect('/site/manage');
                 } catch (Exception $e) {
-                    $smarty->assign('error', $e->getMessage());
-                    $smarty->display('500.tpl');
+                    return $app->abort(500, $e->getMessage());
                 }
             });
         }
