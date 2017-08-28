@@ -33,7 +33,7 @@
                                                 </span>
                                                 <span class="input-group-btn">
                                                     <button
-                                                        formaction="/site/delete/{$siteid}"
+                                                        formaction="/site/delete/{{siteid}}"
                                                         class="btn btn-danger"{% if locations[siteid]['locations']|count != 0 %} disabled{% endif %}>
                                                             Delete
                                                     </button>

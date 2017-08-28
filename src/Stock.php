@@ -215,8 +215,8 @@
                 throw new Exception('Specified site does not exist.');
             }
             $sql = 'SELECT stock_id as id,
-                        parents.location_name as site,
-                        '.LOCATIONS_TABLE.'.location_name as location,
+                        site_name as site,
+                        location_name as location,
                         stock_name as name,
                         stock_count as count,
                         stock_min as min,
@@ -224,12 +224,12 @@
                         category_name as category
                     FROM '.STOCK_TABLE.'
                     LEFT JOIN '.LOCATIONS_TABLE.' ON '.STOCK_TABLE.'.stock_location='.LOCATIONS_TABLE.'.location_id
-                    LEFT JOIN '.LOCATIONS_TABLE.' as parents ON '.LOCATIONS_TABLE.'.location_site=parents.location_id
+                    LEFT JOIN '.SITES_TABLE.' ON '.LOCATIONS_TABLE.'.location_site='.SITES_TABLE.'.site_id
                     LEFT JOIN '.CATEGORIES_TABLE.' ON '.STOCK_TABLE.'.stock_category='.CATEGORIES_TABLE.'.category_id';
             if ($site != 0) {
                 $sql .= " WHERE site_id=:site";
             }
-            $sql .= ' ORDER BY stock_name, '.LOCATIONS_TABLE.'.location_name, parents.location_name ASC';
+            $sql .= ' ORDER BY stock_name, location_name, site_name ASC';
             $statement = $this->database->getPDO()->prepare($sql);
             if ($site != 0) {
                 $statement->bindValue(':site', $site, PDO::PARAM_INT);
