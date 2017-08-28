@@ -56,10 +56,10 @@
                 try {
                     if ($name !== false && $parent !== false) {
                         $app['stock']->insertCategory($name, $parent);
-                        return $app->redirect('/manage/categories');
+                        return $app->redirect('/categories/manage');
                     } else if ($name !== false) {
                         $app['stock']->insertCategory($name);
-                        return $app->redirect('/manage/categories');
+                        return $app->redirect('/categories/manage');
                     }
                     return $app->abort(500, 'Missing required value.');
                 } catch (Exception $e) {
@@ -88,7 +88,7 @@
                 $categoryID = filter_var($categoryID, FILTER_VALIDATE_INT);
                 try {
                     $app['stock']->deleteCategory($categoryID);
-                    return $app->redirect('/manage/categories');
+                    return $app->redirect('/categories/manage');
                 } catch (Exception $e) {
                     return $app->abort(500, $e->getMessage());
                 }
