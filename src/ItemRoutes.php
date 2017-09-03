@@ -43,7 +43,7 @@
                 try {
                     if ($itemid !== null) {
                         if (is_numeric($data['newcount'])) {
-                            $app['stock']->editItemCount($itemid, intval($data['newcount']));
+                            $app['stock']->editItemCount(intval($itemid), intval($data['newcount']));
                             return intval($data['newcount']);
                         } else {
                             return $app->abort(400, 'Not an int');
