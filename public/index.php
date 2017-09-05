@@ -97,6 +97,10 @@
                 'pattern' => '^/auth/login$',
                 'anonymous' => true,
             ),
+            'verifyemail' => array(
+                'pattern' => '^/auth/verifyemail/.*$',
+                'anonymous' => true,
+            ),
             'general' => array(
                 'pattern' => '^.*$',
                 'anonymous' => false,
