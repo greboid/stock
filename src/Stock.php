@@ -350,8 +350,8 @@
             if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
             }
-            if (preg_match('#\.|\.\.|\\\\|/#', $name)) {
-                throw new Exception('The name cannot contain ., .. ,/ or \\');
+            if (preg_match('#\\\\|/#', $name)) {
+                throw new Exception('The name cannot contain / or \\');
             }
             if ($count > MAX_STOCK) {
                 throw new Exception('Stock count cannot be greater than '.MAX_STOCK);
@@ -385,8 +385,8 @@
             if ($name == 'all') {
                 throw new Exception('You cannot use all as a name.');
             }
-            if (preg_match('#\.|\.\.|\\\\|/#', $name)) {
-                throw new Exception('The name cannot contain ., .. ,/ or \\');
+            if (preg_match('#\\\\|/#', $name)) {
+                throw new Exception('The name cannot contain / or \\');
             }
             if (!$this->getSiteName($site)) {
                 throw new Exception('Specified site does not exist.');
@@ -410,8 +410,8 @@
             if ($name == 'all') {
                 throw new Exception('You cannot use all as a name.');
             }
-            if (preg_match('#\.|\.\.|\\\\|/#', $name)) {
-                throw new Exception('The name cannot contain ., .. ,/ or \\');
+            if (preg_match('#\\\\|/#', $name)) {
+                throw new Exception('The name cannot contain / or \\');
             }
 
             $statement = $this->database->getPDO()->prepare('
@@ -431,8 +431,8 @@
             if ($name == 'all') {
                 throw new Exception('You cannot use all as a name.');
             }
-            if (preg_match('#\.|\.\.|\\\\|/#', $name)) {
-                throw new Exception('The name cannot contain ., .. ,/ or \\');
+            if (preg_match('#\\\\|/#', $name)) {
+                throw new Exception('The name cannot contain / or \\');
             }
 
             $statement = $this->database->getPDO()->prepare('
@@ -453,8 +453,8 @@
             if ($locationName == 'all') {
                 throw new Exception('You cannot use all as a name.');
             }
-            if (preg_match('#\.|\.\.|\\\\|/#', $locationName)) {
-                throw new Exception('The name cannot contain ., .. ,/ or \\');
+            if (preg_match('#\\\\|/#', $locationName)) {
+                throw new Exception('The name cannot contain / or \\');
             }
 
             $statement = $this->database->getPDO()->prepare('
@@ -476,8 +476,8 @@
             if ($categoryName == 'all') {
                 throw new Exception('You cannot use all as a name.');
             }
-            if (preg_match('#\.|\.\.|\\\\|/#', $categoryName)) {
-                throw new Exception('The name cannot contain ., .. ,/ or \\');
+            if (preg_match('#\\\\|/#', $categoryName)) {
+                throw new Exception('The name cannot contain / or \\');
             }
 
             $statement = $this->database->getPDO()->prepare('
@@ -502,8 +502,8 @@
             if ($itemName == 'all') {
                 throw new Exception('You cannot use all as a name.');
             }
-            if (preg_match('#\.|\.\.|\\\\|/#', $itemName)) {
-                throw new Exception('The name cannot contain ., .. ,/ or \\');
+            if (preg_match('#\\\\|/#', $itemName)) {
+                throw new Exception('The name cannot contain / or \\');
             }
 
             $statement = $this->database->getPDO()->prepare('
@@ -527,8 +527,8 @@
             if (empty($name)) {
                 throw new Exception('The name cannot be blank.');
             }
-            if (preg_match('#\.|\.\.|\\\\|/#', $name)) {
-                throw new Exception('The name cannot contain ., .. ,/ or \\');
+            if (preg_match('#\\\\|/#', $name)) {
+                throw new Exception('The name cannot contain / or \\');
             }
 
             $statement = $this->database->getPDO()->prepare('
